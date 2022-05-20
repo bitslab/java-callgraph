@@ -35,7 +35,7 @@ properties:
   - name: StateSetQuickcheck#removeRemoves
     entryPoint: "jflex.state.StateSetQuickcheck.removeRemoves(Ljflex/state/StateSet;I)V"
   - name: StateSetQuickcheck#removeAdd
-    entryPoint: "jflex.state.StateSetQuickcheck.removeAdd(Ljflex/state/StateSet;II)V"
+    entryPoint: "jflex.state.StateSetQuickcheck.removeAdd(Ljflex/state/StateSet;I)V"
   - name: StateSetQuickcheck#clearMakesEmpty
     entryPoint: "jflex.state.StateSetQuickcheck.clearMakesEmpty(Ljflex/state/StateSet;)V"
   - name: StateSetQuickcheck#addStateAdds
@@ -73,17 +73,17 @@ properties:
   - name: CharClassesQuickcheck#maxCharCode
     entryPoint: "jflex.core.unicode.CharClassesQuickcheck.maxCharCode(Ljflex/core/unicode/CharClasses;)V"
   - name: CharClassesQuickcheck#addSingle
-    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSingle(Ljflex/core/unicode/CharClasses;IIZ)V"
+    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSingle(Ljflex/core/unicode/CharClasses;II)V"
   - name: CharClassesQuickcheck#addSingleSingleton
     entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSingleSingleton(Ljflex/core/unicode/CharClasses;I)V"
   - name: CharClassesQuickcheck#addSet
-    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSet(Ljflex/core/unicode/CharClasses;Ljflex/core/unicode/IntCharSet;IZ)V"
+    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSet(Ljflex/core/unicode/CharClasses;Ljflex/core/unicode/IntCharSet;I)V"
   - name: CharClassesQuickcheck#addSetParts
-    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSetParts(Ljflex/core/unicode/CharClasses;Ljflex/core/unicode/IntCharSet;Z)V"
+    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSetParts(Ljflex/core/unicode/CharClasses;Ljflex/core/unicode/IntCharSet;)V"
   - name: CharClassesQuickcheck#addSetComplement
-    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSetComplement(Ljflex/core/unicode/CharClasses;Ljflex/core/unicode/IntCharSet;Z)V"
+    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSetComplement(Ljflex/core/unicode/CharClasses;Ljflex/core/unicode/IntCharSet;)V"
   - name: CharClassesQuickcheck#addString
-    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addString(Ljflex/core/unicode/CharClasses;Ljava/lang/String;IZ)V"
+    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addString(Ljflex/core/unicode/CharClasses;Ljava/lang/String;I)V"
   - name: CharClassesQuickcheck#normaliseSingle
     entryPoint: "jflex.core.unicode.CharClassesQuickcheck.normaliseSingle(Ljflex/core/unicode/CharClasses;I)V"
   - name: CharClassesQuickcheck#computeTablesEq
