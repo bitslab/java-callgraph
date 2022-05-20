@@ -1,6 +1,8 @@
 package gr.gousiosg.javacg.stat.coverage;
 
-public class ColoredNode {
+import java.io.Serializable;
+
+public class ColoredNode implements Serializable {
 
     /* Colors */
     private static final String IMPLIED_COVERAGE_COLOR = "skyblue";
@@ -28,6 +30,10 @@ public class ColoredNode {
 
     public String getColor() {
         return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public String getLabel() {
@@ -131,7 +137,11 @@ public class ColoredNode {
         return branchesMissed;
     }
 
-    private float lineRatio() {
+    public float lineRatio() {
         return (float) linesCovered / ((float) linesCovered + (float) linesMissed);
+    }
+
+    public String toString() {
+        return getLabel();
     }
 }
