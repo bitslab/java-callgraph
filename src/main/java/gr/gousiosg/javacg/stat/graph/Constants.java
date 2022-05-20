@@ -10,4 +10,5 @@ public class Constants {
     protected static final String STYLE = "style";
     protected static final String FILLCOLOR = "fillcolor";
     protected static final String FILLED = "filled";
+    protected static final String LINERATIO = "lineratio";
 }

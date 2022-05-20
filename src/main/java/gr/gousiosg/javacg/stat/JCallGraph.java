@@ -28,6 +28,7 @@
 
 package gr.gousiosg.javacg.stat;
 
+import edu.uic.bitslab.callgraph.GetBest;
 import gr.gousiosg.javacg.dyn.Pair;
 import gr.gousiosg.javacg.stat.coverage.ColoredNode;
 import gr.gousiosg.javacg.stat.coverage.CoverageStatistics;
@@ -81,6 +82,7 @@ public class JCallGraph {
   private static final String DELIMITER = "-";
   private static final String DOT_SUFFIX = ".dot";
   private static final String CSV_SUFFIX = ".csv";
+  private static final String SER_SUFFIX = ".ser";
 
   public static void main(String[] args) {
     try {
@@ -176,12 +178,17 @@ public class JCallGraph {
             Pruning.pruneOriginalGraph(callgraph, jacocoCoverage);
             // 4. Operate on the graph and write it to output
             maybeWriteGraph(callgraph.graph, JCallGraph.OUTPUT_DIRECTORY + propertyName);
-            maybeInspectReachability(callgraph, arguments.maybeDepth(), jacocoCoverage, s.second, JCallGraph.OUTPUT_DIRECTORY + propertyName);
+            Graph<ColoredNode, DefaultEdge> prunedReachability = maybeInspectReachability(callgraph, arguments.maybeDepth(), jacocoCoverage, s.second, JCallGraph.OUTPUT_DIRECTORY + propertyName);
             maybeInspectAncestry(callgraph, arguments, jacocoCoverage, Optional.of(s.second), Optional.of(propertyName));
             rt.cleanTarget();
+
+            // write the best paths and annotated dot file
+            GetBest getBest = new GetBest(prunedReachability, propertyName);
+            getBest.run();
           }
           break;
         }
+
         default:
           LOGGER.error("Invalid argument provided!");
           System.exit(1);
@@ -403,14 +410,14 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
 
     maybeInspectReachability(callgraph, depth, jacocoCoverage, entryPoint, output);
 
-//    maybeWriteGraph(callgraph.graph, args[4]);
+    // maybeWriteGraph(callgraph.graph, args[4]);
   }
 
   private static void maybeWriteGraph(Graph<String, DefaultEdge> graph, String output) {
     Utilities.writeGraph(graph, Utilities.defaultExporter(), JCallGraph.asDot(output));
   }
 
-  private static void maybeInspectReachability(
+  private static Graph<ColoredNode, DefaultEdge> maybeInspectReachability(
       StaticCallgraph callgraph, Optional<Integer> depth, JacocoCoverage jacocoCoverage, String entryPoint, String outputFile) {
 
     /* Fetch reachability */
@@ -424,6 +431,30 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
     Pruning.pruneReachabilityGraph(reachability, callgraph.metadata, jacocoCoverage);
 
     /* Should we write the graph to a file? */
+    String outputName = getCompleteOutputName(depth, outputFile);
+
+    /* Store reachability in file? */
+    Utilities.writeGraph(
+            reachability, Utilities.coloredExporter(), JCallGraph.asDot(outputName));
+
+    try {
+      writeSerializeReachabilityGraph(reachability, asSer(outputName));
+    } catch (IOException e) {
+      LOGGER.error("Error writing serialized reachability graph.");
+      LOGGER.error(e.getMessage());
+    }
+
+
+    /* Analyze reachability coverage? */
+    if (jacocoCoverage.hasCoverage()) {
+      CoverageStatistics.analyze( reachability, Optional.of(asCsv(outputName + DELIMITER + COVERAGE)));
+    }
+
+    return reachability;
+  }
+
+  private static String getCompleteOutputName(Optional<Integer> depth, String outputFile) {
+    /* Should we write the graph to a file? */
     String outputName = outputFile + DELIMITER + REACHABILITY;
 
     /* Attach depth to name if present */
@@ -431,14 +462,7 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
       outputName = outputName + DELIMITER + depth.get();
     }
 
-    /* Store reachability in file? */
-    Utilities.writeGraph(
-            reachability, Utilities.coloredExporter(), JCallGraph.asDot(outputName));
-
-    /* Analyze reachability coverage? */
-    if (jacocoCoverage.hasCoverage()) {
-      CoverageStatistics.analyze( reachability, Optional.of(asCsv(outputName + DELIMITER + COVERAGE)));
-    }
+    return outputName;
   }
 
   private static void maybeInspectAncestry(
@@ -469,6 +493,10 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
     return name.endsWith(DOT_SUFFIX) ? name : (name + DOT_SUFFIX);
   }
 
+  private static String asSer(String name) {
+    return name.endsWith(SER_SUFFIX) ? name : (name + SER_SUFFIX);
+  }
+
   private static String asCsv(String name) {
     return name.endsWith(CSV_SUFFIX) ? name : (name + CSV_SUFFIX);
   }
@@ -485,6 +513,15 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
       out.close();
       file.close();
     }
+  }
+
+  private static void writeSerializeReachabilityGraph(Graph<ColoredNode, DefaultEdge> reachability, String pathname) throws IOException {
+    File filename = new File(pathname);
+    FileOutputStream file = new FileOutputStream(filename);
+    ObjectOutputStream out = new ObjectOutputStream(file);
+    out.writeObject(reachability);
+    out.close();
+    file.close();
   }
 
   //
