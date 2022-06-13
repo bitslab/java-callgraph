@@ -5,7 +5,9 @@ import gr.gousiosg.javacg.stat.coverage.ColoredNode;
 import gr.gousiosg.javacg.stat.graph.Utilities;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
+import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
+import org.jgrapht.alg.shortestpath.BFSShortestPath;
 import org.jgrapht.event.ConnectedComponentTraversalEvent;
 import org.jgrapht.event.EdgeTraversalEvent;
 import org.jgrapht.event.TraversalListenerAdapter;
@@ -18,8 +20,11 @@ import org.jgrapht.traverse.DepthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -126,19 +131,16 @@ public class GetBest {
             LOGGER.error("Unable to write callgraph to " + path);
         }
 
-
         // get all of the paths
-        HashSet<ColoredNode> sourceSet = new HashSet<>(Collections.singleton(entryPoint));
-        HashSet<ColoredNode> targetSet = reachability.vertexSet().stream().filter(vertex -> reachability.outDegreeOf(vertex) == 0).collect(Collectors.toCollection(HashSet::new));
-        AllDirectedPaths<ColoredNode, DefaultEdge> allDirectedPaths = new AllDirectedPaths<>(reachability);
-        List<GraphPath<ColoredNode, DefaultEdge>> allPaths = allDirectedPaths.getAllPaths(sourceSet, targetSet, true, null);
-
         List<PathWeight> pathWeights = new ArrayList<>();
+        BFSShortestPath<ColoredNode, DefaultEdge> bfsShortestPath = new BFSShortestPath<>(reachability);
+        ShortestPathAlgorithm.SingleSourcePaths<ColoredNode, DefaultEdge> allPaths = bfsShortestPath.getPaths(entryPoint);
+        HashSet<ColoredNode> sinkSet = reachability.vertexSet().stream().filter(vertex -> reachability.outDegreeOf(vertex) == 0).collect(Collectors.toCollection(HashSet::new));
+        sinkSet.forEach( sinkVertex -> {
+            GraphPath<ColoredNode, DefaultEdge> executionPath = allPaths.getPath(sinkVertex);
 
-        // add the weights to each path
-        allPaths.forEach( executionPath -> {
-          double pathSum = executionPath.getEdgeList().stream().map(reachability::getEdgeTarget).mapToDouble(score::get).filter( (d) -> !Double.isNaN(d)).sum();
-          pathWeights.add(new PathWeight(executionPath, pathSum));
+            double pathSum = executionPath.getEdgeList().stream().map(reachability::getEdgeTarget).mapToDouble(score::get).filter( (d) -> !Double.isNaN(d)).sum();
+            pathWeights.add(new PathWeight(executionPath, pathSum));
         });
 
         // output sorted paths
@@ -149,19 +151,26 @@ public class GetBest {
         try {
             Writer writer = new FileWriter(outputPaths);
             for(PathWeight pathWeight : pathWeights) {
+                String pathString = pathWeight.path
+                        .getVertexList()
+                        .stream()
+                        .map(p -> '"' + p.toString() + '"')
+                        .collect(Collectors.joining(","));
+
+                MessageDigest md = MessageDigest.getInstance("md5");
+                md.update(pathString.getBytes());
+                byte[] digest = md.digest();
+                String pathHash = DatatypeConverter.printHexBinary(digest).toUpperCase();
+
                 writer.write(
-                    pathWeight.weight +
-                        "," +
-                        pathWeight.path
-                                .getVertexList()
-                                .stream()
-                                .map(p -> '"' + p.toString() + '"')
-                                .collect(Collectors.joining(",")) +
+                    pathWeight.weight + "," +
+                        pathHash + "," +
+                        pathString +
                         System.lineSeparator());
             }
 
             writer.close();
-        } catch (IOException e) {
+        } catch (IOException | NoSuchAlgorithmException e) {
             LOGGER.error("Unable to write paths to " + outputPaths);
         }
     }
@@ -229,22 +238,22 @@ public class GetBest {
             score.put(parentVertex, Score(parentVertex));
         }
 
-        private byte vertexColorToInt(String color) {
+        private double vertexColorToInt(String color) {
             switch (color) {
                 case UNCOVERED_COLOR:
-                    return 8;
+                    return 1.00;
 
                 case LIGHT_GREEN:
-                    return 4;
+                    return 0.75;
 
                 case MEDIUM_GREEN:
-                    return 3;
+                    return 0.50;
 
                 case MEDIUM_DARK_GREEN:
-                    return 2;
+                    return 0.25;
 
                 case DARK_GREEN:
-                    return 1;
+                    return 0.00;
 
                 default:
                     return 0;
@@ -256,7 +265,7 @@ public class GetBest {
             final double weightUncoveredChildren = .5;
 
             // parent score (note: high score is better
-            long parentScore = vertexColorToInt(vertex.getColor());
+            double parentScore = vertexColorToInt(vertex.getColor());
 
             // get uncovered children
             long countUncoveredChildren = graph.outgoingEdgesOf(vertex)
