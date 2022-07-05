@@ -69,7 +69,7 @@ public class CoverageStatistics {
 
     private static void toCsv(CoverageStatistics statistics, String fileName) throws Exception {
         if (statistics == null) return;
-        FileWriter writer = new FileWriter(JCallGraph.OUTPUT_DIRECTORY + fileName);
+        FileWriter writer = new FileWriter(fileName);
         Arrays.stream(CoverageStatistics.class.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Writeable.class))
                 .forEach(
