@@ -2,6 +2,7 @@ name: mph-table
 URL: https://github.com/indeedeng/mph-table.git
 checkoutID: dbd5413df33bf8f0a995822eeefe94df50f3c5a7
 patchName: artifacts/configs/mph-table/mph-table.patch
+#mvnOptions: -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
 properties:
   - name: TestSmartListSerializer#canRoundTripSerializableLists
     entryPoint: "com.indeed.mph.serializers.TestSmartListSerializer.canRoundTripSerializableLists(Ljava/util/List;Ljava/util/List;Ljava/util/List;)V"
@@ -19,6 +20,8 @@ properties:
     entryPoint: "com.indeed.mph.serializers.TestSmartLongSerializer.canRoundTripLongs(J)V"
   - name: TestSmartPairSerializer#canRoundTripPairs
     entryPoint: "com.indeed.mph.serializers.TestSmartPairSerializer.canRoundTripPairs(Lcom/indeed/util/core/Pair;)V"
+  - name: TestSmartOptionalSerializer#java#canRoundTripPresentOptionals
+    entryPoint: "com.indeed.mph.serializers.TestSmartOptionalSerializer.java.canRoundTripPresentOptionals(J)V"
   - name: TestSmartListSerializer#canRoundTripSerializableLists
     entryPoint: "com.indeed.mph.serializers.TestSmartListSerializer.canRoundTripSerializableLists(Ljava/util/List;Ljava/util/List;Ljava/util/List;)V"
   - name: TestSmartListSerializer#canRoundTripSerializableListsWithGenerator

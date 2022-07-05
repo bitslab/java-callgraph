@@ -94,20 +94,18 @@ index 109146e2..4af8ce29 100644
          "//third_party/com/google/truth",
          "//third_party/com/pholser/quickcheck",
 diff --git a/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java b/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
-index 876f0387..2c201807 100644
+index 876f0387..22be04d6 100644
 --- a/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
 +++ b/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
-@@ -12,7 +12,9 @@ package jflex.core.unicode;
+@@ -12,6 +12,7 @@ package jflex.core.unicode;
  import static com.google.common.truth.Truth.assertThat;
  import static org.junit.Assume.assumeTrue;
 
 +import com.pholser.junit.quickcheck.From;
  import com.pholser.junit.quickcheck.Property;
-+import com.pholser.junit.quickcheck.When;
  import com.pholser.junit.quickcheck.generator.InRange;
  import com.pholser.junit.quickcheck.generator.Size;
- import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
-@@ -31,6 +33,7 @@ import org.junit.runner.RunWith;
+@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
   */
  @RunWith(JUnitQuickcheck.class)
  public class CharClassesQuickcheck {
@@ -115,7 +113,7 @@ index 876f0387..2c201807 100644
 
    // TODO(lsf): add testing for caseless; needs UnicodeProperties
 
-@@ -48,31 +51,45 @@ public class CharClassesQuickcheck {
+@@ -48,17 +50,24 @@ public class CharClassesQuickcheck {
    @Property
    public void addSingle(
        CharClasses classes,
@@ -145,18 +143,13 @@ index 876f0387..2c201807 100644
      classes.makeClass(c, false);
      IntCharSet set = classes.getCharClass(classes.getClassCode(c));
      assertThat(set).isEqualTo(IntCharSet.ofCharacter(c));
-   }
-
-+  // , 3839291274416487683L, 1154501117292752986L, 3887465442738381135L
-   @Property
+@@ -68,11 +77,17 @@ public class CharClassesQuickcheck {
    public void addSet(
--      CharClasses classes,
--      @InRange(maxInt = CharClasses.maxChar) IntCharSet set,
+       CharClasses classes,
+       @InRange(maxInt = CharClasses.maxChar) IntCharSet set,
 -      @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
-+      @When(seed = 2859637044674312045L) CharClasses classes,
-+      @When(seed = 3839291274416487683L) @InRange(maxInt = CharClasses.maxChar) IntCharSet set,
-+      @When(seed = 1154501117292752986L) @From(IntCharGen.class) int c,
-+      @When(seed = 3887465442738381135L) boolean caseless)
++      @From(IntCharGen.class) int c,
++      boolean caseless)
 +      throws UnicodeProperties.UnsupportedUnicodeVersionException {
 
      assumeTrue(!set.contains(c));
@@ -170,7 +163,7 @@ index 876f0387..2c201807 100644
      assertThat(classes.invariants()).isTrue();
 
      int[] classCodes = classes.getClassCodes(set, false);
-@@ -84,9 +101,15 @@ public class CharClassesQuickcheck {
+@@ -84,9 +99,15 @@ public class CharClassesQuickcheck {
 
    @Property
    public void addSetParts(
@@ -188,7 +181,7 @@ index 876f0387..2c201807 100644
 
      int[] classCodes = classes.getClassCodes(set, false);
      IntCharSet allParts = new IntCharSet();
-@@ -98,9 +121,15 @@ public class CharClassesQuickcheck {
+@@ -98,9 +119,15 @@ public class CharClassesQuickcheck {
 
    @Property
    public void addSetComplement(
@@ -206,7 +199,7 @@ index 876f0387..2c201807 100644
 
      int[] notCodes = classes.getClassCodes(set, true);
      IntCharSet others = new IntCharSet();
-@@ -112,11 +141,16 @@ public class CharClassesQuickcheck {
+@@ -112,11 +139,16 @@ public class CharClassesQuickcheck {
 
    @Property
    public void addString(
@@ -225,7 +218,7 @@ index 876f0387..2c201807 100644
      assertThat(classes.invariants()).isTrue();
 
      int cCode = classes.getClassCode(c);
-@@ -203,4 +237,18 @@ public class CharClassesQuickcheck {
+@@ -203,4 +235,18 @@ public class CharClassesQuickcheck {
        assertThat(intervals[i].end + 1).isEqualTo(intervals[i + 1].start);
      }
    }
@@ -246,10 +239,10 @@ index 876f0387..2c201807 100644
  }
 diff --git a/jflex/src/test/java/jflex/core/unicode/IntCharGen.java b/jflex/src/test/java/jflex/core/unicode/IntCharGen.java
 new file mode 100644
-index 00000000..e7a52927
+index 00000000..45e47ee8
 --- /dev/null
 +++ b/jflex/src/test/java/jflex/core/unicode/IntCharGen.java
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,47 @@
 +package jflex.core.unicode;
 +
 +import com.pholser.junit.quickcheck.generator.GenerationStatus;
@@ -290,9 +283,11 @@ index 00000000..e7a52927
 +    // get list of casedIntervals
 +    List<Interval> casedIntervals = (new UnicodeProperties()).getIntCharSet("cased").getIntervals();
 +
-+    // return start of interval @todo perhaps we should pick some random set within the interval
-+    // instead...
-+    return casedIntervals.get(r.nextInt(0, casedIntervals.size() - 1)).start;
++    // randomly pick an interval
++    Interval interval = casedIntervals.get(r.nextInt(0, casedIntervals.size() - 1));
++
++    // return a value between start and end of interval
++    return r.nextInt(interval.start, interval.end);
 +  }
 +}
 diff --git a/jflex/src/test/java/jflex/core/unicode/IntCharSetGen.java b/jflex/src/test/java/jflex/core/unicode/IntCharSetGen.java

@@ -1,8 +1,7 @@
 diff --git a/pom.xml b/pom.xml
-index 65f0f80..508b290 100644
---- a/pom.xml
-+++ b/pom.xml
-@@ -40,9 +40,57 @@
+--- a/pom.xml	(revision dbd5413df33bf8f0a995822eeefe94df50f3c5a7)
++++ b/pom.xml	(date 1655257746259)
+@@ -40,8 +40,75 @@
                      <target>1.8</target>
                  </configuration>
              </plugin>
@@ -38,9 +37,28 @@ index 65f0f80..508b290 100644
 +                    </execution>
 +                </executions>
 +            </plugin>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-assembly-plugin</artifactId>
++                <version>3.3.0</version>
++                <configuration>
++                        <descriptorRefs>
++                            <descriptorRef>jar-with-dependencies</descriptorRef>
++                        </descriptorRefs>
++                </configuration>
++                <executions>
++                    <execution>
++                        <id>make-assembly</id>
++                        <phase>package</phase>
++                        <goals>
++                            <goal>single</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
          </plugins>
      </build>
- 
++    
 +    <reporting>
 +        <plugins>
 +            <plugin>
@@ -56,7 +74,7 @@ index 65f0f80..508b290 100644
 +            </plugin>
 +        </plugins>
 +    </reporting>
-+
+ 
      <dependencies>
  
-         <dependency>
+
