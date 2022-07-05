@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# SET JCG_HOME based on the directory wehere this script resides
+# SET JCG_HOME based on the directory where this script resides
 JCG_HOME="$(pwd)/$( dirname -- "$0"; )";
 
 declare -A mainjar
@@ -46,7 +46,7 @@ do
     rm -rf output-$project-$type
     mv output output-$project-$type
 
-		cd output-$project-$type
+		cd output-$project-$type || exit
     ../buildsvg.sh
 		cd ..
   done
