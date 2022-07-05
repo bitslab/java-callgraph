@@ -6,7 +6,6 @@ import gr.gousiosg.javacg.stat.graph.Utilities;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
-import org.jgrapht.alg.shortestpath.AllDirectedPaths;
 import org.jgrapht.alg.shortestpath.BFSShortestPath;
 import org.jgrapht.event.ConnectedComponentTraversalEvent;
 import org.jgrapht.event.EdgeTraversalEvent;
@@ -244,38 +243,53 @@ public class GetBest {
                     return 1.00;
 
                 case LIGHT_GREEN:
-                    return 0.75;
+                    return 0.80;
 
                 case MEDIUM_GREEN:
-                    return 0.50;
+                    return 0.60;
 
                 case MEDIUM_DARK_GREEN:
-                    return 0.25;
+                    return 0.40;
 
                 case DARK_GREEN:
-                    return 0.00;
+                    return 0.20;
 
                 default:
-                    return 0;
+                    return 0.00;
             }
         }
 
         private double Score(ColoredNode vertex) {
             final double weightParentScore = 1;
-            final double weightUncoveredChildren = .5;
+            final double weightChildrenScore = .5;
+            //final double weightUncoveredChildren = .5;
 
-            // parent score (note: high score is better
+            // parent score (note: high score is better)
             double parentScore = vertexColorToInt(vertex.getColor());
 
-            // get uncovered children
-            long countUncoveredChildren = graph.outgoingEdgesOf(vertex)
+//            double maxChildrenScore = graph.outgoingEdgesOf(vertex)
+//                    .stream()
+//                    .mapToDouble( e -> score.get(graph.getEdgeTarget(e)) )
+//                    .max()
+//                    .orElse(0.00);
+
+            double totalChildrenScore = graph.outgoingEdgesOf(vertex)
                     .stream()
-                    .map( e -> graph.getEdgeTarget(e).getColor() )
-                    .filter( color -> color.equals(UNCOVERED_COLOR))
-                    .count();
+                    .mapToDouble( e -> score.getOrDefault(graph.getEdgeTarget(e), 0.00) )
+                    .sum();
 
             return (weightParentScore * parentScore) +
-                    (parentScore * (weightUncoveredChildren * countUncoveredChildren));
+                    (weightChildrenScore * totalChildrenScore);
+
+            // get uncovered children
+//            long countUncoveredChildren = graph.outgoingEdgesOf(vertex)
+//                    .stream()
+//                    .map( e -> graph.getEdgeTarget(e).getColor() )
+//                    .filter( color -> color.equals(UNCOVERED_COLOR))
+//                    .count();
+//
+//            return (weightParentScore * parentScore) +
+//                    (parentScore * (weightUncoveredChildren * countUncoveredChildren));
         }
     }
 }
