@@ -16,37 +16,43 @@ testjar[mph-table]=mph-table-1.0.6-SNAPSHOT-tests.jar
 
 cd $JCG_HOME || exit
 
+mkdir -p serializedGraphs
+
+
 for type in original fixed
 do
   for project in convex jflex mph-table
   do
     echo $type for $project
-    
+
+    if [[ "$type" == "original" ]]
+    then
+      projectName=$project
+    else
+      projectName=$project-$type
+    fi
+
     # clean project
-    rm -rf $project
+    rm -rf $projectName
     
     # clean output
     rm -rf output
     mkdir output
     
-    # move config files
-    cp artifacts/configs/$project/$project.$type.yaml artifacts/configs/$project/$project.yaml
-    cp artifacts/configs/$project/$project.$type.patch artifacts/configs/$project/$project.patch
-    
     # git project
-    java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar git -c $project
-    
+    java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar git -c $projectName
+
     # build project
-    java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/${mainjar[$project]} -t ./artifacts/output/${testjar[$project]} -o $project-$type
+    java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/${mainjar[$project]} -t ./artifacts/output/${testjar[$project]} -o serializedGraphs/$projectName
 
     # test project
-    java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar test -c $project -f $project-$type
+    java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar test -c $projectName -f serializedGraphs/$projectName
 
     # copy output
-    rm -rf output-$project-$type
-    mv output output-$project-$type
+    rm -rf output-$projectName
+    mv output output-$projectName
 
-		cd output-$project-$type || exit
+		cd output-$projectName || exit
     ../buildsvg.sh
 		cd ..
   done
