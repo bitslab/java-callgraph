@@ -279,7 +279,7 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
   for(Method tempMethod : methods)
     if(Arrays.stream(tempMethod.getAnnotationEntries())
             .map(e->e.getAnnotationType())
-            .anyMatch(e->e.equals("Lorg/junit/Test;"))){
+            .anyMatch(e->e.equals("Lcom/pholser/junit/quickcheck/Property;"))){  // .anyMatch(e->e.equals("Lorg/junit/Test;"))){
       String methodDescriptor=tempMethod.getName() + tempMethod.getSignature();
       signatureResults.add(new Pair<>(className+"#"+tempMethod.getName(),jc.getClassName() + "." + methodDescriptor));
     }
