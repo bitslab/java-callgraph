@@ -45,6 +45,13 @@ public class GetBest {
     private static final String NO_COLOR = "ghostwhite";
     private static final String TEST_NODE_COLOR = "plum";
 
+    private static final String DEFAULT_EDGE_COLOR = "black";
+    private static final String FIRST_PATH_EDGE_COLOR = "green";
+    private static final String SECOND_PATH_EDGE_COLOR = "yellow";
+    private static final String THIRD_PATH_EDGE_COLOR = "red";
+
+    private static final int NUM_TOP_PATHS = 3;
+
     // color by type
     private static final String UNCOVERED_COLOR = FIREBRICK;
 
@@ -106,28 +113,9 @@ public class GetBest {
         DepthFirstIterator<ColoredNode, DefaultEdge> iter = new DepthFirstIterator<>(reachability, entryPoint);
         iter.addTraversalListener(new GetBestTraversalListener(reachability, score));
 
+        // traverse the graph to set the scores
         while (iter.hasNext()) {
             iter.next();
-        }
-
-
-        /* annotated graph - Write to .dot file in output directory */
-        String path = JCallGraph.OUTPUT_DIRECTORY + propertyName + "-annotated.dot";
-        try {
-            Writer writer = new FileWriter(path);
-            DOTExporter<ColoredNode, DefaultEdge> exporter = Utilities.coloredExporter();
-            exporter.setVertexAttributeProvider(
-                    (v) -> {
-                        Map<String, Attribute> map = new LinkedHashMap<>();
-                        map.put("label", DefaultAttribute.createAttribute(score.get(v).toString() + " - " + dotFormat(v.toString())));
-                        map.put("style", DefaultAttribute.createAttribute("filled"));
-                        map.put("fillcolor", DefaultAttribute.createAttribute(v.getColor()));
-                        return map;
-                    });
-            exporter.exportGraph(reachability, writer);
-            LOGGER.info("Graph written to " + path + "!");
-        } catch (IOException e) {
-            LOGGER.error("Unable to write callgraph to " + path);
         }
 
         // get all of the paths
@@ -162,15 +150,73 @@ public class GetBest {
                 String pathHash = DatatypeConverter.printHexBinary(digest).toUpperCase();
 
                 writer.write(
-                    pathWeight.weight + "," +
-                        pathHash + "," +
-                        pathString +
-                        System.lineSeparator());
+                        pathWeight.weight + "," +
+                                pathHash + "," +
+                                pathString +
+                                System.lineSeparator());
             }
 
             writer.close();
         } catch (IOException | NoSuchAlgorithmException e) {
             LOGGER.error("Unable to write paths to " + outputPaths);
+        }
+
+        String[] edgeStringColor = {
+                FIRST_PATH_EDGE_COLOR,
+                SECOND_PATH_EDGE_COLOR,
+                THIRD_PATH_EDGE_COLOR
+        };
+
+        Map<DefaultEdge, List<Integer>> edgePathNumber = new HashMap<>();
+
+        // color the edges based on the top three paths
+        for (int pathIndex = 0; pathIndex < NUM_TOP_PATHS && pathIndex < pathWeights.size(); pathIndex++) {
+            for (DefaultEdge edge : pathWeights.get(pathIndex).path.getEdgeList()) {
+                if (edgePathNumber.containsKey(edge)) {
+                    edgePathNumber.get(edge).add(pathIndex);
+                } else {
+                    edgePathNumber.put(edge, new ArrayList<>(List.of(pathIndex)));
+                }
+            }
+        }
+
+        /* annotated graph - Write to .dot file in output directory */
+        String path = JCallGraph.OUTPUT_DIRECTORY + propertyName + "-annotated.dot";
+        try {
+            Writer writer = new FileWriter(path);
+            DOTExporter<ColoredNode, DefaultEdge> exporter = Utilities.coloredExporter();
+            exporter.setVertexAttributeProvider(
+                    (v) -> {
+                        Map<String, Attribute> map = new LinkedHashMap<>();
+                        map.put("label", DefaultAttribute.createAttribute(score.get(v).toString() + " - " + dotFormat(v.toString())));
+                        map.put("style", DefaultAttribute.createAttribute("filled"));
+                        map.put("fillcolor", DefaultAttribute.createAttribute(v.getColor()));
+                        return map;
+                    });
+            exporter.setEdgeAttributeProvider(
+                    (edge) -> {
+                        Map<String, Attribute> map = new LinkedHashMap<>();
+
+                        if (edgePathNumber.containsKey(edge)) {
+                            List<Integer> pathSet = edgePathNumber.get(edge);
+
+
+                            int pathNumber = pathSet.get(0);
+                            map.put("color", DefaultAttribute.createAttribute(edgeStringColor[pathNumber]));
+
+                            map.put("penwidth", DefaultAttribute.createAttribute(2.0));
+
+                            String stringPathNumbers = pathSet.stream().map(String::valueOf).collect(Collectors.joining("/"));
+                            map.put("label", DefaultAttribute.createAttribute("P" + stringPathNumbers));
+                        }
+
+                        return map;
+                    }
+            );
+            exporter.exportGraph(reachability, writer);
+            LOGGER.info("Graph written to " + path + "!");
+        } catch (IOException e) {
+            LOGGER.error("Unable to write callgraph to " + path);
         }
     }
 
