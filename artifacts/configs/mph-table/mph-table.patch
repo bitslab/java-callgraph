@@ -1,8 +1,7 @@
 diff --git a/pom.xml b/pom.xml
-index 65f0f80..508b290 100644
---- a/pom.xml
-+++ b/pom.xml
-@@ -40,9 +40,57 @@
+--- a/pom.xml	(revision dbd5413df33bf8f0a995822eeefe94df50f3c5a7)
++++ b/pom.xml	(date 1655257746259)
+@@ -40,8 +40,75 @@
                      <target>1.8</target>
                  </configuration>
              </plugin>
@@ -38,9 +37,28 @@ index 65f0f80..508b290 100644
 +                    </execution>
 +                </executions>
 +            </plugin>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-assembly-plugin</artifactId>
++                <version>3.3.0</version>
++                <configuration>
++                        <descriptorRefs>
++                            <descriptorRef>jar-with-dependencies</descriptorRef>
++                        </descriptorRefs>
++                </configuration>
++                <executions>
++                    <execution>
++                        <id>make-assembly</id>
++                        <phase>package</phase>
++                        <goals>
++                            <goal>single</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
          </plugins>
      </build>
- 
++    
 +    <reporting>
 +        <plugins>
 +            <plugin>
@@ -56,89 +74,7 @@ index 65f0f80..508b290 100644
 +            </plugin>
 +        </plugins>
 +    </reporting>
-+
+ 
      <dependencies>
  
-         <dependency>
-diff --git a/src/test/java/com/indeed/mph/generators/IntListGenerator.java b/src/test/java/com/indeed/mph/generators/IntListGenerator.java
-new file mode 100644
-index 0000000..33b6870
---- /dev/null
-+++ b/src/test/java/com/indeed/mph/generators/IntListGenerator.java
-@@ -0,0 +1,36 @@
-+package com.indeed.mph.generators;
-+import com.pholser.junit.quickcheck.generator.ComponentizedGenerator;
-+import com.pholser.junit.quickcheck.generator.GenerationStatus;
-+import com.pholser.junit.quickcheck.random.SourceOfRandomness;
-+import java.util.ArrayList;
-+import java.util.List;
-+import java.util.stream.Collectors;
-+import java.util.stream.IntStream;
-+
-+public class IntListGenerator extends ComponentizedGenerator<List> {
-+    public IntListGenerator() {
-+        super(List.class);
-+    }
-+    boolean generatedEmptyList = false;
-+    @Override
-+    public List generate(SourceOfRandomness sourceOfRandomness, GenerationStatus generationStatus) {
-+        if (!generatedEmptyList) {
-+            generatedEmptyList = true;
-+            return new ArrayList();
-+        }
-+        int rng = sourceOfRandomness.nextInt(0, 20);
-+        int listSize = 0;
-+        if (rng >= 0 && rng <= 16) {
-+            listSize = sourceOfRandomness.nextInt(0, 100);
-+        } else if (rng >= 17 && rng <= 18) {
-+            listSize = sourceOfRandomness.nextInt(1000, 10000);
-+        } else if (rng >= 19 && rng <= 20) {
-+            listSize = sourceOfRandomness.nextInt(100000, 10000000);
-+        }
-+        return IntStream.range(0, listSize).mapToObj(i -> sourceOfRandomness.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE)).collect(Collectors.toList());
-+    }
-+    @Override
-+    public int numberOfNeededComponents() {
-+        return 1;
-+    }
-+}
-diff --git a/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java b/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java
-index 8312fe2..e898509 100644
---- a/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java
-+++ b/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java
-@@ -1,9 +1,9 @@
- package com.indeed.mph.serializers;
--
-+import com.pholser.junit.quickcheck.From;
- import com.pholser.junit.quickcheck.Property;
- import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
- import org.junit.runner.RunWith;
--
-+import com.indeed.mph.generators.IntListGenerator;
- import java.io.IOException;
- import java.util.List;
- 
-@@ -23,7 +23,23 @@ public class TestSmartListSerializer {
-         final SmartListSerializer<Byte> bytesSerializer = new SmartListSerializer<>(new SmartByteSerializer());
-         assertRoundTrip(bytesSerializer, byteTarget);
- 
-+        final SmartListSerializer<String> stringsSerializer = new SmartListSerializer<>(new SmartStringSerializer());
-+        assertRoundTrip(stringsSerializer, stringTarget);
-+    }
-+    @Property
-+    public void canRoundTripSerializableListsWithGenerator(
-+            @From(IntListGenerator.class) final List<Integer> intTarget,
-+            final List<Byte> byteTarget,
-+            final List<String> stringTarget
-+    ) throws IOException {
-+        final SmartListSerializer<Integer> intsSerializer = new SmartListSerializer<>(new SmartIntegerSerializer());
-+        assertRoundTrip(intsSerializer, intTarget);
-+
-+        final SmartListSerializer<Byte> bytesSerializer = new SmartListSerializer<>(new SmartByteSerializer());
-+        assertRoundTrip(bytesSerializer, byteTarget);
-+
-         final SmartListSerializer<String> stringsSerializer = new SmartListSerializer<>(new SmartStringSerializer());
-         assertRoundTrip(stringsSerializer, stringTarget);
-     }
- }
-+
+
