@@ -1,7 +1,7 @@
 name: convex-fixed
 URL: https://github.com/Convex-Dev/convex.git
 checkoutID: e6db05a611cd4a1fb51f959e20d246637bb7744a
-patchName: artifacts/configs/convex-fixed/convex.patch
+patchName: artifacts/configs/convex-fixed/convex-fixed.patch
 subProject: convex-core
 #mvnOptions: -DfailIfNoTests=false -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
 mvnOptions: -DfailIfNoTests=false

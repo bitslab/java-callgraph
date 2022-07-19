@@ -1,7 +1,7 @@
 name: mph-table-fixed
 URL: https://github.com/indeedeng/mph-table.git
 checkoutID: dbd5413df33bf8f0a995822eeefe94df50f3c5a7
-patchName: artifacts/configs/mph-table-fixed/mph-table.patch
+patchName: artifacts/configs/mph-table-fixed/mph-table-fixed.patch
 #mvnOptions: -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
 properties:
   - name: TestSmartListSerializer#canRoundTripSerializableLists

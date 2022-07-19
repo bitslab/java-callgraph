@@ -1,7 +1,7 @@
 name: jflex-fixed
 URL: https://github.com/jflex-de/jflex.git
 checkoutID: e6d1752bd48a7ccb2a2b78479dc5a73ac475bbb9
-patchName: artifacts/configs/jflex-fixed/jflex.patch
+patchName: artifacts/configs/jflex-fixed/jflex-fixed.patch
 subProject: jflex
 #mvnOptions: -DfailIfNoTests=false -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
 mvnOptions: -DfailIfNoTests=false
