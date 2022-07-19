@@ -76,6 +76,12 @@ There are command line options that can be used:
 | jcg.includeExceptionBasicBlocks | Set to "true" to included exception basic blocks, otherwise these will be excluded by default | -Djcg.includeExceptionBasicBlocks=true |
 
 
+#### Heuristic
+The "test" phase has been updated to calculate and append a heuristic value to each node. The heuristic value represents the likelihood that a property could be improved 
+through altering the generator and/or test case.  A higher value indicates greater chance of improvement, so the paths with the top three values should be explored first. 
+The "test" phase will generate another dot file that has the heuristic value prepended to the name of each node.
+
+
 ## Known Restrictions
 
 * The static call graph generator does not account for methods invoked via reflection.
@@ -84,6 +90,7 @@ There are command line options that can be used:
 
 Georgios Gousios <gousiosg@gmail.com>  
 Will Cygan <wcygan3232@gmail.com>
+Jesse Coultas <jcoul01s@uic.edu>
 
 ### License
 
