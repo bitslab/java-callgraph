@@ -1,0 +1,501 @@
+diff --git a/jflex/pom.xml b/jflex/pom.xml
+index 47904b61..185a3790 100644
+--- a/jflex/pom.xml
++++ b/jflex/pom.xml
+@@ -51,6 +51,21 @@
+       <timezone>+1</timezone>
+     </developer>
+   </developers>
++  <reporting>
++      <plugins>
++        <plugin>
++          <groupId>org.jacoco</groupId>
++          <artifactId>jacoco-maven-plugin</artifactId>
++          <reportSets>
++            <reportSet>
++              <reports>
++                <report>report</report>
++              </reports>
++            </reportSet>
++          </reportSets>
++        </plugin>
++      </plugins>
++  </reporting>
+   <dependencies>
+     <dependency>
+       <groupId>com.github.vbmacher</groupId>
+@@ -156,6 +171,34 @@
+             </manifest>
+           </archive>
+         </configuration>
++        <executions>
++          <execution>
++            <goals>
++              <goal>test-jar</goal>
++            </goals>
++          </execution>
++        </executions>
++      </plugin>
++      <plugin>
++        <groupId>org.apache.maven.plugins</groupId>
++        <artifactId>maven-assembly-plugin</artifactId>
++        <version>3.3.0</version>
++
++        <configuration>
++          <descriptorRefs>
++            <descriptorRef>jar-with-dependencies</descriptorRef>
++          </descriptorRefs>
++        </configuration>
++
++        <executions>
++          <execution>
++            <id>make-assembly</id>
++            <phase>package</phase>
++            <goals>
++              <goal>single</goal>
++            </goals>
++          </execution>
++        </executions>
+       </plugin>
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+@@ -231,6 +274,13 @@
+               </excludes>
+             </configuration>
+           </execution>
++          <execution>
++            <id>jacoco-report</id>
++            <phase>test</phase>
++            <goals>
++              <goal>report</goal>
++            </goals>
++          </execution>
+         </executions>
+       </plugin>
+     </plugins>
+diff --git a/jflex/src/test/java/jflex/core/unicode/BUILD.bazel b/jflex/src/test/java/jflex/core/unicode/BUILD.bazel
+index 109146e2..4af8ce29 100644
+--- a/jflex/src/test/java/jflex/core/unicode/BUILD.bazel
++++ b/jflex/src/test/java/jflex/core/unicode/BUILD.bazel
+@@ -49,9 +49,14 @@ java_test(
+ java_library(
+     name = "IntCharSetGen",
+     testonly = True,
+-    srcs = ["IntCharSetGen.java"],
++    srcs = [
++        "IntCharGen.java",
++        "IntCharSetGen.java",
++    ],
+     deps = [
++        "//jflex/src/main/java/jflex/chars",
+         "//jflex/src/main/java/jflex/core/unicode",
++        "//jflex/src/main/java/jflex/logging",
+         "//jflex/src/test/java/jflex/chars",
+         "//third_party/com/google/truth",
+         "//third_party/com/pholser/quickcheck",
+diff --git a/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java b/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
+index 876f0387..22be04d6 100644
+--- a/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
++++ b/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
+@@ -12,6 +12,7 @@ package jflex.core.unicode;
+ import static com.google.common.truth.Truth.assertThat;
+ import static org.junit.Assume.assumeTrue;
+
++import com.pholser.junit.quickcheck.From;
+ import com.pholser.junit.quickcheck.Property;
+ import com.pholser.junit.quickcheck.generator.InRange;
+ import com.pholser.junit.quickcheck.generator.Size;
+@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
+  */
+ @RunWith(JUnitQuickcheck.class)
+ public class CharClassesQuickcheck {
++  UnicodeProperties unicodeProperties;
+
+   // TODO(lsf): add testing for caseless; needs UnicodeProperties
+
+@@ -48,17 +50,24 @@ public class CharClassesQuickcheck {
+   @Property
+   public void addSingle(
+       CharClasses classes,
+-      @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c1,
+-      @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c2) {
++      @From(IntCharGen.class) int c1,
++      @From(IntCharGen.class) int c2,
++      boolean caseless)
++      throws UnicodeProperties.UnsupportedUnicodeVersionException {
++
+     assumeTrue(c1 != c2);
+-    classes.makeClass(c1, false);
++
++    if (caseless) {
++      classesInit(classes);
++    }
++
++    classes.makeClass(c1, caseless);
+     assertThat(classes.invariants()).isTrue();
+     assertThat(classes.getClassCode(c1)).isNotEqualTo(classes.getClassCode(c2));
+   }
+
+   @Property
+-  public void addSingleSingleton(
+-      CharClasses classes, @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
++  public void addSingleSingleton(CharClasses classes, @From(IntCharGen.class) int c) {
+     classes.makeClass(c, false);
+     IntCharSet set = classes.getCharClass(classes.getClassCode(c));
+     assertThat(set).isEqualTo(IntCharSet.ofCharacter(c));
+@@ -68,11 +77,17 @@ public class CharClassesQuickcheck {
+   public void addSet(
+       CharClasses classes,
+       @InRange(maxInt = CharClasses.maxChar) IntCharSet set,
+-      @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
++      @From(IntCharGen.class) int c,
++      boolean caseless)
++      throws UnicodeProperties.UnsupportedUnicodeVersionException {
+
+     assumeTrue(!set.contains(c));
+
+-    classes.makeClass(set, false);
++    if (caseless) {
++      classesInit(classes);
++    }
++
++    classes.makeClass(set, caseless);
+     assertThat(classes.invariants()).isTrue();
+
+     int[] classCodes = classes.getClassCodes(set, false);
+@@ -84,9 +99,15 @@ public class CharClassesQuickcheck {
+
+   @Property
+   public void addSetParts(
+-      CharClasses classes, @InRange(maxInt = CharClasses.maxChar) IntCharSet set) {
++      CharClasses classes, @InRange(maxInt = CharClasses.maxChar) IntCharSet set, boolean caseless)
++      throws UnicodeProperties.UnsupportedUnicodeVersionException {
+
+-    classes.makeClass(set, false);
++    if (caseless) {
++      classesInit(classes);
++      set = set.getCaseless(unicodeProperties);
++    }
++
++    classes.makeClass(set, caseless);
+
+     int[] classCodes = classes.getClassCodes(set, false);
+     IntCharSet allParts = new IntCharSet();
+@@ -98,9 +119,15 @@ public class CharClassesQuickcheck {
+
+   @Property
+   public void addSetComplement(
+-      CharClasses classes, @InRange(maxInt = CharClasses.maxChar) IntCharSet set) {
++      CharClasses classes, @InRange(maxInt = CharClasses.maxChar) IntCharSet set, boolean caseless)
++      throws UnicodeProperties.UnsupportedUnicodeVersionException {
++
++    if (caseless) {
++      classesInit(classes);
++      set = set.getCaseless(unicodeProperties);
++    }
+
+-    classes.makeClass(set, false);
++    classes.makeClass(set, caseless);
+
+     int[] notCodes = classes.getClassCodes(set, true);
+     IntCharSet others = new IntCharSet();
+@@ -112,11 +139,16 @@ public class CharClassesQuickcheck {
+
+   @Property
+   public void addString(
+-      CharClasses classes, String s, @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
++      CharClasses classes, String s, @From(IntCharGen.class) int c, boolean caseless)
++      throws UnicodeProperties.UnsupportedUnicodeVersionException {
+
+     assumeTrue(s.indexOf(c) < 0);
+
+-    classes.makeClass(s, false);
++    if (caseless) {
++      classesInit(classes);
++    }
++
++    classes.makeClass(s, caseless);
+     assertThat(classes.invariants()).isTrue();
+
+     int cCode = classes.getClassCode(c);
+@@ -203,4 +235,18 @@ public class CharClassesQuickcheck {
+       assertThat(intervals[i].end + 1).isEqualTo(intervals[i + 1].start);
+     }
+   }
++
++  private void classesInit(CharClasses classes)
++      throws UnicodeProperties.UnsupportedUnicodeVersionException {
++    // init classes
++    unicodeProperties = new UnicodeProperties();
++    classes.init(
++        CharClasses.maxChar,
++        new ILexScan() {
++          @Override
++          public UnicodeProperties getUnicodeProperties() {
++            return unicodeProperties;
++          }
++        });
++  }
+ }
+diff --git a/jflex/src/test/java/jflex/core/unicode/IntCharGen.java b/jflex/src/test/java/jflex/core/unicode/IntCharGen.java
+new file mode 100644
+index 00000000..45e47ee8
+--- /dev/null
++++ b/jflex/src/test/java/jflex/core/unicode/IntCharGen.java
+@@ -0,0 +1,47 @@
++package jflex.core.unicode;
++
++import com.pholser.junit.quickcheck.generator.GenerationStatus;
++import com.pholser.junit.quickcheck.generator.Generator;
++import com.pholser.junit.quickcheck.random.SourceOfRandomness;
++import java.util.List;
++import jflex.chars.Interval;
++import jflex.logging.Out;
++
++/**
++ * Generator for random Integer values that ensure to sometimes generate a cased character
++ *
++ * @author Jesse Coultas
++ * @version JFlex 1.8.2
++ */
++public class IntCharGen extends Generator<Integer> {
++  /** Constructs generator for CharClasses */
++  public IntCharGen() throws UnicodeProperties.UnsupportedUnicodeVersionException {
++    super(Integer.class);
++  }
++
++  @Override
++  public Integer generate(SourceOfRandomness r, GenerationStatus status) {
++    // ensure we sometimes generate an int that has case options
++    if (r.nextBoolean()) {
++      try {
++        return getRandomCased(r);
++      } catch (UnicodeProperties.UnsupportedUnicodeVersionException e) {
++        Out.warning("Unable to fetch a random cased value - " + e.getMessage());
++      }
++    }
++
++    return r.nextInt(0, CharClasses.maxChar);
++  }
++
++  public static Integer getRandomCased(SourceOfRandomness r)
++      throws UnicodeProperties.UnsupportedUnicodeVersionException {
++    // get list of casedIntervals
++    List<Interval> casedIntervals = (new UnicodeProperties()).getIntCharSet("cased").getIntervals();
++
++    // randomly pick an interval
++    Interval interval = casedIntervals.get(r.nextInt(0, casedIntervals.size() - 1));
++
++    // return a value between start and end of interval
++    return r.nextInt(interval.start, interval.end);
++  }
++}
+diff --git a/jflex/src/test/java/jflex/core/unicode/IntCharSetGen.java b/jflex/src/test/java/jflex/core/unicode/IntCharSetGen.java
+index 7ff19e45..9d80976a 100644
+--- a/jflex/src/test/java/jflex/core/unicode/IntCharSetGen.java
++++ b/jflex/src/test/java/jflex/core/unicode/IntCharSetGen.java
+@@ -15,6 +15,7 @@ import com.pholser.junit.quickcheck.generator.InRange;
+ import com.pholser.junit.quickcheck.generator.Size;
+ import com.pholser.junit.quickcheck.random.SourceOfRandomness;
+ import jflex.chars.IntervalGen;
++import jflex.logging.Out;
+
+ /**
+  * Generator for random {@link IntCharSet} instances.
+@@ -48,6 +49,15 @@ public class IntCharSetGen extends Generator<IntCharSet> {
+       result.add(intervals.generate(r, status));
+     }
+
++    // randomly add possible additional cased character
++    if (numIntervals < maxSize && r.nextBoolean()) {
++      try {
++        result.add(IntCharGen.getRandomCased(r));
++      } catch (UnicodeProperties.UnsupportedUnicodeVersionException e) {
++        Out.warning("Unable to fetch a random cased value - " + e.getMessage());
++      }
++    }
++
+     return result;
+   }
+
+diff --git a/jflex/src/test/java/jflex/state/BUILD.bazel b/jflex/src/test/java/jflex/state/BUILD.bazel
+index 936249c8..7481ca43 100644
+--- a/jflex/src/test/java/jflex/state/BUILD.bazel
++++ b/jflex/src/test/java/jflex/state/BUILD.bazel
+@@ -3,6 +3,7 @@ java_test(
+     size = "small",
+     timeout = "short",
+     srcs = [
++        "OffsetGen.java",
+         "StateSetGen.java",
+         "StateSetQuickcheck.java",
+     ],
+diff --git a/jflex/src/test/java/jflex/state/OffsetGen.java b/jflex/src/test/java/jflex/state/OffsetGen.java
+new file mode 100644
+index 00000000..fd9d5ab3
+--- /dev/null
++++ b/jflex/src/test/java/jflex/state/OffsetGen.java
+@@ -0,0 +1,45 @@
++package jflex.state;
++
++import com.pholser.junit.quickcheck.generator.GenerationStatus;
++import com.pholser.junit.quickcheck.generator.Generator;
++import com.pholser.junit.quickcheck.random.SourceOfRandomness;
++
++/** Generator for Offset data values */
++public class OffsetGen extends Generator<Integer> {
++  public OffsetGen() {
++    super(Integer.class);
++  }
++
++  @Override
++  public Integer generate(SourceOfRandomness r, GenerationStatus status) {
++    int rnd = r.nextInt(1, 100);
++
++    // 5% change of getting number 0
++    if (rnd >= 1 && rnd <= 5) {
++      return 0;
++    }
++
++    // 5% change of getting number 1
++    if (rnd >= 6 && rnd <= 10) {
++      return 1;
++    }
++
++    // 5% change of getting Integer.MAX_VALUE
++    if (rnd >= 11 && rnd <= 15) {
++      return Integer.MAX_VALUE;
++    }
++
++    // 15% chance of getting a "larger" size
++    if (rnd >= 16 && rnd <= 30) {
++      return r.nextInt(200_001, 10_000_000);
++    }
++
++    // 5% chance of getting a "huge" size
++    if (rnd >= 31 && rnd <= 35) {
++      return r.nextInt(10_000_001, Integer.MAX_VALUE);
++    }
++
++    // 77% - normalish size
++    return r.nextInt(100, 20_000);
++  }
++}
+diff --git a/jflex/src/test/java/jflex/state/StateSetGen.java b/jflex/src/test/java/jflex/state/StateSetGen.java
+index e9962397..1f4d2443 100644
+--- a/jflex/src/test/java/jflex/state/StateSetGen.java
++++ b/jflex/src/test/java/jflex/state/StateSetGen.java
+@@ -50,6 +50,11 @@ public class StateSetGen extends Generator<StateSet> {
+       result.addState(r.nextInt(minRange, maxRange));
+     }
+
++    // add large value 20% of the time
++    if (r.nextInt(1, 5) == 5) {
++      result.addState(r.nextInt(minRange + 100_000, maxRange + 100_000));
++    }
++
+     return result;
+   }
+
+diff --git a/jflex/src/test/java/jflex/state/StateSetQuickcheck.java b/jflex/src/test/java/jflex/state/StateSetQuickcheck.java
+index 2537700d..0ac0e12c 100644
+--- a/jflex/src/test/java/jflex/state/StateSetQuickcheck.java
++++ b/jflex/src/test/java/jflex/state/StateSetQuickcheck.java
+@@ -11,9 +11,13 @@ package jflex.state;
+
+ import static com.google.common.truth.Truth.assertThat;
+ import static com.google.common.truth.Truth.assertWithMessage;
++import static org.hamcrest.core.IsEqual.equalTo;
++import static org.junit.Assume.assumeThat;
+ import static org.junit.Assume.assumeTrue;
+
++import com.pholser.junit.quickcheck.From;
+ import com.pholser.junit.quickcheck.Property;
++import com.pholser.junit.quickcheck.generator.Also;
+ import com.pholser.junit.quickcheck.generator.InRange;
+ import com.pholser.junit.quickcheck.generator.Size;
+ import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
+@@ -157,7 +161,8 @@ public class StateSetQuickcheck {
+   @Property
+   public void removeAdd(
+       @Size(max = 90) @InRange(minInt = 0, maxInt = 100) StateSet s,
+-      @InRange(minInt = 0, maxInt = 100) int e) {
++      @InRange(minInt = 0, maxInt = 100) int e,
++      @From(OffsetGen.class) int largeOffset) {
+     assumeTrue(s.hasElement(e));
+     StateSet sPre = new StateSet(s);
+     s.remove(e);
+@@ -165,6 +170,17 @@ public class StateSetQuickcheck {
+     assertThat(s).isNotEqualTo(sPre);
+     s.addState(e);
+     assertThat(s).isEqualTo(sPre);
++
++    // add larger state value to force resize
++    if ((Integer.MAX_VALUE - largeOffset) <= s.bits.length) { // avoid overrun wrap
++      largeOffset = Integer.MAX_VALUE - s.bits.length;
++    }
++    int largerState =
++        ((s.bits.length + largeOffset) << StateSet.BITS) & Integer.MAX_VALUE; // & resets sign bit
++    s.addState(largerState);
++    assertThat(s).contains(largerState);
++    s.remove(largerState);
++    assertThat(s).isEqualTo(sPre);
+   }
+
+   @Property
+@@ -181,10 +197,27 @@ public class StateSetQuickcheck {
+   }
+
+   @Property
+-  public void addStateDoesNotRemove(StateSet set, @InRange(minInt = 0, maxInt = 34) int e) {
++  public void addStateDoesNotRemove(
++      StateSet set, @Also("2147483647") @InRange(minInt = 0, maxInt = 34) int e) {
+     StateSet setPre = new StateSet(set);
+     set.addState(e);
+     assertThat(set.contains(setPre)).isTrue();
++    assertThat(set.hasElement(e)).isTrue();
++
++    // add an out of range value to increase coverage of contains
++
++    // offset to StateSetGen.maxRange + 1
++    int offset =
++        1001; // note this effected by InRange, so this needs to be adjusted based on annotations
++    // on set, default is set
++
++    //  if no overflow then offset + e, else overflow so use MAX_VALUE
++    int newValue = (Integer.MAX_VALUE - offset) >= e ? offset + e : Integer.MAX_VALUE;
++    assumeThat(set.hasElement(newValue), equalTo(false));
++    set.addState(newValue);
++    assertThat(set.contains(setPre)).isTrue();
++    assertThat(set.hasElement(newValue)).isTrue();
++    assertThat(setPre.contains(set)).isFalse();
+   }
+
+   @Property
+@@ -208,6 +241,12 @@ public class StateSetQuickcheck {
+     StateSet comp = s1.complement(s2);
+     // only elements of s2 are in the complement
+     assertThat(s2.contains(comp)).isTrue();
++
++    // ensure that comp does not contain s1
++    StateSet empty = new StateSet();
++    if (!empty.contains(s1)) { // if s1 is {}, then it will always be contained in comp
++      assertThat(comp.contains(s1)).isFalse();
++    }
+   }
+
+   @Property
+@@ -228,6 +267,13 @@ public class StateSetQuickcheck {
+   public void containsElements(StateSet s, @InRange(minInt = 0, maxInt = 34) int e) {
+     s.addState(e);
+     assertThat(s.containsElements()).isTrue();
++
++    // remove each added element, ot ensure containsElements continues to work as elements are
++    // removed
++    while (s.containsElements()) {
++      s.getAndRemoveElement();
++    }
++    assertThat(s.containsElements()).isFalse();
+   }
+
+   @Property
