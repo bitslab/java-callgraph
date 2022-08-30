@@ -7,11 +7,16 @@ declare -A mainjar
 mainjar[convex]=convex-core-0.7.1-jar-with-dependencies.jar
 mainjar[jflex]=jflex-1.8.2-jar-with-dependencies.jar
 mainjar[mph-table]=mph-table-1.0.6-SNAPSHOT-jar-with-dependencies.jar
+mainjar[JQF]=jqf-fuzz-1.9-jar-with-dependencies.jar
+mainjar[rpki-commons]=rpki-commons-DEV.jar
+
 
 declare -A testjar
 testjar[convex]=convex-core-0.7.1-tests.jar
 testjar[jflex]=jflex-1.8.2-tests.jar
 testjar[mph-table]=mph-table-1.0.6-SNAPSHOT-tests.jar
+testjar[JQF]=jqf-fuzz-1.9-tests.jar
+testjar[rpki-commons]=rpki-commons-DEV-tests.jar
 
 
 cd $JCG_HOME || exit
@@ -21,7 +26,7 @@ mkdir -p serializedGraphs
 
 for type in original fixed
 do
-  for project in convex jflex mph-table
+  for project in convex jflex mph-table JQF rpki-commons
   do
     echo $type for $project
 

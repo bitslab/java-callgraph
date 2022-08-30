@@ -188,7 +188,7 @@ public class GetBest {
             exporter.setVertexAttributeProvider(
                     (v) -> {
                         Map<String, Attribute> map = new LinkedHashMap<>();
-                        map.put("label", DefaultAttribute.createAttribute(score.get(v).toString() + " - " + dotFormat(v.toString())));
+                        map.put("label", DefaultAttribute.createAttribute((Math.round(score.get(v) * 100) / 100.0d) + " - " + dotFormat(v.toString())));
                         map.put("style", DefaultAttribute.createAttribute("filled"));
                         map.put("fillcolor", DefaultAttribute.createAttribute(v.getColor()));
                         return map;
@@ -204,7 +204,7 @@ public class GetBest {
                             int pathNumber = pathSet.get(0);
                             map.put("color", DefaultAttribute.createAttribute(edgeStringColor[pathNumber]));
 
-                            map.put("penwidth", DefaultAttribute.createAttribute(2.0));
+                            map.put("penwidth", DefaultAttribute.createAttribute(3.0));
 
                             String stringPathNumbers = pathSet.stream().map(String::valueOf).collect(Collectors.joining("/"));
                             map.put("label", DefaultAttribute.createAttribute("P" + stringPathNumbers));
