@@ -1,6 +1,7 @@
 package inttest;
 
 import gr.gousiosg.javacg.stat.JCallGraph;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,8 +108,11 @@ public class MphTableIT {
         Process process = pb.start();
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
-        while((line = br.readLine()) != null)
+        while((line = br.readLine()) != null) {
+            if(line.contains("%"))
+                Assert.assertTrue(line.contains("0.0%"));
             LOGGER.info(line);
+        }
         process.waitFor();
     }
 }
