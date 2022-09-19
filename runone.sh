@@ -23,6 +23,9 @@ else
   rm -rf output
   mkdir output
 
+	# add results (if not exists)
+  mkdir -p "artifacts/results/$projectName"
+
   # git project
   java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar git -c $projectName
 
