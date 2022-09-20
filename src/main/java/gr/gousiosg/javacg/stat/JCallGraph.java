@@ -180,9 +180,14 @@ public class JCallGraph {
             maybeInspectAncestry(callgraph, arguments, jacocoCoverage, Optional.of(s.second), Optional.of(propertyName));
             rt.cleanTarget();
 
-            // write the best paths and annotated dot file
-            GetBest getBest = new GetBest(prunedReachability, propertyName);
-            getBest.run();
+            try {
+              // write the best paths and annotated dot file
+              GetBest getBest = new GetBest(prunedReachability, propertyName);
+              getBest.run();
+            } catch (NullPointerException e) {
+              // ok ... getbest blew up ... log it an continue
+              LOGGER.error("Get Best Null Pointer Exception: " + Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString));
+            }
           }
           break;
         }
