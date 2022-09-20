@@ -118,17 +118,20 @@ public class GetBest {
             iter.next();
         }
 
-        // get all of the paths
+        // get all the paths in best order
         List<PathWeight> pathWeights = new ArrayList<>();
         BFSShortestPath<ColoredNode, DefaultEdge> bfsShortestPath = new BFSShortestPath<>(reachability);
         ShortestPathAlgorithm.SingleSourcePaths<ColoredNode, DefaultEdge> allPaths = bfsShortestPath.getPaths(entryPoint);
         HashSet<ColoredNode> sinkSet = reachability.vertexSet().stream().filter(vertex -> reachability.outDegreeOf(vertex) == 0).collect(Collectors.toCollection(HashSet::new));
         sinkSet.forEach( sinkVertex -> {
             GraphPath<ColoredNode, DefaultEdge> executionPath = allPaths.getPath(sinkVertex);
+            double pathSum = executionPath.getEdgeList().stream().map(reachability::getEdgeTarget).filter(Objects::nonNull).mapToDouble(score::get).sum();
 
-            double pathSum = executionPath.getEdgeList().stream().map(reachability::getEdgeTarget).mapToDouble(score::get).filter( (d) -> !Double.isNaN(d)).sum();
-            pathWeights.add(new PathWeight(executionPath, pathSum));
+            if (pathSum > 0.00 && score.getOrDefault(executionPath.getEndVertex(), 0.00d) > 0.00) {
+                pathWeights.add(new PathWeight(executionPath, pathSum));
+            }
         });
+
 
         // output sorted paths
         Comparator<PathWeight> comparator = Comparator.comparingDouble(p -> p.weight);
@@ -188,7 +191,7 @@ public class GetBest {
             exporter.setVertexAttributeProvider(
                     (v) -> {
                         Map<String, Attribute> map = new LinkedHashMap<>();
-                        map.put("label", DefaultAttribute.createAttribute((Math.round(score.get(v) * 100) / 100.0d) + " - " + dotFormat(v.toString())));
+                        map.put("label", DefaultAttribute.createAttribute(score.get(v) + " - " + dotFormat(v.toString())));
                         map.put("style", DefaultAttribute.createAttribute("filled"));
                         map.put("fillcolor", DefaultAttribute.createAttribute(v.getColor()));
                         return map;
@@ -289,16 +292,16 @@ public class GetBest {
                     return 1.00;
 
                 case LIGHT_GREEN:
-                    return 0.80;
+                    return 0.00;
 
                 case MEDIUM_GREEN:
-                    return 0.60;
+                    return 0.00;
 
                 case MEDIUM_DARK_GREEN:
-                    return 0.40;
+                    return 0.00;
 
                 case DARK_GREEN:
-                    return 0.20;
+                    return 0.00;
 
                 default:
                     return 0.00;
@@ -308,34 +311,19 @@ public class GetBest {
         private double Score(ColoredNode vertex) {
             final double weightParentScore = 1;
             final double weightChildrenScore = .5;
-            //final double weightUncoveredChildren = .5;
 
             // parent score (note: high score is better)
             double parentScore = vertexColorToInt(vertex.getColor());
-
-//            double maxChildrenScore = graph.outgoingEdgesOf(vertex)
-//                    .stream()
-//                    .mapToDouble( e -> score.get(graph.getEdgeTarget(e)) )
-//                    .max()
-//                    .orElse(0.00);
 
             double totalChildrenScore = graph.outgoingEdgesOf(vertex)
                     .stream()
                     .mapToDouble( e -> score.getOrDefault(graph.getEdgeTarget(e), 0.00) )
                     .sum();
 
-            return (weightParentScore * parentScore) +
+            double vertexScore = (weightParentScore * parentScore) +
                     (weightChildrenScore * totalChildrenScore);
 
-            // get uncovered children
-//            long countUncoveredChildren = graph.outgoingEdgesOf(vertex)
-//                    .stream()
-//                    .map( e -> graph.getEdgeTarget(e).getColor() )
-//                    .filter( color -> color.equals(UNCOVERED_COLOR))
-//                    .count();
-//
-//            return (weightParentScore * parentScore) +
-//                    (parentScore * (weightUncoveredChildren * countUncoveredChildren));
+            return Math.round(vertexScore * 100) / 100.0d;
         }
     }
 }
