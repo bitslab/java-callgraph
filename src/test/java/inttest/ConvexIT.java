@@ -1,10 +1,14 @@
 package inttest;
 
 import gr.gousiosg.javacg.stat.JCallGraph;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,5 +62,37 @@ public class ConvexIT {
         assertTrue(Files.exists(genTestFormat));
         assertTrue(Files.exists(genTestFormatReachability));
 
+    }
+
+    //
+    // Create png files for comparison
+    @Test
+    public void testE() throws IOException, InterruptedException {
+        String cmd = "./buildpng.sh";
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        Process process = pb.start();
+        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while((line = br.readLine()) != null)
+            LOGGER.info(line);
+        process.waitFor();
+    }
+
+    //
+    // Test difference through diffimg
+    @Test
+    public void testF() throws IOException, InterruptedException {
+        String cmd = "./testdiff.sh";
+        String project = "convex";
+        ProcessBuilder pb = new ProcessBuilder(cmd, project);
+        Process process = pb.start();
+        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while((line = br.readLine()) != null) {
+            if(line.contains("%"))
+                Assert.assertTrue(line.contains("0.0%"));
+            LOGGER.info(line);
+        }
+        process.waitFor();
     }
 }

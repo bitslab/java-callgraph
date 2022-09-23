@@ -1,6 +1,7 @@
 package inttest;
 
 import gr.gousiosg.javacg.stat.JCallGraph;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertTrue;
 
 public class MphTableIT {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MphTableIT.class);
     private final Path mphJar = Paths.get(System.getProperty("user.dir"),"artifacts","output","mph-table-1.0.6-SNAPSHOT.jar");
     private final Path mphTestJar = Paths.get(System.getProperty("user.dir"),"artifacts","output","mph-table-1.0.6-SNAPSHOT-tests.jar");
@@ -34,6 +36,8 @@ public class MphTableIT {
     private final Path mphSmartShortSerializerReachability = Paths.get(System.getProperty("user.dir"),"output","TestSmartShortSerializer#canRoundTripShort-reachability.dot");
     private final Path mphSmartStringSerializer = Paths.get(System.getProperty("user.dir"),"output","TestSmartStringSerializer#canRoundTripStrings.dot");
     private final Path mphSmartStringSerializerReachability = Paths.get(System.getProperty("user.dir"),"output","TestSmartStringSerializer#canRoundTripStrings-reachability.dot");
+
+
     // Git Stage
     @Test
     public void testA(){
@@ -104,7 +108,8 @@ public class MphTableIT {
     @Test
     public void testF() throws IOException, InterruptedException {
         String cmd = "./testdiff.sh";
-        ProcessBuilder pb = new ProcessBuilder(cmd);
+        String project = "mph-table";
+        ProcessBuilder pb = new ProcessBuilder(cmd, project);
         Process process = pb.start();
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
@@ -113,6 +118,14 @@ public class MphTableIT {
                 Assert.assertTrue(line.contains("0.0%"));
             LOGGER.info(line);
         }
+        process.waitFor();
+    }
+
+    @After
+    public void cleanUp() throws IOException, InterruptedException {
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("sh", "rm", "output/*.dot");
+        Process process = pb.start();
         process.waitFor();
     }
 }

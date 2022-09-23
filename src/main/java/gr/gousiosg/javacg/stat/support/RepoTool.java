@@ -195,6 +195,12 @@ public class RepoTool {
         String jacocoTargetPath = directoryPath + "/" + property + ".xml";
         String statisticsPath = System.getProperty("user.dir") + "/" + projectDir + "/target/site/jacoco/index.html";
         String statisticsTargetPath = directoryPath + "/" + property + ".html";
+        if(projectDir.contains("/")){
+            String [] directories = projectDir.split("/");
+            String rootDirectoryPath = System.getProperty("user.dir") + "/artifacts/results/" + directories[0];
+            File rootDir = new File(rootDirectoryPath);
+            rootDir.mkdir();
+        }
         File directory = new File(directoryPath);
         directory.mkdir();
         Path jacoco = Files.move(
