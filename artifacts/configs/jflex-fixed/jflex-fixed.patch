@@ -94,48 +94,31 @@ index 109146e2..4af8ce29 100644
          "//third_party/com/google/truth",
          "//third_party/com/pholser/quickcheck",
 diff --git a/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java b/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
-index 876f0387..22be04d6 100644
+index 876f0387..5c80c0dc 100644
 --- a/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
 +++ b/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
 @@ -12,6 +12,7 @@ package jflex.core.unicode;
  import static com.google.common.truth.Truth.assertThat;
  import static org.junit.Assume.assumeTrue;
-
+ 
 +import com.pholser.junit.quickcheck.From;
  import com.pholser.junit.quickcheck.Property;
  import com.pholser.junit.quickcheck.generator.InRange;
  import com.pholser.junit.quickcheck.generator.Size;
-@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
-  */
- @RunWith(JUnitQuickcheck.class)
- public class CharClassesQuickcheck {
-+  UnicodeProperties unicodeProperties;
-
-   // TODO(lsf): add testing for caseless; needs UnicodeProperties
-
-@@ -48,17 +50,24 @@ public class CharClassesQuickcheck {
+@@ -47,9 +48,7 @@ public class CharClassesQuickcheck {
+ 
    @Property
    public void addSingle(
-       CharClasses classes,
+-      CharClasses classes,
 -      @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c1,
 -      @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c2) {
-+      @From(IntCharGen.class) int c1,
-+      @From(IntCharGen.class) int c2,
-+      boolean caseless)
-+      throws UnicodeProperties.UnsupportedUnicodeVersionException {
-+
++      CharClasses classes, @From(IntCharGen.class) int c1, @From(IntCharGen.class) int c2) {
      assumeTrue(c1 != c2);
--    classes.makeClass(c1, false);
-+
-+    if (caseless) {
-+      classesInit(classes);
-+    }
-+
-+    classes.makeClass(c1, caseless);
+     classes.makeClass(c1, false);
      assertThat(classes.invariants()).isTrue();
-     assertThat(classes.getClassCode(c1)).isNotEqualTo(classes.getClassCode(c2));
+@@ -57,8 +56,7 @@ public class CharClassesQuickcheck {
    }
-
+ 
    @Property
 -  public void addSingleSingleton(
 -      CharClasses classes, @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
@@ -143,100 +126,25 @@ index 876f0387..22be04d6 100644
      classes.makeClass(c, false);
      IntCharSet set = classes.getCharClass(classes.getClassCode(c));
      assertThat(set).isEqualTo(IntCharSet.ofCharacter(c));
-@@ -68,11 +77,17 @@ public class CharClassesQuickcheck {
+@@ -68,7 +66,7 @@ public class CharClassesQuickcheck {
    public void addSet(
        CharClasses classes,
        @InRange(maxInt = CharClasses.maxChar) IntCharSet set,
 -      @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
-+      @From(IntCharGen.class) int c,
-+      boolean caseless)
-+      throws UnicodeProperties.UnsupportedUnicodeVersionException {
-
++      @From(IntCharGen.class) int c) {
+ 
      assumeTrue(!set.contains(c));
-
--    classes.makeClass(set, false);
-+    if (caseless) {
-+      classesInit(classes);
-+    }
-+
-+    classes.makeClass(set, caseless);
-     assertThat(classes.invariants()).isTrue();
-
-     int[] classCodes = classes.getClassCodes(set, false);
-@@ -84,9 +99,15 @@ public class CharClassesQuickcheck {
-
-   @Property
-   public void addSetParts(
--      CharClasses classes, @InRange(maxInt = CharClasses.maxChar) IntCharSet set) {
-+      CharClasses classes, @InRange(maxInt = CharClasses.maxChar) IntCharSet set, boolean caseless)
-+      throws UnicodeProperties.UnsupportedUnicodeVersionException {
-
--    classes.makeClass(set, false);
-+    if (caseless) {
-+      classesInit(classes);
-+      set = set.getCaseless(unicodeProperties);
-+    }
-+
-+    classes.makeClass(set, caseless);
-
-     int[] classCodes = classes.getClassCodes(set, false);
-     IntCharSet allParts = new IntCharSet();
-@@ -98,9 +119,15 @@ public class CharClassesQuickcheck {
-
-   @Property
-   public void addSetComplement(
--      CharClasses classes, @InRange(maxInt = CharClasses.maxChar) IntCharSet set) {
-+      CharClasses classes, @InRange(maxInt = CharClasses.maxChar) IntCharSet set, boolean caseless)
-+      throws UnicodeProperties.UnsupportedUnicodeVersionException {
-+
-+    if (caseless) {
-+      classesInit(classes);
-+      set = set.getCaseless(unicodeProperties);
-+    }
-
--    classes.makeClass(set, false);
-+    classes.makeClass(set, caseless);
-
-     int[] notCodes = classes.getClassCodes(set, true);
-     IntCharSet others = new IntCharSet();
-@@ -112,11 +139,16 @@ public class CharClassesQuickcheck {
-
-   @Property
-   public void addString(
--      CharClasses classes, String s, @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
-+      CharClasses classes, String s, @From(IntCharGen.class) int c, boolean caseless)
-+      throws UnicodeProperties.UnsupportedUnicodeVersionException {
-
-     assumeTrue(s.indexOf(c) < 0);
-
--    classes.makeClass(s, false);
-+    if (caseless) {
-+      classesInit(classes);
-+    }
-+
-+    classes.makeClass(s, caseless);
-     assertThat(classes.invariants()).isTrue();
-
-     int cCode = classes.getClassCode(c);
-@@ -203,4 +235,18 @@ public class CharClassesQuickcheck {
-       assertThat(intervals[i].end + 1).isEqualTo(intervals[i + 1].start);
-     }
+ 
+@@ -111,8 +109,7 @@ public class CharClassesQuickcheck {
    }
-+
-+  private void classesInit(CharClasses classes)
-+      throws UnicodeProperties.UnsupportedUnicodeVersionException {
-+    // init classes
-+    unicodeProperties = new UnicodeProperties();
-+    classes.init(
-+        CharClasses.maxChar,
-+        new ILexScan() {
-+          @Override
-+          public UnicodeProperties getUnicodeProperties() {
-+            return unicodeProperties;
-+          }
-+        });
-+  }
- }
+ 
+   @Property
+-  public void addString(
+-      CharClasses classes, String s, @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
++  public void addString(CharClasses classes, String s, @From(IntCharGen.class) int c) {
+ 
+     assumeTrue(s.indexOf(c) < 0);
+ 
 diff --git a/jflex/src/test/java/jflex/core/unicode/IntCharGen.java b/jflex/src/test/java/jflex/core/unicode/IntCharGen.java
 new file mode 100644
 index 00000000..45e47ee8
@@ -299,13 +207,13 @@ index 7ff19e45..9d80976a 100644
  import com.pholser.junit.quickcheck.random.SourceOfRandomness;
  import jflex.chars.IntervalGen;
 +import jflex.logging.Out;
-
+ 
  /**
   * Generator for random {@link IntCharSet} instances.
 @@ -48,6 +49,15 @@ public class IntCharSetGen extends Generator<IntCharSet> {
        result.add(intervals.generate(r, status));
      }
-
+ 
 +    // randomly add possible additional cased character
 +    if (numIntervals < maxSize && r.nextBoolean()) {
 +      try {
@@ -317,7 +225,7 @@ index 7ff19e45..9d80976a 100644
 +
      return result;
    }
-
+ 
 diff --git a/jflex/src/test/java/jflex/state/BUILD.bazel b/jflex/src/test/java/jflex/state/BUILD.bazel
 index 936249c8..7481ca43 100644
 --- a/jflex/src/test/java/jflex/state/BUILD.bazel
@@ -388,7 +296,7 @@ index e9962397..1f4d2443 100644
 @@ -50,6 +50,11 @@ public class StateSetGen extends Generator<StateSet> {
        result.addState(r.nextInt(minRange, maxRange));
      }
-
+ 
 +    // add large value 20% of the time
 +    if (r.nextInt(1, 5) == 5) {
 +      result.addState(r.nextInt(minRange + 100_000, maxRange + 100_000));
@@ -396,19 +304,19 @@ index e9962397..1f4d2443 100644
 +
      return result;
    }
-
+ 
 diff --git a/jflex/src/test/java/jflex/state/StateSetQuickcheck.java b/jflex/src/test/java/jflex/state/StateSetQuickcheck.java
 index 2537700d..0ac0e12c 100644
 --- a/jflex/src/test/java/jflex/state/StateSetQuickcheck.java
 +++ b/jflex/src/test/java/jflex/state/StateSetQuickcheck.java
 @@ -11,9 +11,13 @@ package jflex.state;
-
+ 
  import static com.google.common.truth.Truth.assertThat;
  import static com.google.common.truth.Truth.assertWithMessage;
 +import static org.hamcrest.core.IsEqual.equalTo;
 +import static org.junit.Assume.assumeThat;
  import static org.junit.Assume.assumeTrue;
-
+ 
 +import com.pholser.junit.quickcheck.From;
  import com.pholser.junit.quickcheck.Property;
 +import com.pholser.junit.quickcheck.generator.Also;
@@ -441,11 +349,11 @@ index 2537700d..0ac0e12c 100644
 +    s.remove(largerState);
 +    assertThat(s).isEqualTo(sPre);
    }
-
+ 
    @Property
 @@ -181,10 +197,27 @@ public class StateSetQuickcheck {
    }
-
+ 
    @Property
 -  public void addStateDoesNotRemove(StateSet set, @InRange(minInt = 0, maxInt = 34) int e) {
 +  public void addStateDoesNotRemove(
@@ -470,7 +378,7 @@ index 2537700d..0ac0e12c 100644
 +    assertThat(set.hasElement(newValue)).isTrue();
 +    assertThat(setPre.contains(set)).isFalse();
    }
-
+ 
    @Property
 @@ -208,6 +241,12 @@ public class StateSetQuickcheck {
      StateSet comp = s1.complement(s2);
@@ -483,7 +391,7 @@ index 2537700d..0ac0e12c 100644
 +      assertThat(comp.contains(s1)).isFalse();
 +    }
    }
-
+ 
    @Property
 @@ -228,6 +267,13 @@ public class StateSetQuickcheck {
    public void containsElements(StateSet s, @InRange(minInt = 0, maxInt = 34) int e) {
@@ -497,5 +405,5 @@ index 2537700d..0ac0e12c 100644
 +    }
 +    assertThat(s.containsElements()).isFalse();
    }
-
+ 
    @Property
