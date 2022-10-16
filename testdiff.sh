@@ -1,8 +1,8 @@
-for i in `ls output/*-reachability.png`;
+for i in `ls output/"$1"/*-reachability.png`;
 do
-    echo Processing "$i"...
+    echo Processing Difference "$i"...
     image=${i:7}
-    python3 -m diffimg artifacts/expected/"$1"/"$image" "$i"
+    python3 configuredDiffImg.py artifacts/expected/"$image" "$i"
     echo Done
 done
 echo Completed diffimg testing

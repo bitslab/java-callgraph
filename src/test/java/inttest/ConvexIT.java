@@ -1,6 +1,7 @@
 package inttest;
 
 import gr.gousiosg.javacg.stat.JCallGraph;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -18,6 +19,16 @@ import static org.junit.Assert.assertTrue;
 public class ConvexIT {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConvexIT.class);
+    private final Path convexJar = Paths.get(System.getProperty("user.dir"),"artifacts","output","convex-core-0.7.1.jar");
+    private final Path convexDependencyJar = Paths.get(System.getProperty("user.dir"),"artifacts","output","convex-core-0.7.1-jar-with-dependencies.jar");
+    private final Path convexTestJar = Paths.get(System.getProperty("user.dir"),"artifacts","output","convex-core-0.7.1-tests.jar");
+    private final Path convexGraph = Paths.get(System.getProperty("user.dir"),"convex_core_graph");
+    private final Path primitiveRoundTrip = Paths.get(System.getProperty("user.dir"),"output","GenTestFormat#primitiveRoundTrip.dot");
+    private final Path primitiveRoundTripReachability = Paths.get(System.getProperty("user.dir"),"output","GenTestFormat#primitiveRoundTrip-reachability.dot");
+    private final Path dataRoundTripFormat = Paths.get(System.getProperty("user.dir"),"output","GenTestFormat#dataRoundTrip.dot");
+    private final Path dataRoundTripReachability = Paths.get(System.getProperty("user.dir"),"output","GenTestFormat#dataRoundTrip-reachability.dot");
+    private final Path messageRoundTrip = Paths.get(System.getProperty("user.dir"),"output","GenTestFormat#messageRoundTrip.dot");
+    private final Path messageRoundTripReachability = Paths.get(System.getProperty("user.dir"),"output","GenTestFormat#messageRoundTrip-reachability.dot");
 
     @Test
     public void testA(){
@@ -42,25 +53,24 @@ public class ConvexIT {
     public void testD(){
 
         // Git Stage
-        Path convexJar = Paths.get(System.getProperty("user.dir"),"artifacts","output","convex-core-0.7.1.jar");
-        Path convexDependencyJar = Paths.get(System.getProperty("user.dir"),"artifacts","output","convex-core-0.7.1-jar-with-dependencies.jar");
-        Path convexTestJar = Paths.get(System.getProperty("user.dir"),"artifacts","output","convex-core-0.7.1-tests.jar");
         LOGGER.info("Starting Convex Git Verification");
         assertTrue(Files.exists(convexJar));
         assertTrue(Files.exists(convexDependencyJar));
         assertTrue(Files.exists(convexTestJar));
 
         // Build Stage
-        Path convexGraph = Paths.get(System.getProperty("user.dir"),"convex_core_graph");
         LOGGER.info("Starting Convex Build Verification");
         assertTrue(Files.exists(convexGraph));
 
 
         // Test Stage
-        Path genTestFormat = Paths.get(System.getProperty("user.dir"),"output","GenTestFormat#primitiveRoundTrip.dot");
-        Path genTestFormatReachability = Paths.get(System.getProperty("user.dir"),"output","GenTestFormat#primitiveRoundTrip-reachability.dot");
-        assertTrue(Files.exists(genTestFormat));
-        assertTrue(Files.exists(genTestFormatReachability));
+        LOGGER.info("Starting Convex Test Verfication");
+        assertTrue(Files.exists(primitiveRoundTrip));
+        assertTrue(Files.exists(primitiveRoundTripReachability));
+        assertTrue(Files.exists(dataRoundTripFormat));
+        assertTrue(Files.exists(dataRoundTripReachability));
+        assertTrue(Files.exists(messageRoundTrip));
+        assertTrue(Files.exists(messageRoundTripReachability));
 
     }
 
@@ -69,7 +79,8 @@ public class ConvexIT {
     @Test
     public void testE() throws IOException, InterruptedException {
         String cmd = "./buildpng.sh";
-        ProcessBuilder pb = new ProcessBuilder(cmd);
+        String project = "convex";
+        ProcessBuilder pb = new ProcessBuilder(cmd, project);
         Process process = pb.start();
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
@@ -89,10 +100,21 @@ public class ConvexIT {
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         while((line = br.readLine()) != null) {
-            if(line.contains("%"))
-                Assert.assertTrue(line.contains("0.0%"));
+            if(line.contains("%")) {
+                String[] values = line.split(" : ");
+                Double percentDifference = Double.parseDouble(values[1].replace("%", ""));
+                Assert.assertTrue(percentDifference < 0.05);
+            }
             LOGGER.info(line);
         }
+        process.waitFor();
+    }
+
+    @After
+    public void cleanUp() throws IOException, InterruptedException {
+        ProcessBuilder pb = new ProcessBuilder();
+        pb.command("sh", "rm", "output/*.dot");
+        Process process = pb.start();
         process.waitFor();
     }
 }

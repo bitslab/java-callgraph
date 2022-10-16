@@ -94,7 +94,8 @@ public class MphTableIT {
     @Test
     public void testE() throws IOException, InterruptedException {
         String cmd = "./buildpng.sh";
-        ProcessBuilder pb = new ProcessBuilder(cmd);
+        String project = "mph-table";
+        ProcessBuilder pb = new ProcessBuilder(cmd, project);
         Process process = pb.start();
         BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;

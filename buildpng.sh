@@ -6,4 +6,6 @@ do
     dot -Tpng -o "$output".png "$i"
     echo Done
 done
+mv *.png "$1"
+rm *.dot
 echo Completed generating png files
