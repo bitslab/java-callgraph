@@ -178,6 +178,13 @@ public class JCallGraph {
             maybeWriteGraph(callgraph.graph, JCallGraph.OUTPUT_DIRECTORY + propertyName);
             Graph<ColoredNode, DefaultEdge> prunedReachability = maybeInspectReachability(callgraph, arguments.maybeDepth(), jacocoCoverage, s.second, JCallGraph.OUTPUT_DIRECTORY + propertyName);
             maybeInspectAncestry(callgraph, arguments, jacocoCoverage, Optional.of(s.second), Optional.of(propertyName));
+
+            try {
+              rt.moveOutput();
+            } catch (Exception exception) {
+              LOGGER.error("Error moving output to artifact: " + exception.getMessage());
+              System.exit(1);
+            }
             rt.cleanTarget();
 
             try {
