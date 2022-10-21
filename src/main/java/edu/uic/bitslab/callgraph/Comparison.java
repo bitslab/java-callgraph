@@ -173,35 +173,36 @@ public class Comparison {
 
         RepoTool rt = new RepoTool(project, timeStamp);
         List<Pair<String,?>> coverageFiles = rt.obtainCoverageFilesAndEntryPoints();
+        Map<String, Row> rpt = new HashMap<>();
 
         for (Pair<String, ?> coverageFile : coverageFiles) {
             // need pruned graph ser file part of artifacts!
             String jacocoXMLFilename = coverageFile.first;
             String prunedGraphSerFile = coverageFile.first.substring(0, coverageFile.first.length()-4) + "-reachability.ser";
 
-            Map<String, Row> rpt = comparison.pruneAndJaCoCo(jacocoXMLFilename, prunedGraphSerFile);
+            rpt.putAll(comparison.pruneAndJaCoCo(jacocoXMLFilename, prunedGraphSerFile));
+        }
+
+        String header = String.join(",",
+                "entryPoint", "method", "nodeColor",
+                "branchesCovered", "branchesMissed", "linesCovered", "linesMissed",
+                "inJaCoCo", "inPrunedGraph"
+        );
 
 
-            String header = String.join(",",
-                            "entryPoint", "method", "nodeColor",
-                            "branchesCovered", "branchesMissed", "linesCovered", "linesMissed",
-                            "inJaCoCo", "inPrunedGraph"
-                    );
+        if (outputFile == null) {
+            System.out.println(header);
+            rpt.forEach((k, r) -> System.out.println(r));
+        } else {
+            try(FileWriter writer = new FileWriter(outputFile)) {
+                writer.write(header + "\n");
 
-
-            if (outputFile == null) {
-                System.out.println(header);
-                rpt.forEach((k, r) -> System.out.println(r));
-            } else {
-                try(FileWriter writer = new FileWriter(outputFile)) {
-                    writer.write(header + "\n");
-
-                    for (Row r : rpt.values()) {
-                        writer.write(r + "\n");
-                    }
+                for (Row r : rpt.values()) {
+                    writer.write(r + "\n");
                 }
             }
         }
+
     }
 
     static class Row {
