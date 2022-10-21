@@ -23,10 +23,11 @@ public class JacocoCoverage {
     public static final String LINE_TYPE = "LINE";
     public static final String BRANCH_TYPE = "BRANCH";
     private static final Logger LOGGER = LoggerFactory.getLogger(JacocoCoverage.class);
+    @SuppressWarnings("UnusedAssignment")
     private boolean hasCoverage = false;
 
-    private Map<String, Report.Package.Class.Method> methodCoverage = new HashMap<>();
-    private Set<String> coveredLines = new HashSet<>();
+    private final Map<String, Report.Package.Class.Method> methodCoverage = new HashMap<>();
+    private final Set<String> coveredLines = new HashSet<>();
 
     /**
      * Create a {@link JacocoCoverage} object
@@ -161,5 +162,10 @@ public class JacocoCoverage {
 
     private boolean hasNonzeroCoverage(Report.Package.Class.Method.Counter counter) {
         return counter.getCovered() > 0;
+    }
+
+    public Map<String, Report.Package.Class.Method> getMethodCoverage() {
+        //methodCoverage.get(a).
+        return methodCoverage;
     }
 }
