@@ -222,7 +222,7 @@ public class RepoTool {
     public void moveOutput() throws Exception {
         moveFiles(
             Paths.get(System.getProperty("user.dir"), "/output"), // src
-            Paths.get(System.getProperty("user.dir"), "/artifacts/results/", getProjectDir(), timeStamp), // dst
+            Paths.get(System.getProperty("user.dir"), "/artifacts/results/", getProjectDir() + timeStamp), // dst
             "*.*"  // g;ob
         );
     }
@@ -232,7 +232,9 @@ public class RepoTool {
                 .toLowerCase().startsWith("windows");
     }
 
-    private String getProjectDir() {
+    public String getProjectDir() {
         return (subProject.equals("")) ? name : (name + "/" + subProject);
     }
+
+    public String getSubProject() { return subProject; }
 }

@@ -108,8 +108,9 @@ public class Comparison {
     }
 
     private static Path getLatestResultPath(String project) throws IOException {
-        String resultsDir = "artifacts/results/";
-        String glob = project + "????-??-??T??_??_??.??????";
+        RepoTool rt = new RepoTool(project);
+        String resultsDir = "artifacts/results/" + (rt.getSubProject().equals("") ? "" : project );
+        String glob = (rt.getSubProject().equals("") ? project : rt.getSubProject()) + "????-??-??T??_??_??.??????";
         Path latestPath = null;
 
         for (Path path : Files.newDirectoryStream(Path.of(resultsDir), glob)) {
@@ -166,7 +167,8 @@ public class Comparison {
 
             assert project != null;
 
-            timeStamp = latestPath.getFileName().toString().substring(project.length());
+            String dirPath = latestPath.getFileName().toString();
+            timeStamp = dirPath.substring(dirPath.length() - 26);
         }
 
         Comparison comparison = new Comparison();
