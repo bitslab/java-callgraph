@@ -19,19 +19,34 @@ for project in projects:
     data['Project'] = projName
     data['inJaCoCo'] = data['inJaCoCo'] == "Y"  #convert Y/N to True/False
     data['inPrunedGraph'] = data['inPrunedGraph'] == "Y"  #convert Y/N to True/False
-    data['coveredJaCoCo'] = data['linesCovered'].apply(lambda v: 0 if v == "UNK" else v).astype(int) > 0
 
-    data['FP'] = (data['coveredJaCoCo'] & ~data['inPrunedGraph'])
+    #data['coveredJaCoCo'] = data['linesCovered'].apply(lambda v: 0 if v == "UNK" else v).astype(int) > 0
+
+    data['reachableJaCoCo'] = data['inJaCoCo']
+    data['reachableProperty'] = data['inPrunedGraph']
+
+    #output is by method?
+
+    # false-positives: tool identifies code as reachable,
+    #   but cannot be reached by a property test
+    data['FP'] = (data['reachableJaCoCo'] & ~data['reachableProperty'])
     data['FP'] = data['FP'].apply(lambda v: 1 if v else 0)
 
-    data['FN'] = (~data['coveredJaCoCo'] & data['inPrunedGraph'])
+    # false-negatives: code that is reachable from the property
+    #   test but the tool does not identify it as such
+    data['FN'] = (~data['reachableJaCoCo'] & data['reachableProperty'])
     data['FN'] = data['FN'].apply(lambda v: 1 if v else 0)
 
-    data['Agree'] = (data['coveredJaCoCo'] & data['inPrunedGraph'])
-    data['Agree'] = data['Agree'].apply(lambda v: 1 if v else 0)
+    # JaCoCo and our tool agree that is reachability
+    data['TP'] = (data['reachableJaCoCo'] & data['reachableProperty'])
+    data['TP'] = data['TP'].apply(lambda v: 1 if v else 0)
+
+    # JaCoCo and our tool agree that is NOT reachable
+    data['TN'] = (~data['reachableJaCoCo'] & ~data['reachableProperty'])
+    data['TN'] = data['TN'].apply(lambda v: 1 if v else 0)
 
     with open(texFile, 'w') as tf:
-        fpfnSum = data[['entryPoint', 'FP', 'FN', 'Agree']].groupby(by='entryPoint').sum()
+        fpfnSum = data[['entryPoint', 'FP', 'FN', 'TP', 'TN']].groupby(by='entryPoint').sum()
         tf.write(fpfnSum.reset_index().style.to_latex())
 
     dataSet = pd.concat([dataSet, data.copy()])
@@ -39,7 +54,11 @@ for project in projects:
 
 # output sum group by projName
 with open(byProjNameFile, 'w') as tf:
-    fpfnSum = dataSet[['Project', 'FP', 'FN', 'Agree']].groupby(by='Project').sum()
+    fpfnSum = dataSet[['Project', 'FP', 'FN', 'TP', 'TN']]\
+        .sort_values(by='Project')\
+        .groupby(by='Project')\
+        .sum()
+    fpfnSum['Total'] = dataSet[['Project']].groupby(by='Project').size()
     tf.write(fpfnSum.reset_index().style.hide(axis="index").to_latex())
 
 

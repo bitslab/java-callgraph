@@ -68,22 +68,40 @@ public class Comparison {
                 (method, details) -> {
                     String key = getKey(entryPoint, method);
                     Row r = rpt.getOrDefault(key, new Row(entryPoint, method));
+
+
+                    int instructionCovered = Integer.MIN_VALUE;
+                    int instructionMissed = Integer.MIN_VALUE;
                     int branchesCovered = Integer.MIN_VALUE;
                     int branchedMissed = Integer.MIN_VALUE;
                     int linesCovered = Integer.MIN_VALUE;
                     int linesMissed = Integer.MIN_VALUE;
+                    int complexityCovered = Integer.MIN_VALUE;
+                    int complexityMissed = Integer.MIN_VALUE;
+                    int methodCovered = Integer.MIN_VALUE;
+                    int methodMissed = Integer.MIN_VALUE;
+
 
                     for (Report.Package.Class.Method.Counter counter : details.getCounter()) {
-                        if (counter.getType().equals("BRANCH")) {
+                        if (counter.getType().equals("INSTRUCTION")) {
+                            instructionCovered = counter.getCovered();
+                            instructionMissed = counter.getMissed();
+                        } else if (counter.getType().equals("BRANCH")) {
                             branchesCovered = counter.getCovered();
                             branchedMissed = counter.getMissed();
                         } else if (counter.getType().equals("LINE")) {
                             linesCovered = counter.getCovered();
                             linesMissed = counter.getMissed();
+                        } else if (counter.getType().equals("COMPLEXITY")) {
+                            complexityCovered = counter.getCovered();
+                            complexityMissed = counter.getMissed();
+                        } else if (counter.getType().equals("METHOD")) {
+                            methodCovered = counter.getCovered();
+                            methodMissed = counter.getMissed();
                         }
                     }
 
-                    r.addJaCoCo(branchesCovered, branchedMissed, linesCovered, linesMissed);
+                    r.addJaCoCo(instructionCovered, instructionMissed, branchesCovered, branchedMissed, linesCovered, linesMissed, complexityCovered, complexityMissed, methodCovered, methodMissed);
 
                     rpt.put(key, r);
                 }
@@ -187,10 +205,13 @@ public class Comparison {
 
         String header = String.join(",",
                 "entryPoint", "method", "nodeColor",
-                "branchesCovered", "branchesMissed", "linesCovered", "linesMissed",
+                "instructionCovered", "instructionMissed",
+                "branchesCovered", "branchesMissed",
+                "linesCovered", "linesMissed",
+                "complexityCovered","complexityMissed",
+                "methodCovered","methodMissed",
                 "inJaCoCo", "inPrunedGraph"
         );
-
 
         if (outputFile == null) {
             System.out.println(header);
@@ -204,17 +225,24 @@ public class Comparison {
                 }
             }
         }
-
     }
 
     static class Row {
         private final String entryPoint;
         private final String method;
         private String nodeColor = "";
+
+        private int instructionCovered = Integer.MIN_VALUE;
+        private int instructionMissed = Integer.MIN_VALUE;
         private int branchesCovered = Integer.MIN_VALUE;
         private int branchesMissed = Integer.MIN_VALUE;
         private int linesCovered = Integer.MIN_VALUE;
         private int linesMissed = Integer.MIN_VALUE;
+        private int complexityCovered = Integer.MIN_VALUE;
+        private int complexityMissed = Integer.MIN_VALUE;
+        private int methodCovered = Integer.MIN_VALUE;
+        private int methodMissed = Integer.MIN_VALUE;
+
         private boolean inJaCoCo = false;
         private boolean inPrunedGraph = false;
 
@@ -223,11 +251,17 @@ public class Comparison {
             this.method = method;
         }
 
-        public void addJaCoCo(int branchesCovered, int branchesMissed, int linesCovered, int linesMissed) {
+        public void addJaCoCo(int instructionCovered, int instructionMissed, int branchesCovered, int branchesMissed, int linesCovered, int linesMissed, int complexityCovered, int complexityMissed, int methodCovered, int methodMissed) {
+            this.instructionCovered = instructionCovered;
+            this.instructionMissed = instructionMissed;
             this.branchesCovered = branchesCovered;
             this.branchesMissed = branchesMissed;
             this.linesCovered = linesCovered;
             this.linesMissed = linesMissed;
+            this.complexityCovered = complexityCovered;
+            this.complexityMissed = complexityMissed;
+            this.methodCovered = methodCovered;
+            this.methodMissed = methodMissed;
             this.inJaCoCo = true;
         }
 
@@ -242,10 +276,18 @@ public class Comparison {
                     "\"" + entryPoint + "\"",
                     "\"" + method + "\"",
                     "\"" + nodeColor + "\"",
+
+                    // stuff here
+                    cntToStr(instructionCovered),
+                    cntToStr(instructionMissed),
                     cntToStr(branchesCovered),
                     cntToStr(branchesMissed),
                     cntToStr(linesCovered),
                     cntToStr(linesMissed),
+                    cntToStr(complexityCovered),
+                    cntToStr(complexityMissed),
+                    cntToStr(methodCovered),
+                    cntToStr(methodMissed),
                     inJaCoCo ? "Y" : "N",
                     inPrunedGraph ? "Y" : "N"
             );
