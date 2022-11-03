@@ -1,14 +1,21 @@
 import pandas as pd
+from common import shortNames
+
+CALC_NAMES = ['FP', 'FN', 'TP']
 
 projects = [
-    ('MPH Table', 'artifacts/experiment/rq1_mph-table.csv', 'artifacts/experiment/rq1_table_mph-table.tex'),
     ('Convex', 'artifacts/experiment/rq1_convex.csv', 'artifacts/experiment/rq1_table_convex.tex'),
     ('jFlex', 'artifacts/experiment/rq1_jflex.csv', 'artifacts/experiment/rq1_table_jflex.tex'),
+    ('MPH Table', 'artifacts/experiment/rq1_mph-table.csv', 'artifacts/experiment/rq1_table_mph-table.tex'),
 ]
 
 byProjNameFile = 'artifacts/experiment/rq1_table_projects.tex'
 
+byAllEntrypointNameFile = 'artifacts/experiment/rq1_table_all_entrypoints.tex'
+
 dataSet = pd.DataFrame()
+dataSetSum = {}
+rowCount = 1
 
 for project in projects:
     projName = project[0]
@@ -20,12 +27,9 @@ for project in projects:
     data['inJaCoCo'] = data['inJaCoCo'] == "Y"  #convert Y/N to True/False
     data['inPrunedGraph'] = data['inPrunedGraph'] == "Y"  #convert Y/N to True/False
 
-    #data['coveredJaCoCo'] = data['linesCovered'].apply(lambda v: 0 if v == "UNK" else v).astype(int) > 0
-
     data['reachableJaCoCo'] = data['inJaCoCo']
     data['reachableProperty'] = data['inPrunedGraph']
 
-    #output is by method?
 
     # false-positives: tool identifies code as reachable,
     #   but cannot be reached by a property test
@@ -45,25 +49,81 @@ for project in projects:
     data['TN'] = (~data['reachableJaCoCo'] & ~data['reachableProperty'])
     data['TN'] = data['TN'].apply(lambda v: 1 if v else 0)
 
+    # add Name as a friendly name for each entrypoint
+    data['Property'] = data['entryPoint'].apply(lambda v: shortNames[v])
+
+    df = data[['Property', 'FP', 'FN', 'TP']].groupby(by='Property').sum().round(2)
+    df['N'] = pd.RangeIndex(start=rowCount, stop=len(df.index) + rowCount)
+    df.reset_index(inplace=True)
+    dfSubset = df[['N', 'Property', 'FP', 'FN', 'TP']]
+
+    rowCount = len(df.index) + rowCount
+    dataSetSum[projName] = dfSubset.copy()
+
     with open(texFile, 'w') as tf:
-        fpfnSum = data[['entryPoint', 'FP', 'FN', 'TP', 'TN']].groupby(by='entryPoint').sum()
-        tf.write(fpfnSum.reset_index().style.to_latex())
+        tf.write(dfSubset.to_latex(index=False, header=False))
 
     dataSet = pd.concat([dataSet, data.copy()])
 
 
 # output sum group by projName
 with open(byProjNameFile, 'w') as tf:
-    fpfnSum = dataSet[['Project', 'FP', 'FN', 'TP', 'TN']]\
+    fpfnSum = dataSet[['Project', 'FP', 'FN', 'TP']]\
         .sort_values(by='Project')\
         .groupby(by='Project')\
         .sum()
+
     fpfnSum['Total'] = dataSet[['Project']].groupby(by='Project').size()
     tf.write(fpfnSum.reset_index().style.hide(axis="index").to_latex())
 
 
+# output all projects with project headings
+with open(byAllEntrypointNameFile, 'w') as tf:
+    newDF = pd.DataFrame()
 
+    for project in projects:
+        projName = project[0]
+        dataSetSum[projName]['_style'] = ''
 
+        projMean = dataSetSum[projName][CALC_NAMES].mean()
+        projMean['_style'] = 'BOLD'
+        projMean['N'] = ''
+        projMean['Property'] = 'Average'
+        dataSetSum[projName].loc['mean'] = projMean
 
+        header = dict(zip(['N', 'Property', 'FP', 'FN', 'TP'], ['', '', '', '', '']))
 
+        newDF = pd.concat([
+            newDF,
+            pd.DataFrame(header | {'_style': 'HEADER', 'Property': projName}, index=[0]), # project header
+            dataSetSum[projName] # project data / avg
+        ], ignore_index=True)
 
+    # header_rows = newDF[newDF['N'] == '0HEADER'].index
+    bold_rows = newDF[ newDF['_style'] == 'BOLD' ].index
+    header_rows = newDF[ newDF['_style'] == 'HEADER' ].index
+
+    latexTable = newDF \
+        .drop(columns=['_style']) \
+        .style \
+        .hide(axis=0) \
+        .format(precision=2) \
+        .set_properties(subset=pd.IndexSlice[header_rows, :], **{'HEADER': ''}) \
+        .set_properties(subset=pd.IndexSlice[bold_rows, :], **{'textbf': '--rwrap'}) \
+        .to_latex(hrules=False)
+
+    outTable = ''
+
+    # transform to sub headers
+    for line in latexTable.splitlines(keepends=True):
+        s = line.split('&')
+        c = str(len(s))
+
+        possibleCommand = s[0].strip()
+
+        if possibleCommand == '\HEADER':
+            outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{' + s[1].strip()[7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
+        else:
+            outTable += line
+
+    tf.write(outTable)
