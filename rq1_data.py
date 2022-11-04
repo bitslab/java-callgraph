@@ -7,6 +7,7 @@ projects = [
     ('Convex', 'artifacts/experiment/rq1_convex.csv', 'artifacts/experiment/rq1_table_convex.tex'),
     ('jFlex', 'artifacts/experiment/rq1_jflex.csv', 'artifacts/experiment/rq1_table_jflex.tex'),
     ('MPH Table', 'artifacts/experiment/rq1_mph-table.csv', 'artifacts/experiment/rq1_table_mph-table.tex'),
+    ('RPKI-Commons', 'artifacts/experiment/rq1_rpki-commons.csv', 'artifacts/experiment/rq1_table_rpki-commons.tex'),
 ]
 
 byProjNameFile = 'artifacts/experiment/rq1_table_projects.tex'
@@ -61,7 +62,7 @@ for project in projects:
     dataSetSum[projName] = dfSubset.copy()
 
     with open(texFile, 'w') as tf:
-        tf.write(dfSubset.to_latex(index=False, header=False))
+        tf.write(dfSubset.style.hide(axis="index").to_latex())
 
     dataSet = pd.concat([dataSet, data.copy()])
 

@@ -10,7 +10,7 @@ cd $JCG_HOME || exit
 
 mkdir -p artifacts/experiment
 
-for PROJECT in mph-table convex jflex
+for PROJECT in mph-table convex jflex rpki-commons
 do
 	FILE=artifacts/experiment/rq1_$PROJECT.csv
 
