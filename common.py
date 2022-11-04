@@ -16,5 +16,11 @@ shortNames = {
     "jflex.core.unicode.CharClassesQuickcheck.addString(Ljflex/core/unicode/CharClasses;Ljava/lang/String;I)V": 'addString',
     "jflex.state.StateSetQuickcheck.addStateDoesNotRemove(Ljflex/state/StateSet;I)V": 'add',
     "jflex.state.StateSetQuickcheck.containsElements(Ljflex/state/StateSet;I)V": 'contains',
-    "jflex.state.StateSetQuickcheck.removeAdd(Ljflex/state/StateSet;I)V": 'remove'
+    "jflex.state.StateSetQuickcheck.removeAdd(Ljflex/state/StateSet;I)V": 'remove',
+    "net.ripe.rpki.commons.crypto.cms.roa.RoaCMSBuilderPropertyTest.buildEncodedParseCheck(JLjava/lang/Integer;)V": 'roa',
+    "net.ripe.rpki.commons.crypto.cms.manifest.ManifestCMSBuilderPropertyTest.buildEncodedParseCheck([BLjava/math/BigInteger;Ljava/lang/Integer;)V": 'manifest',
+    "net.ripe.rpki.commons.crypto.cms.aspa.AspaCmsTest.should_generate_aspa(ILjava/util/List;)V": 'aspa',
+    "net.ripe.rpki.commons.validation.X509ResourceCertificateParentChildValidatorTest.validParentChildSubResources(Ljava/util/List;I)V": 'resources',
+    "net.ripe.rpki.commons.validation.X509ResourceCertificateParentChildValidatorTest.validParentChildOverClaiming(Ljava/util/List;ILjava/util/List;)V": 'claiming',
+    "net.ripe.rpki.commons.validation.X509ResourceCertificateParentChildValidatorTest.validParentChildOverClaimingLooseValidation(Ljava/util/List;ILjava/util/List;)V": 'loose'
 }
