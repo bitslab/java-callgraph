@@ -22,5 +22,5 @@ properties:
     entryPoint: "com.indeed.mph.serializers.TestSmartLongSerializer.canRoundTripLongs(J)V"
   - name: TestSmartPairSerializer#canRoundTripPairs
     entryPoint: "com.indeed.mph.serializers.TestSmartPairSerializer.canRoundTripPairs(Lcom/indeed/util/core/Pair;)V"
-  - name: TestSmartOptionalSerializer#java#canRoundTripPresentOptionals
-    entryPoint: "com.indeed.mph.serializers.TestSmartOptionalSerializer.java.canRoundTripPresentOptionals(J)V"
+  - name: TestSmartOptionalSerializer#canRoundTripPresentOptionals
+    entryPoint: "com.indeed.mph.serializers.TestSmartOptionalSerializer.canRoundTripPresentOptionals(J)V"
