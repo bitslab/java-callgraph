@@ -86,7 +86,7 @@ with open(byAllEntrypointNameFile, 'w') as tf:
         projName = project[0]
         dataSetSum[projName]['_style'] = ''
 
-        projMean = dataSetSum[projName][CALC_NAMES].mean()
+        projMean = dataSetSum[projName][CALC_NAMES].mean().round()
         projMean['_style'] = 'BOLD'
         projMean['N'] = ''
         projMean['Property'] = 'Average'
@@ -111,8 +111,8 @@ with open(byAllEntrypointNameFile, 'w') as tf:
         .format(precision=0) \
         .set_properties(subset=pd.IndexSlice[header_rows, :], **{'HEADER': ''}) \
         .set_properties(subset=pd.IndexSlice[bold_rows, :], **{'textbf': '--rwrap'}) \
-        .format(subset=pd.IndexSlice[bold_rows, :], precision=2) \
-        .to_latex(hrules=False)
+        .format(subset=pd.IndexSlice[bold_rows, :], precision=0) \
+        .to_latex(hrules=False, column_format="llrrr")
 
     outTable = ''
 
