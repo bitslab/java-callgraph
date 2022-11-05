@@ -7,7 +7,7 @@ projects = [
     ('Convex', 'artifacts/experiment/rq1_convex.csv', 'artifacts/experiment/rq1_table_convex.tex'),
     ('jFlex', 'artifacts/experiment/rq1_jflex.csv', 'artifacts/experiment/rq1_table_jflex.tex'),
     ('MPH Table', 'artifacts/experiment/rq1_mph-table.csv', 'artifacts/experiment/rq1_table_mph-table.tex'),
-    ('RPKI-Commons', 'artifacts/experiment/rq1_rpki-commons.csv', 'artifacts/experiment/rq1_table_rpki-commons.tex'),
+    ('RPKI Commons', 'artifacts/experiment/rq1_rpki-commons.csv', 'artifacts/experiment/rq1_table_rpki-commons.tex'),
 ]
 
 byProjNameFile = 'artifacts/experiment/rq1_table_projects.tex'
@@ -108,9 +108,10 @@ with open(byAllEntrypointNameFile, 'w') as tf:
         .drop(columns=['_style']) \
         .style \
         .hide(axis=0) \
-        .format(precision=2) \
+        .format(precision=0) \
         .set_properties(subset=pd.IndexSlice[header_rows, :], **{'HEADER': ''}) \
         .set_properties(subset=pd.IndexSlice[bold_rows, :], **{'textbf': '--rwrap'}) \
+        .format(subset=pd.IndexSlice[bold_rows, :], precision=2) \
         .to_latex(hrules=False)
 
     outTable = ''
