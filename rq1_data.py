@@ -4,10 +4,10 @@ from common import shortNames
 CALC_NAMES = ['FP', 'FN', 'TP']
 
 projects = [
-    ('Convex', 'artifacts/experiment/rq1_convex.csv', 'artifacts/experiment/rq1_table_convex.tex'),
-    ('jFlex', 'artifacts/experiment/rq1_jflex.csv', 'artifacts/experiment/rq1_table_jflex.tex'),
-    ('MPH Table', 'artifacts/experiment/rq1_mph-table.csv', 'artifacts/experiment/rq1_table_mph-table.tex'),
-    ('RPKI Commons', 'artifacts/experiment/rq1_rpki-commons.csv', 'artifacts/experiment/rq1_table_rpki-commons.tex'),
+    ('convex', 'artifacts/experiment/rq1_convex.csv', 'artifacts/experiment/rq1_table_convex.tex'),
+    ('jflex', 'artifacts/experiment/rq1_jflex.csv', 'artifacts/experiment/rq1_table_jflex.tex'),
+    ('mphtable', 'artifacts/experiment/rq1_mph-table.csv', 'artifacts/experiment/rq1_table_mph-table.tex'),
+    ('rpkicommons', 'artifacts/experiment/rq1_rpki-commons.csv', 'artifacts/experiment/rq1_table_rpki-commons.tex'),
 ]
 
 byProjNameFile = 'artifacts/experiment/rq1_table_projects.tex'
@@ -54,9 +54,10 @@ for project in projects:
     data['Property'] = data['entryPoint'].apply(lambda v: shortNames[v])
 
     df = data[['Property', 'FP', 'FN', 'TP']].groupby(by='Property').sum().round(2)
+    df['+Ratio'] = df['FP'] / df['TP']
     df['N'] = pd.RangeIndex(start=rowCount, stop=len(df.index) + rowCount)
     df.reset_index(inplace=True)
-    dfSubset = df[['N', 'Property', 'FP', 'FN', 'TP']]
+    dfSubset = df[['N', 'Property', 'FP', 'FN', 'TP', '+Ratio']]
 
     rowCount = len(df.index) + rowCount
     dataSetSum[projName] = dfSubset.copy()
@@ -90,9 +91,10 @@ with open(byAllEntrypointNameFile, 'w') as tf:
         projMean['_style'] = 'BOLD'
         projMean['N'] = ''
         projMean['Property'] = 'Average'
+        projMean['+Ratio'] = projMean['FP'] / projMean['TP']
         dataSetSum[projName].loc['mean'] = projMean
 
-        header = dict(zip(['N', 'Property', 'FP', 'FN', 'TP'], ['', '', '', '', '']))
+        header = dict(zip(['N', 'Property', 'FP', 'FN', 'TP', '+Ratio'], ['', '', '', '', '', '']))
 
         newDF = pd.concat([
             newDF,
@@ -100,7 +102,6 @@ with open(byAllEntrypointNameFile, 'w') as tf:
             dataSetSum[projName] # project data / avg
         ], ignore_index=True)
 
-    # header_rows = newDF[newDF['N'] == '0HEADER'].index
     bold_rows = newDF[ newDF['_style'] == 'BOLD' ].index
     header_rows = newDF[ newDF['_style'] == 'HEADER' ].index
 
@@ -111,8 +112,8 @@ with open(byAllEntrypointNameFile, 'w') as tf:
         .format(precision=0) \
         .set_properties(subset=pd.IndexSlice[header_rows, :], **{'HEADER': ''}) \
         .set_properties(subset=pd.IndexSlice[bold_rows, :], **{'textbf': '--rwrap'}) \
-        .format(subset=pd.IndexSlice[bold_rows, :], precision=0) \
-        .to_latex(hrules=False, column_format="llrrr")
+        .format(subset=pd.IndexSlice['+Ratio'], precision=2) \
+        .to_latex(hrules=False, column_format="llrrrr")
 
     outTable = ''
 
@@ -124,7 +125,7 @@ with open(byAllEntrypointNameFile, 'w') as tf:
         possibleCommand = s[0].strip()
 
         if possibleCommand == '\HEADER':
-            outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{' + s[1].strip()[7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
+            outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
         else:
             outTable += line
 
