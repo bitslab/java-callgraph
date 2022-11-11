@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN"
+        "report.dtd">
+<report name="java-callgraph-driver">
+    <sessioninfo id="DESKTOP-48B7IRD-8b5721b5" start="1613237663780" dump="1613237664187"/>
+    <sessioninfo id="DESKTOP-48B7IRD-266d82cb" start="1613237672022" dump="1613237672405"/>
+    <package name="edu/uic/cs398/Book">
+        <class name="edu/uic/cs398/Book/BookFactory" sourcefilename="BookFactory.java">
+            <method name="&lt;init&gt;" desc="()V" line="5">
+                <counter type="INSTRUCTION" missed="3" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="getBook" desc="(I)Ledu/uic/cs398/Book/Book;" line="7">
+                <counter type="INSTRUCTION" missed="5" covered="26"/>
+                <counter type="BRANCH" missed="1" covered="6"/>
+                <counter type="LINE" missed="1" covered="7"/>
+                <counter type="COMPLEXITY" missed="1" covered="6"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <counter type="INSTRUCTION" missed="8" covered="26"/>
+            <counter type="BRANCH" missed="1" covered="6"/>
+            <counter type="LINE" missed="2" covered="7"/>
+            <counter type="COMPLEXITY" missed="2" covered="6"/>
+            <counter type="METHOD" missed="1" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </class>
+        <class name="edu/uic/cs398/Book/AbstractBook" sourcefilename="AbstractBook.java">
+            <method name="&lt;init&gt;" desc="(Ljava/lang/String;Ljava/lang/String;)V" line="7">
+                <counter type="INSTRUCTION" missed="0" covered="9"/>
+                <counter type="LINE" missed="0" covered="4"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="getTitle" desc="()Ljava/lang/String;" line="14">
+                <counter type="INSTRUCTION" missed="3" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="getAuthor" desc="()Ljava/lang/String;" line="19">
+                <counter type="INSTRUCTION" missed="3" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="magic" desc="()V" line="24">
+                <counter type="INSTRUCTION" missed="3" covered="0"/>
+                <counter type="LINE" missed="2" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="bazinga" desc="()V" line="29">
+                <counter type="INSTRUCTION" missed="1" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <counter type="INSTRUCTION" missed="10" covered="9"/>
+            <counter type="LINE" missed="5" covered="4"/>
+            <counter type="COMPLEXITY" missed="4" covered="1"/>
+            <counter type="METHOD" missed="4" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </class>
+        <class name="edu/uic/cs398/Book/Book" sourcefilename="Book.java"/>
+        <sourcefile name="Book.java"/>
+        <sourcefile name="AbstractBook.java">
+            <line nr="7" mi="0" ci="2" mb="0" cb="0"/>
+            <line nr="8" mi="0" ci="3" mb="0" cb="0"/>
+            <line nr="9" mi="0" ci="3" mb="0" cb="0"/>
+            <line nr="10" mi="0" ci="1" mb="0" cb="0"/>
+            <line nr="14" mi="3" ci="0" mb="0" cb="0"/>
+            <line nr="19" mi="3" ci="0" mb="0" cb="0"/>
+            <line nr="24" mi="2" ci="0" mb="0" cb="0"/>
+            <line nr="25" mi="1" ci="0" mb="0" cb="0"/>
+            <line nr="29" mi="1" ci="0" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="10" covered="9"/>
+            <counter type="LINE" missed="5" covered="4"/>
+            <counter type="COMPLEXITY" missed="4" covered="1"/>
+            <counter type="METHOD" missed="4" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </sourcefile>
+        <sourcefile name="BookFactory.java">
+            <line nr="5" mi="3" ci="0" mb="0" cb="0"/>
+            <line nr="7" mi="0" ci="2" mb="1" cb="6"/>
+            <line nr="9" mi="0" ci="4" mb="0" cb="0"/>
+            <line nr="11" mi="0" ci="4" mb="0" cb="0"/>
+            <line nr="13" mi="0" ci="4" mb="0" cb="0"/>
+            <line nr="15" mi="0" ci="4" mb="0" cb="0"/>
+            <line nr="17" mi="0" ci="4" mb="0" cb="0"/>
+            <line nr="19" mi="0" ci="4" mb="0" cb="0"/>
+            <line nr="21" mi="5" ci="0" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="8" covered="26"/>
+            <counter type="BRANCH" missed="1" covered="6"/>
+            <counter type="LINE" missed="2" covered="7"/>
+            <counter type="COMPLEXITY" missed="2" covered="6"/>
+            <counter type="METHOD" missed="1" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </sourcefile>
+        <counter type="INSTRUCTION" missed="18" covered="35"/>
+        <counter type="BRANCH" missed="1" covered="6"/>
+        <counter type="LINE" missed="7" covered="11"/>
+        <counter type="COMPLEXITY" missed="6" covered="7"/>
+        <counter type="METHOD" missed="5" covered="2"/>
+        <counter type="CLASS" missed="0" covered="2"/>
+    </package>
+    <package name="edu/uic/cs398">
+        <class name="edu/uic/cs398/Main" sourcefilename="Main.java">
+            <method name="&lt;init&gt;" desc="()V" line="6">
+                <counter type="INSTRUCTION" missed="3" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="main" desc="([Ljava/lang/String;)V" line="9">
+                <counter type="INSTRUCTION" missed="0" covered="9"/>
+                <counter type="BRANCH" missed="1" covered="1"/>
+                <counter type="LINE" missed="0" covered="4"/>
+                <counter type="COMPLEXITY" missed="1" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="foo" desc="(I)Z" line="15">
+                <counter type="INSTRUCTION" missed="0" covered="11"/>
+                <counter type="BRANCH" missed="1" covered="3"/>
+                <counter type="LINE" missed="0" covered="3"/>
+                <counter type="COMPLEXITY" missed="1" covered="2"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <counter type="INSTRUCTION" missed="3" covered="20"/>
+            <counter type="BRANCH" missed="2" covered="4"/>
+            <counter type="LINE" missed="1" covered="7"/>
+            <counter type="COMPLEXITY" missed="3" covered="3"/>
+            <counter type="METHOD" missed="1" covered="2"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </class>
+        <sourcefile name="Main.java">
+            <line nr="6" mi="3" ci="0" mb="0" cb="0"/>
+            <line nr="9" mi="0" ci="3" mb="0" cb="0"/>
+            <line nr="10" mi="0" ci="3" mb="1" cb="1"/>
+            <line nr="11" mi="0" ci="2" mb="0" cb="0"/>
+            <line nr="12" mi="0" ci="1" mb="0" cb="0"/>
+            <line nr="15" mi="0" ci="4" mb="1" cb="3"/>
+            <line nr="16" mi="0" ci="2" mb="0" cb="0"/>
+            <line nr="18" mi="0" ci="5" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="3" covered="20"/>
+            <counter type="BRANCH" missed="2" covered="4"/>
+            <counter type="LINE" missed="1" covered="7"/>
+            <counter type="COMPLEXITY" missed="3" covered="3"/>
+            <counter type="METHOD" missed="1" covered="2"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </sourcefile>
+        <counter type="INSTRUCTION" missed="3" covered="20"/>
+        <counter type="BRANCH" missed="2" covered="4"/>
+        <counter type="LINE" missed="1" covered="7"/>
+        <counter type="COMPLEXITY" missed="3" covered="3"/>
+        <counter type="METHOD" missed="1" covered="2"/>
+        <counter type="CLASS" missed="0" covered="1"/>
+    </package>
+    <package name="edu/uic/cs398/Book/impl">
+        <class name="edu/uic/cs398/Book/impl/FluentPython" sourcefilename="FluentPython.java">
+            <method name="&lt;init&gt;" desc="()V" line="5">
+                <counter type="INSTRUCTION" missed="0" covered="3"/>
+                <counter type="LINE" missed="0" covered="1"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="getTitle" desc="()Ljava/lang/String;" line="8">
+                <counter type="INSTRUCTION" missed="2" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="getAuthor" desc="()Ljava/lang/String;" line="13">
+                <counter type="INSTRUCTION" missed="2" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="magic" desc="()V" line="19">
+                <counter type="INSTRUCTION" missed="1" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <counter type="INSTRUCTION" missed="5" covered="3"/>
+            <counter type="LINE" missed="3" covered="1"/>
+            <counter type="COMPLEXITY" missed="3" covered="1"/>
+            <counter type="METHOD" missed="3" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </class>
+        <class name="edu/uic/cs398/Book/impl/Freakonomics" sourcefilename="Freakonomics.java">
+            <method name="&lt;init&gt;" desc="()V" line="5">
+                <counter type="INSTRUCTION" missed="0" covered="3"/>
+                <counter type="LINE" missed="0" covered="1"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="getTitle" desc="()Ljava/lang/String;" line="9">
+                <counter type="INSTRUCTION" missed="2" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="getAuthor" desc="()Ljava/lang/String;" line="14">
+                <counter type="INSTRUCTION" missed="2" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="magic" desc="()V" line="20">
+                <counter type="INSTRUCTION" missed="1" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <counter type="INSTRUCTION" missed="5" covered="3"/>
+            <counter type="LINE" missed="3" covered="1"/>
+            <counter type="COMPLEXITY" missed="3" covered="1"/>
+            <counter type="METHOD" missed="3" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </class>
+        <class name="edu/uic/cs398/Book/impl/HowDemocraciesDie" sourcefilename="HowDemocraciesDie.java">
+            <method name="&lt;init&gt;" desc="()V" line="5">
+                <counter type="INSTRUCTION" missed="0" covered="3"/>
+                <counter type="LINE" missed="0" covered="1"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="getTitle" desc="()Ljava/lang/String;" line="8">
+                <counter type="INSTRUCTION" missed="0" covered="2"/>
+                <counter type="LINE" missed="0" covered="1"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="getAuthor" desc="()Ljava/lang/String;" line="13">
+                <counter type="INSTRUCTION" missed="0" covered="2"/>
+                <counter type="LINE" missed="0" covered="1"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="magic" desc="()V" line="19">
+                <counter type="INSTRUCTION" missed="0" covered="1"/>
+                <counter type="LINE" missed="0" covered="1"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <counter type="INSTRUCTION" missed="0" covered="8"/>
+            <counter type="LINE" missed="0" covered="4"/>
+            <counter type="COMPLEXITY" missed="0" covered="4"/>
+            <counter type="METHOD" missed="0" covered="4"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </class>
+        <class name="edu/uic/cs398/Book/impl/DesigningDataIntensiveApplications"
+               sourcefilename="DesigningDataIntensiveApplications.java">
+            <method name="&lt;init&gt;" desc="()V" line="7">
+                <counter type="INSTRUCTION" missed="0" covered="5"/>
+                <counter type="LINE" missed="0" covered="2"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="foo" desc="()V" line="12">
+                <counter type="INSTRUCTION" missed="1" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="magic" desc="(I)V" line="16">
+                <counter type="INSTRUCTION" missed="1" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <counter type="INSTRUCTION" missed="2" covered="5"/>
+            <counter type="LINE" missed="2" covered="2"/>
+            <counter type="COMPLEXITY" missed="2" covered="1"/>
+            <counter type="METHOD" missed="2" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </class>
+        <class name="edu/uic/cs398/Book/impl/EffectiveJava" sourcefilename="EffectiveJava.java">
+            <method name="&lt;init&gt;" desc="()V" line="9">
+                <counter type="INSTRUCTION" missed="0" covered="5"/>
+                <counter type="LINE" missed="0" covered="2"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="getAuthor" desc="()Ljava/lang/String;" line="14">
+                <counter type="INSTRUCTION" missed="2" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="magic" desc="()V" line="19">
+                <counter type="INSTRUCTION" missed="4" covered="0"/>
+                <counter type="LINE" missed="2" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="specialFunction" desc="(ILjava/lang/Integer;Ledu/uic/cs398/Book/Book;)Ljava/lang/String;"
+                    line="23">
+                <counter type="INSTRUCTION" missed="16" covered="0"/>
+                <counter type="LINE" missed="2" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <counter type="INSTRUCTION" missed="22" covered="5"/>
+            <counter type="LINE" missed="5" covered="2"/>
+            <counter type="COMPLEXITY" missed="3" covered="1"/>
+            <counter type="METHOD" missed="3" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </class>
+        <class name="edu/uic/cs398/Book/impl/ArguingWithZombies" sourcefilename="ArguingWithZombies.java">
+            <method name="&lt;init&gt;" desc="()V" line="5">
+                <counter type="INSTRUCTION" missed="0" covered="3"/>
+                <counter type="LINE" missed="0" covered="1"/>
+                <counter type="COMPLEXITY" missed="0" covered="1"/>
+                <counter type="METHOD" missed="0" covered="1"/>
+            </method>
+            <method name="getTitle" desc="()Ljava/lang/String;" line="8">
+                <counter type="INSTRUCTION" missed="2" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="getAuthor" desc="()Ljava/lang/String;" line="13">
+                <counter type="INSTRUCTION" missed="2" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <method name="magic" desc="()V" line="19">
+                <counter type="INSTRUCTION" missed="1" covered="0"/>
+                <counter type="LINE" missed="1" covered="0"/>
+                <counter type="COMPLEXITY" missed="1" covered="0"/>
+                <counter type="METHOD" missed="1" covered="0"/>
+            </method>
+            <counter type="INSTRUCTION" missed="5" covered="3"/>
+            <counter type="LINE" missed="3" covered="1"/>
+            <counter type="COMPLEXITY" missed="3" covered="1"/>
+            <counter type="METHOD" missed="3" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </class>
+        <sourcefile name="HowDemocraciesDie.java">
+            <line nr="5" mi="0" ci="3" mb="0" cb="0"/>
+            <line nr="8" mi="0" ci="2" mb="0" cb="0"/>
+            <line nr="13" mi="0" ci="2" mb="0" cb="0"/>
+            <line nr="19" mi="0" ci="1" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="0" covered="8"/>
+            <counter type="LINE" missed="0" covered="4"/>
+            <counter type="COMPLEXITY" missed="0" covered="4"/>
+            <counter type="METHOD" missed="0" covered="4"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </sourcefile>
+        <sourcefile name="Freakonomics.java">
+            <line nr="5" mi="0" ci="3" mb="0" cb="0"/>
+            <line nr="9" mi="2" ci="0" mb="0" cb="0"/>
+            <line nr="14" mi="2" ci="0" mb="0" cb="0"/>
+            <line nr="20" mi="1" ci="0" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="5" covered="3"/>
+            <counter type="LINE" missed="3" covered="1"/>
+            <counter type="COMPLEXITY" missed="3" covered="1"/>
+            <counter type="METHOD" missed="3" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </sourcefile>
+        <sourcefile name="EffectiveJava.java">
+            <line nr="9" mi="0" ci="4" mb="0" cb="0"/>
+            <line nr="10" mi="0" ci="1" mb="0" cb="0"/>
+            <line nr="14" mi="2" ci="0" mb="0" cb="0"/>
+            <line nr="19" mi="3" ci="0" mb="0" cb="0"/>
+            <line nr="20" mi="1" ci="0" mb="0" cb="0"/>
+            <line nr="23" mi="2" ci="0" mb="0" cb="0"/>
+            <line nr="24" mi="14" ci="0" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="22" covered="5"/>
+            <counter type="LINE" missed="5" covered="2"/>
+            <counter type="COMPLEXITY" missed="3" covered="1"/>
+            <counter type="METHOD" missed="3" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </sourcefile>
+        <sourcefile name="DesigningDataIntensiveApplications.java">
+            <line nr="7" mi="0" ci="4" mb="0" cb="0"/>
+            <line nr="8" mi="0" ci="1" mb="0" cb="0"/>
+            <line nr="12" mi="1" ci="0" mb="0" cb="0"/>
+            <line nr="16" mi="1" ci="0" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="2" covered="5"/>
+            <counter type="LINE" missed="2" covered="2"/>
+            <counter type="COMPLEXITY" missed="2" covered="1"/>
+            <counter type="METHOD" missed="2" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </sourcefile>
+        <sourcefile name="FluentPython.java">
+            <line nr="5" mi="0" ci="3" mb="0" cb="0"/>
+            <line nr="8" mi="2" ci="0" mb="0" cb="0"/>
+            <line nr="13" mi="2" ci="0" mb="0" cb="0"/>
+            <line nr="19" mi="1" ci="0" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="5" covered="3"/>
+            <counter type="LINE" missed="3" covered="1"/>
+            <counter type="COMPLEXITY" missed="3" covered="1"/>
+            <counter type="METHOD" missed="3" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </sourcefile>
+        <sourcefile name="ArguingWithZombies.java">
+            <line nr="5" mi="0" ci="3" mb="0" cb="0"/>
+            <line nr="8" mi="2" ci="0" mb="0" cb="0"/>
+            <line nr="13" mi="2" ci="0" mb="0" cb="0"/>
+            <line nr="19" mi="1" ci="0" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="5" covered="3"/>
+            <counter type="LINE" missed="3" covered="1"/>
+            <counter type="COMPLEXITY" missed="3" covered="1"/>
+            <counter type="METHOD" missed="3" covered="1"/>
+            <counter type="CLASS" missed="0" covered="1"/>
+        </sourcefile>
+        <counter type="INSTRUCTION" missed="39" covered="27"/>
+        <counter type="LINE" missed="16" covered="11"/>
+        <counter type="COMPLEXITY" missed="14" covered="9"/>
+        <counter type="METHOD" missed="14" covered="9"/>
+        <counter type="CLASS" missed="0" covered="6"/>
+    </package>
+    <counter type="INSTRUCTION" missed="60" covered="82"/>
+    <counter type="BRANCH" missed="3" covered="10"/>
+    <counter type="LINE" missed="24" covered="29"/>
+    <counter type="COMPLEXITY" missed="23" covered="19"/>
+    <counter type="METHOD" missed="20" covered="13"/>
+    <counter type="CLASS" missed="0" covered="9"/>
+</report>
