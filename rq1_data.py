@@ -1,7 +1,17 @@
 import pandas as pd
 from common import shortNames
 
-CALC_NAMES = ['FP', 'FN', 'TP']
+FIELD_N = 'N'
+FIELD_PROPERTY = 'Property'
+FIELD_JACOCO = '\\jacoco'
+FIELD_SYSNAME = '\\sysname'
+FIELD_REACHABLE = 'Reachable'
+FIELD_IMPOSSIBLE = 'Impossible'
+FIELD_MISSED = 'Missed'
+
+PROP_NAMES = [FIELD_N, FIELD_PROPERTY]
+CALC_NAMES = [FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_MISSED, FIELD_SYSNAME]
+TABLE_HEADER = PROP_NAMES + CALC_NAMES
 
 projects = [
     ('convex', 'artifacts/experiment/rq1_convex.csv', 'artifacts/experiment/rq1_table_convex.tex'),
@@ -51,13 +61,17 @@ for project in projects:
     data['TN'] = data['TN'].apply(lambda v: 1 if v else 0)
 
     # add Name as a friendly name for each entrypoint
-    data['Property'] = data['entryPoint'].apply(lambda v: shortNames[v])
+    data[FIELD_PROPERTY] = data['entryPoint'].apply(lambda v: shortNames[v])
 
-    df = data[['Property', 'FP', 'FN', 'TP']].groupby(by='Property').sum().round(2)
-    df['+Ratio'] = df['FP'] / df['TP']
-    df['N'] = pd.RangeIndex(start=rowCount, stop=len(df.index) + rowCount)
+    df = data[[FIELD_PROPERTY, 'FP', 'FN', 'TP']].groupby(by=FIELD_PROPERTY).sum().round(2)
+    df[FIELD_JACOCO] = df['FP'] + df['TP']
+    df[FIELD_REACHABLE] = df['TP']
+    df[FIELD_IMPOSSIBLE] = df['FP']
+    df[FIELD_MISSED] = df['FN']
+    df[FIELD_SYSNAME] = df['FN'] + df['TP']
+    df[FIELD_N] = pd.RangeIndex(start=rowCount, stop=len(df.index) + rowCount)
     df.reset_index(inplace=True)
-    dfSubset = df[['N', 'Property', 'FP', 'FN', 'TP', '+Ratio']]
+    dfSubset = df[TABLE_HEADER]
 
     rowCount = len(df.index) + rowCount
     dataSetSum[projName] = dfSubset.copy()
@@ -89,30 +103,34 @@ with open(byAllEntrypointNameFile, 'w') as tf:
 
         projMean = dataSetSum[projName][CALC_NAMES].mean().round()
         projMean['_style'] = 'BOLD'
-        projMean['N'] = ''
-        projMean['Property'] = 'Average'
-        projMean['+Ratio'] = projMean['FP'] / projMean['TP']
+        projMean[FIELD_N] = ''
+        projMean[FIELD_PROPERTY] = 'Average'
         dataSetSum[projName].loc['mean'] = projMean
 
-        header = dict(zip(['N', 'Property', 'FP', 'FN', 'TP', '+Ratio'], ['', '', '', '', '', '']))
+        header = dict(zip(TABLE_HEADER, map(lambda v: '', TABLE_HEADER)))
 
         newDF = pd.concat([
             newDF,
-            pd.DataFrame(header | {'_style': 'HEADER', 'Property': projName}, index=[0]), # project header
+            pd.DataFrame(header | {'_style': 'HEADER', FIELD_PROPERTY: projName}, index=[0]), # project header
             dataSetSum[projName] # project data / avg
         ], ignore_index=True)
 
     bold_rows = newDF[ newDF['_style'] == 'BOLD' ].index
     header_rows = newDF[ newDF['_style'] == 'HEADER' ].index
+    data_rows = newDF[ newDF['_style'] != 'HEADER' ].index
 
     latexTable = newDF \
         .drop(columns=['_style']) \
         .style \
         .hide(axis=0) \
-        .format(precision=0) \
+        .format({
+                FIELD_JACOCO: "{:.0f}",
+                FIELD_IMPOSSIBLE: "-{:.0f}",
+                FIELD_MISSED: "+{:.0f}",
+                FIELD_SYSNAME: "{:.0f}"
+            }, subset=pd.IndexSlice[data_rows, :]) \
         .set_properties(subset=pd.IndexSlice[header_rows, :], **{'HEADER': ''}) \
         .set_properties(subset=pd.IndexSlice[bold_rows, :], **{'textbf': '--rwrap'}) \
-        .format(subset=pd.IndexSlice['+Ratio'], precision=2) \
         .to_latex(hrules=False, column_format="llrrrr")
 
     outTable = ''
