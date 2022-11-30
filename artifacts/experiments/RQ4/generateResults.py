@@ -14,15 +14,8 @@ RAW_NAMES = ['Vanilla', 'Improved']
 CALC_NAMES = ['Vanilla', 'Improved', 'Overhead']
 
 propertyShortNames = {
-    "TestSmartByteSerializer#canRoundTripBytes": 'byte',
-    "TestSmartIntegerSerializer#canRoundTripIntegers": 'int',
     "TestSmartListSerializer#canRoundTripSerializableLists": 'list',
-    "TestSmartLongSerializer#canRoundTripLongs": 'long',
-    "TestSmartOptionalSerializer#canRoundTripPresentOptionals": 'optionals',
-    "TestSmartPairSerializer#canRoundTripPairs": 'pair',
-    "TestSmartShortSerializer#canRoundTripShort": 'short',
-    "TestSmartStringSerializer#canRoundTripStrings": 'string',
-    "TestSmartListSerializer#canRoundTripSerializableListsWithGenerator": 'list*',
+    "TestSmartListSerializer#canRoundTripSerializableListsWithGenerator": 'list',
     "GenTestFormat#dataRoundTrip": 'data',
     "GenTestFormat#messageRoundTrip": 'message',
     "GenTestFormat#primitiveRoundTrip": 'primitive',
@@ -81,6 +74,8 @@ def retrieve_time_elapsed(directory_path: str, valid_htmls: list[str]) -> dict[s
     times_elapsed_dict = {}
     for html_file in valid_htmls:
         property_name = html_file.replace(".html", "")
+        if property_name not in propertyShortNames:
+            continue
         property_short_name = propertyShortNames[property_name]
         file_path = directory_path + html_file
         with open(file_path) as f:
