@@ -64,20 +64,21 @@ def evaluate_directories(project_name: str, results_directory: str, directories:
         directory_path = results_directory + directory + "/"
         directory_tree = [x[2] for x in os.walk(directory_path)]
         valid_htmls = [x for x in directory_tree[0] if 'html' in x]
-        directory_stats = retrieve_time_elapsed(directory_path=directory_path, valid_htmls=valid_htmls)
+        directory_stats = retrieve_time_elapsed(project_name=project_name, directory_path=directory_path, valid_htmls=valid_htmls)
         project_iteration = project_name + " - " + str(iteration)
         final_stats[project_iteration] = directory_stats
         iteration += 1
     return final_stats
 
-def retrieve_time_elapsed(directory_path: str, valid_htmls: list[str]) -> dict[str, str]:
+
+def retrieve_time_elapsed(project_name: str, directory_path: str, valid_htmls: list[str]) -> dict[str, str]:
     times_elapsed_dict = {}
     for html_file in valid_htmls:
         property_name = html_file.replace(".html", "")
         if property_name not in propertyShortNames:
             continue
         property_short_name = propertyShortNames[property_name]
-        if property_short_name == "list*" and "mph-table-fixed" in directory_path:
+        if property_short_name == "list*" and project_name == "mph-table-fixed":
             property_short_name = "list"
         elif property_short_name == "list*":
             continue
