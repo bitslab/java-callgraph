@@ -15,7 +15,7 @@ CALC_NAMES = ['Vanilla', 'Improved', 'Overhead']
 
 propertyShortNames = {
     "TestSmartListSerializer#canRoundTripSerializableLists": 'list',
-    "TestSmartListSerializer#canRoundTripSerializableListsWithGenerator": 'list',
+    "TestSmartListSerializer#canRoundTripSerializableListsWithGenerator": 'list*',
     "GenTestFormat#dataRoundTrip": 'data',
     "GenTestFormat#messageRoundTrip": 'message',
     "GenTestFormat#primitiveRoundTrip": 'primitive',
@@ -77,6 +77,10 @@ def retrieve_time_elapsed(directory_path: str, valid_htmls: list[str]) -> dict[s
         if property_name not in propertyShortNames:
             continue
         property_short_name = propertyShortNames[property_name]
+        if property_short_name == "list*" and "mph-table-fixed" in directory_path:
+            property_short_name = "list"
+        elif property_short_name == "list*":
+            continue
         file_path = directory_path + html_file
         with open(file_path) as f:
             contents = f.read()
