@@ -78,7 +78,7 @@ def retrieve_time_elapsed(project_name: str, directory_path: str, valid_htmls: l
         if property_name not in propertyShortNames:
             continue
         property_short_name = propertyShortNames[property_name]
-        if property_short_name == "list*" and project_name == "mph-table-fixed":
+        if property_short_name == "list*" and "mph-table-fixed" in project_name:
             property_short_name = "list"
         elif property_short_name == "list*":
             continue
