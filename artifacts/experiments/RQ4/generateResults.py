@@ -34,7 +34,6 @@ propertyShortNames = {
     "X509ResourceCertificateParentChildValidatorTest#validParentChildOverClaimingLooseValidation": 'loose'
 }
 
-row_count = 1
 
 def obtain_stats_directories(results_directory: str) -> list[str]:
     directory_tree = [x for x in os.walk(results_directory)] # os.walk returns a tuple with structure (directory, subdirectories, files)
@@ -125,7 +124,7 @@ def generate_project_report(project_name: str, final_stats: dict[str, str], fina
     return final_report_dict
 
 
-def generate_project_df(final_stats: dict[str, str], final_fixed_stats: dict[str, str]) -> pd.DataFrame():
+def generate_project_df(final_stats: dict[str, str], final_fixed_stats: dict[str, str], row_count: int) -> (pd.DataFrame(), int):
     vanilla_df = pd.DataFrame()
     vanilla_df['Property'] = [key for key in final_stats.keys()]
     vanilla_df['Vanilla'] = [val for val in final_stats.values()]
@@ -136,13 +135,14 @@ def generate_project_df(final_stats: dict[str, str], final_fixed_stats: dict[str
 
     merged_df = pd.merge(vanilla_df, improved_df, how='outer', on='Property')
     merged_df['N'] = pd.RangeIndex(start=row_count, stop=len(merged_df.index) + row_count)
-
+    row_count += len(merged_df.index)
     final_df = merged_df[['N', 'Property', 'Vanilla', 'Improved']]
-    return final_df
+    return final_df, row_count
 
 
 def main():
     final_dataset = {}
+    row_count = 1
     for project_name in PROJECTS:
         fixed_project_name = project_name + "-fixed"
         results_directory = BASE_RESULT_DIR + project_name + "/"
@@ -160,7 +160,7 @@ def main():
         # obtain mean/st dev
         final_stats = generate_report_stats(stat_values=raw_stats)
         final_fixed_stats = generate_report_stats(stat_values=fixed_raw_stats)
-        project_df = generate_project_df(final_stats=final_stats, final_fixed_stats=final_fixed_stats)
+        project_df, row_count = generate_project_df(final_stats=final_stats, final_fixed_stats=final_fixed_stats, row_count=row_count)
         final_dataset[project_name] = project_df
 
 
