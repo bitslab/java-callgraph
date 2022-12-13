@@ -79,10 +79,17 @@ index 65f0f80..f704608 100644
      <dependencies>
  
 diff --git a/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java b/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java
-index 8312fe2..6eb7416 100644
+index 8312fe2..3a31bdf 100644
 --- a/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java
 +++ b/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java
-@@ -26,4 +26,20 @@ public class TestSmartListSerializer {
+@@ -1,5 +1,6 @@
+ package com.indeed.mph.serializers;
+
++import com.pholser.junit.quickcheck.generator.Size;
+ import com.pholser.junit.quickcheck.Property;
+ import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
+ import org.junit.runner.RunWith;
+@@ -26,4 +27,20 @@ public class TestSmartListSerializer {
          final SmartListSerializer<String> stringsSerializer = new SmartListSerializer<>(new SmartStringSerializer());
          assertRoundTrip(stringsSerializer, stringTarget);
      }

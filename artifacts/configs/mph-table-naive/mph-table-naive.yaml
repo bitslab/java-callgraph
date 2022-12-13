@@ -1,7 +1,7 @@
-name: mph-table
+name: mph-table-naive
 URL: https://github.com/indeedeng/mph-table.git
 checkoutID: dbd5413df33bf8f0a995822eeefe94df50f3c5a7
-patchName: artifacts/configs/mph-table/mph-table.patch
+patchName: artifacts/configs/mph-table-naive/mph-table-naive.patch
 mainJar: mph-table-1.0.6-SNAPSHOT-jar-with-dependencies.jar
 testJar: mph-table-1.0.6-SNAPSHOT-tests.jar
 #mvnOptions: -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
