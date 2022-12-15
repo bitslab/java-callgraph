@@ -132,14 +132,11 @@ def generate_mph_project_df(final_stats: dict[str, str], final_fixed_stats: dict
     improved_df['Improved'] = [val for val in final_fixed_stats.values()]
 
     naive_df = pd.DataFrame()
+    naive_df['Property'] = [key for key in final_naive_stats.keys()]
+    naive_df['Improved'] = [val for val in final_naive_stats.values()]
 
-    naive_df['Property'] = ['naive']
-    naive_df['Vanilla'] = [final_stats['list']]
-    naive_df['Improved'] = [final_naive_stats['naive']]
-  
     merged_df = pd.merge(vanilla_df, improved_df, how='outer', on='Property')
-    merged_final_df = pd.concat([merged_df, naive_df]).reset_index()
-
+    merged_final_df = pd.merge(merged_df, naive_df, how='outer', on='Property')
     merged_final_df['N'] = pd.RangeIndex(start=row_count, stop=len(merged_final_df.index) + row_count)
     row_count += len(merged_final_df.index)
     final_df = merged_final_df[['N', 'Property', 'Vanilla', 'Improved']]
@@ -188,9 +185,7 @@ def main():
             final_stats = generate_report_stats(stat_values=raw_stats)
             final_fixed_stats = generate_report_stats(stat_values=fixed_raw_stats)
             final_naive_stats = generate_report_stats(stat_values=naive_stats)
-
-            project_df, row_count = generate_mph_project_df(final_stats=final_stats, final_fixed_stats=final_fixed_stats, final_naive_stats=final_naive_stats, row_count=row_count)
-
+            project_df, row_count = generate_mph_project_df(final_stats=final_stats, final_fixed_stats=final_fixed_stats, naive_stats=final_naive_stats, row_count=row_count)
             final_dataset[project_name] = project_df
         else:
             # obtain mean/st dev
@@ -250,7 +245,7 @@ def main():
             possibleCommand = s[0].strip()
 
             if possibleCommand == '\HEADER':
-                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[7:].strip().replace("-", "") + '}' + " \\\\\n" + '\\hline' + "\n"
+                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{' + s[1].strip()[7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
             else:
                 outTable += line.replace("nan", "-")
 
