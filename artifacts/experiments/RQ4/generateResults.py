@@ -15,6 +15,7 @@ CALC_NAMES = ['Vanilla', 'Improved', 'Overhead']
 
 propertyShortNames = {
     "TestSmartListSerializer#canRoundTripSerializableLists": 'list',
+    "TestSmartListSerializer#canRoundTripSerializableListsNaive": 'naive',
     "TestSmartListSerializer#canRoundTripSerializableListsWithGenerator": 'list*',
     "GenTestFormat#dataRoundTrip": 'data',
     "GenTestFormat#messageRoundTrip": 'message',
@@ -44,6 +45,8 @@ def filter_for_recent_results(project_name: str, stats_directories: list[str]) -
     project_string = project_name if project_name != "convex" else project_name + "-core"  # edge case
     if "mph-table-fixed" in stats_directories[0]:  # edge case
         project_string = "mph-table-fixed"
+    elif "mph-table-naive" in stats_directories[0]:
+        project_string = "mph-table-naive"
     elif "rpki-commons-fixed" in stats_directories[0]:
         project_string = "rpki-commons-fixed"
     time_stamps = [datetime.datetime.strptime(x.replace(project_string, "").replace("_", ":").replace("T", " "), "%Y-%m-%d %H:%M:%S.%f")
@@ -124,6 +127,26 @@ def generate_project_report(project_name: str, final_stats: dict[str, str], fina
     return final_report_dict
 
 
+def generate_mph_project_df(final_stats: dict[str, str], final_fixed_stats: dict[str, str], final_naive_stats: dict[str, str], row_count: int) -> (pd.DataFrame(), int):
+    vanilla_df = pd.DataFrame()
+    vanilla_df['Property'] = [key for key in final_stats.keys()]
+    vanilla_df['Vanilla'] = [val for val in final_stats.values()]
+
+    improved_df = pd.DataFrame()
+    improved_df['Property'] = [key for key in final_fixed_stats.keys()]
+    improved_df['Improved'] = [val for val in final_fixed_stats.values()]
+
+    naive_df = pd.DataFrame()
+    naive_df['Property'] = [key for key in final_naive_stats.keys()]
+    naive_df['Improved'] = [val for val in final_naive_stats.values()]
+
+    merged_df = pd.merge(vanilla_df, improved_df, how='outer', on='Property')
+    merged_final_df = pd.merge(merged_df, naive_df, how='outer', on='Property')
+    merged_final_df['N'] = pd.RangeIndex(start=row_count, stop=len(merged_final_df.index) + row_count)
+    row_count += len(merged_final_df.index)
+    final_df = merged_final_df[['N', 'Property', 'Vanilla', 'Improved']]
+    return final_df, row_count
+
 def generate_project_df(final_stats: dict[str, str], final_fixed_stats: dict[str, str], row_count: int) -> (pd.DataFrame(), int):
     vanilla_df = pd.DataFrame()
     vanilla_df['Property'] = [key for key in final_stats.keys()]
@@ -156,12 +179,25 @@ def main():
         fixed_stats_directories = obtain_stats_directories(results_directory=fixed_results_directory)
         evaluated_fixed_runs = filter_for_recent_results(project_name=project_name, stats_directories=fixed_stats_directories)
         fixed_raw_stats = evaluate_directories(project_name=fixed_project_name, results_directory=fixed_results_directory, directories=evaluated_fixed_runs)
-        
-        # obtain mean/st dev
-        final_stats = generate_report_stats(stat_values=raw_stats)
-        final_fixed_stats = generate_report_stats(stat_values=fixed_raw_stats)
-        project_df, row_count = generate_project_df(final_stats=final_stats, final_fixed_stats=final_fixed_stats, row_count=row_count)
-        final_dataset[project_name] = project_df
+
+        if project_name == "mph-table":
+            naive_project_name = "mph-table-naive"
+            naive_results_directory = BASE_RESULT_DIR + naive_project_name + "/"
+            naive_stats_directories = obtain_stats_directories(results_directory=naive_results_directory)
+            evaluated_naive_runs = filter_for_recent_results(project_name=project_name, stats_directories=naive_stats_directories)
+            naive_stats = evaluate_directories(project_name=naive_project_name, results_directory=naive_results_directory, directories=evaluated_naive_runs)
+            # obtain mean/st dev
+            final_stats = generate_report_stats(stat_values=raw_stats)
+            final_fixed_stats = generate_report_stats(stat_values=fixed_raw_stats)
+            final_naive_stats = generate_report_stats(stat_values=naive_stats)
+            project_df, row_count = generate_mph_project_df(final_stats=final_stats, final_fixed_stats=final_fixed_stats, naive_stats=final_naive_stats, row_count=row_count)
+            final_dataset[project_name] = project_df
+        else:
+            # obtain mean/st dev
+            final_stats = generate_report_stats(stat_values=raw_stats)
+            final_fixed_stats = generate_report_stats(stat_values=fixed_raw_stats)
+            project_df, row_count = generate_project_df(final_stats=final_stats, final_fixed_stats=final_fixed_stats, row_count=row_count)
+            final_dataset[project_name] = project_df
 
 
     with open(TEX_REPORT_NAME, 'w') as tf:

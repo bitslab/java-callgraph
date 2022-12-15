@@ -8,6 +8,8 @@ testJar: mph-table-1.0.6-SNAPSHOT-tests.jar
 properties:
   - name: TestSmartListSerializer#canRoundTripSerializableLists
     entryPoint: "com.indeed.mph.serializers.TestSmartListSerializer.canRoundTripSerializableLists(Ljava/util/List;Ljava/util/List;Ljava/util/List;)V"
+  - name: TestSmartListSerializer#canRoundTripSerializableListsNaive
+    entryPoint: "com.indeed.mph.serializers.TestSmartListSerializer.canRoundTripSerializableListsNaive(Ljava/util/List;Ljava/util/List;Ljava/util/List;)V"
   - name: TestSmartShortSerializer#canRoundTripShort
     entryPoint: "com.indeed.mph.serializers.TestSmartShortSerializer.canRoundTripShort(S)V"
   - name: TestSmartIntegerSerializer#canRoundTripIntegers
