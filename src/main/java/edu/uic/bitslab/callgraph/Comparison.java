@@ -127,7 +127,7 @@ public class Comparison {
 
     private static Path getLatestResultPath(String project) throws IOException {
         RepoTool rt = new RepoTool(project);
-        String resultsDir = "artifacts/results/" + (rt.getSubProject().equals("") ? "" : project );
+        String resultsDir = "artifacts/results/" + project;
         String glob = (rt.getSubProject().equals("") ? project : rt.getSubProject()) + "????-??-??T??_??_??.??????";
         Path latestPath = null;
 

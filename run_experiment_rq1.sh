@@ -10,7 +10,7 @@ cd $JCG_HOME || exit
 
 mkdir -p artifacts/experiment
 
-for PROJECT in mph-table convex jflex rpki-commons
+for PROJECT in mph-table convex jflex rpki-commons mph-table-fixed convex-fixed jflex-fixed rpki-commons-fixed
 do
 	FILE=artifacts/experiment/rq1_$PROJECT.csv
 
@@ -25,5 +25,6 @@ do
 	fi
 done
 
-python rq1_data.py
+python rq1_jacoco_vs_sysname.py
+
 

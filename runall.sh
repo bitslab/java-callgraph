@@ -10,7 +10,7 @@ mkdir -p serializedGraphs
 
 for type in original fixed
 do
-  for project in convex jflex mph-table # JQF rpki-commons
+  for project in convex jflex mph-table rpki-commons
   do
     echo $type for $project
 
