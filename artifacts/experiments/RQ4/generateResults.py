@@ -254,7 +254,7 @@ def main():
             possibleCommand = s[0].strip()
 
             if possibleCommand == '\HEADER':
-                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[7:].strip().replace("-", "") + '}' + " \\\\\n" + '\\hline' + "\n"
+                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
             else:
                 outTable += line
 
