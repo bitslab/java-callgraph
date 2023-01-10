@@ -137,6 +137,7 @@ def generate_mph_project_df(final_stats: dict[str, str], final_fixed_stats: dict
     improved_df['Improved'] = [val for val in final_fixed_stats.values()]
 
     naive_df = pd.DataFrame()
+
     naive_df['Property'] = ['naive']
     naive_df['Vanilla'] = [final_stats['list']]
     naive_df['Improved'] = [final_naive_stats['naive']]
@@ -192,7 +193,9 @@ def main():
             final_stats = generate_report_stats(stat_values=raw_stats)
             final_fixed_stats = generate_report_stats(stat_values=fixed_raw_stats)
             final_naive_stats = generate_report_stats(stat_values=naive_stats)
+
             project_df, row_count = generate_mph_project_df(final_stats=final_stats, final_fixed_stats=final_fixed_stats, final_naive_stats=final_naive_stats, row_count=row_count)
+
             final_dataset[project_name] = project_df
         else:
             # obtain mean/st dev
