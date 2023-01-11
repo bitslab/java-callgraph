@@ -1,4 +1,4 @@
-name: mph-table
+name: mph-table-10
 URL: https://github.com/indeedeng/mph-table.git
 checkoutID: dbd5413df33bf8f0a995822eeefe94df50f3c5a7
 patchName: artifacts/configs/mph-table-10/mph-table-10.patch
