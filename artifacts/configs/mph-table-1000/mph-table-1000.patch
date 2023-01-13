@@ -1,0 +1,93 @@
+diff --git a/pom.xml b/pom.xml
+index 65f0f80..f704608 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -40,8 +40,75 @@
+                     <target>1.8</target>
+                 </configuration>
+             </plugin>
++            <plugin>
++                <groupId>org.jacoco</groupId>
++                <artifactId>jacoco-maven-plugin</artifactId>
++                <version>0.8.6</version>
++                <executions>
++                    <execution>
++                        <id>default-prepare-agent</id>
++                        <goals>
++                            <goal>prepare-agent</goal>
++                        </goals>
++                    </execution>
++                    <execution>
++                        <id>jacoco-report</id>
++                        <phase>test</phase>
++                        <goals>
++                            <goal>report</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-jar-plugin</artifactId>
++                <version>3.2.0</version>
++                <executions>
++                    <execution>
++                        <goals>
++                            <goal>test-jar</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-assembly-plugin</artifactId>
++                <version>3.3.0</version>
++                <configuration>
++                        <descriptorRefs>
++                            <descriptorRef>jar-with-dependencies</descriptorRef>
++                        </descriptorRefs>
++                </configuration>
++                <executions>
++                    <execution>
++                        <id>make-assembly</id>
++                        <phase>package</phase>
++                        <goals>
++                            <goal>single</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
+         </plugins>
+     </build>
++    
++    <reporting>
++        <plugins>
++            <plugin>
++                <groupId>org.jacoco</groupId>
++                <artifactId>jacoco-maven-plugin</artifactId>
++                <reportSets>
++                    <reportSet>
++                        <reports>
++                            <report>report</report>
++                        </reports>
++                    </reportSet>
++                </reportSets>
++            </plugin>
++        </plugins>
++    </reporting>
+ 
+     <dependencies>
+ 
+diff --git a/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java b/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java
+index 8312fe2..49fa01e 100644
+--- a/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java
++++ b/src/test/java/com/indeed/mph/serializers/TestSmartListSerializer.java
+@@ -11,7 +11,7 @@ import static com.indeed.mph.helpers.RoundTripHelpers.assertRoundTrip;
+ 
+ @RunWith(JUnitQuickcheck.class)
+ public class TestSmartListSerializer {
+-    @Property
++    @Property(trials = 1000)
+     public void canRoundTripSerializableLists(
+             final List<Integer> intTarget,
+             final List<Byte> byteTarget,
