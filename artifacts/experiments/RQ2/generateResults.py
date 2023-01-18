@@ -10,7 +10,7 @@ PROJECTS = ["mph-table"]
 REPORT_NAME = "artifacts/output/rq2.csv"
 TEX_REPORT_NAME = "artifacts/output/rq2.tex"
 
-ITERATIONS = [10, 20, 50, 100, 200]
+ITERATIONS = [10, 50, 500, 1000]
 
 propertyShortNames = {
     "TestSmartListSerializer#canRoundTripSerializableLists": 'list',
