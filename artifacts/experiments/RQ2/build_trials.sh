@@ -25,10 +25,10 @@
 #java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/convex-500/convex-core/convex-core-0.7.1-jar-with-dependencies.jar -t ./artifacts/output/convex-500/convex-core/convex-core-0.7.1-tests.jar -o convex-500_graph
 #java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/convex-1000/convex-core/convex-core-0.7.1-jar-with-dependencies.jar -t ./artifacts/output/convex-1000/convex-core/convex-core-0.7.1-tests.jar -o convex-1000_graph
 
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-10/jflex/jflex-1.8.2-jar-with-dependencies.jar -t .artifacts/output/jflex-10/jflex/jflex-1.8.2-tests.jar -o jflex-10_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-50/jflex/jflex-1.8.2-jar-with-dependencies.jar -t .artifacts/output/jflex-50/jflex/jflex-1.8.2-tests.jar -o jflex-50_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-500/jflex/jflex-1.8.2-jar-with-dependencies.jar -t .artifacts/output/jflex-500/jflex/jflex-1.8.2-tests.jar -o jflex-500_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-1000/jflex/jflex-1.8.2-jar-with-dependencies.jar -t .artifacts/output/jflex-1000/jflex/jflex-1.8.2-tests.jar -o jflex-1000_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-10/jflex/jflex-1.8.2-jar-with-dependencies.jar -t ./artifacts/output/jflex-10/jflex/jflex-1.8.2-tests.jar -o jflex-10_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-50/jflex/jflex-1.8.2-jar-with-dependencies.jar -t ./artifacts/output/jflex-50/jflex/jflex-1.8.2-tests.jar -o jflex-50_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-500/jflex/jflex-1.8.2-jar-with-dependencies.jar -t ./artifacts/output/jflex-500/jflex/jflex-1.8.2-tests.jar -o jflex-500_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-1000/jflex/jflex-1.8.2-jar-with-dependencies.jar -t ./artifacts/output/jflex-1000/jflex/jflex-1.8.2-tests.jar -o jflex-1000_graph
 
 #java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/rpki-commons-10/rpki-commons-DEV.jar -t ./artifacts/output/rpki-commons-10/rpki-commons-DEV-tests.jar -o rpki-commons-10_graph
 #java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/rpki-commons-50/rpki-commons-DEV.jar -t ./artifacts/output/rpki-commons-50/rpki-commons-DEV-tests.jar -o rpki-commons-50_graph
