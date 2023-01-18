@@ -7,7 +7,13 @@ PROJECTS = ["mph-table"]
 TRIALS = [10, 50, 500, 1000]
 
 
-def test_properties(project_name: str, trials: int):
+def test_properties(project_name: str):
+    project_graph = project_name + "_graph"
+    subprocess.run(["java", "-jar", JAR_FILE, "test", "-c",
+                    project_name, "-f", project_graph])
+
+
+def test_properties_with_trials(project_name: str, trials: int):
     project_name_with_trials = project_name + "-" + str(trials)
     project_graph = project_name_with_trials + "_graph"
     subprocess.run(["java", "-jar", JAR_FILE, "test", "-c",
@@ -16,8 +22,10 @@ def test_properties(project_name: str, trials: int):
 
 def main():
     for project in PROJECTS:
+        test_properties(project_name=project)
         for trial in TRIALS:
-            test_properties(project_name=project, trials=trial)
+            test_properties_with_trials(project_name=project, trials=trial)
+
 
 if __name__ == "__main__":
     main()
