@@ -1,0 +1,118 @@
+diff --git a/convex-core/pom.xml b/convex-core/pom.xml
+index 471f81bf..3f83db91 100644
+--- a/convex-core/pom.xml
++++ b/convex-core/pom.xml
+@@ -32,6 +32,59 @@
+ 					</execution>
+ 				</executions>
+ 			</plugin>
++			<plugin>
++				<groupId>org.jacoco</groupId>
++				<artifactId>jacoco-maven-plugin</artifactId>
++				<version>0.8.6</version>
++				<executions>
++					<execution>
++						<id>default-prepare-agent</id>
++						<goals>
++							<goal>prepare-agent</goal>
++						</goals>
++					</execution>
++					<execution>
++						<id>jacoco-report</id>
++						<phase>test</phase>
++						<goals>
++							<goal>report</goal>
++						</goals>
++					</execution>
++				</executions>
++			</plugin>
++			<plugin>
++				<groupId>org.apache.maven.plugins</groupId>
++				<artifactId>maven-assembly-plugin</artifactId>
++				<version>3.3.0</version>
++
++				<configuration>
++					<descriptorRefs>
++						<descriptorRef>jar-with-dependencies</descriptorRef>
++					</descriptorRefs>
++				</configuration>
++
++				<executions>
++					<execution>
++						<id>make-assembly</id>
++						<phase>package</phase>
++						<goals>
++							<goal>single</goal>
++						</goals>
++					</execution>
++				</executions>
++			</plugin>
++			<plugin>
++				<groupId>org.apache.maven.plugins</groupId>
++				<artifactId>maven-jar-plugin</artifactId>
++				<version>3.2.0</version>
++				<executions>
++					<execution>
++						<goals>
++							<goal>test-jar</goal>
++						</goals>
++					</execution>
++				</executions>
++			</plugin>
+ 		</plugins>
+ 		<resources>
+ 			<resource>
+@@ -44,6 +97,22 @@
+ 		</resources>
+ 	</build>
+ 
++	<reporting>
++		<plugins>
++			<plugin>
++				<groupId>org.jacoco</groupId>
++				<artifactId>jacoco-maven-plugin</artifactId>
++				<reportSets>
++					<reportSet>
++						<reports>
++							<report>report</report>
++						</reports>
++					</reportSet>
++				</reportSets>
++			</plugin>
++		</plugins>
++	</reporting>
++
+ 	<dependencies>
+ 		<dependency>
+ 			<groupId>org.bouncycastle</groupId>
+diff --git a/convex-core/src/test/java/convex/comms/GenTestFormat.java b/convex-core/src/test/java/convex/comms/GenTestFormat.java
+index 4c8aab37..f123dbe9 100644
+--- a/convex-core/src/test/java/convex/comms/GenTestFormat.java
++++ b/convex-core/src/test/java/convex/comms/GenTestFormat.java
+@@ -22,7 +22,7 @@ import convex.test.generators.ValueGen;
+ 
+ @RunWith(JUnitQuickcheck.class)
+ public class GenTestFormat {
+-	@Property
++	@Property(trials = 500)
+ 	public void messageRoundTrip(String str) throws BadFormatException {
+ 		AString s=Strings.create(str);
+ 		Blob b = Format.encodedBlob(s);
+@@ -33,7 +33,7 @@ public class GenTestFormat {
+ 		FuzzTestFormat.doMutationTest(b);
+ 	}
+ 
+-	@Property
++	@Property(trials = 500)
+ 	public void primitiveRoundTrip(@From(PrimitiveGen.class) ACell prim) throws BadFormatException {
+ 		Blob b = Format.encodedBlob(prim);
+ 		ACell o = Format.read(b);
+@@ -43,7 +43,7 @@ public class GenTestFormat {
+ 		FuzzTestFormat.doMutationTest(b);
+ 	}
+ 
+-	@Property
++	@Property(trials = 500)
+ 	public void dataRoundTrip(@From(ValueGen.class) ACell value) throws BadFormatException {
+ 		Ref<ACell> pref = ACell.createPersisted(value); // ensure persisted
+ 		Blob b = Format.encodedBlob(value);

@@ -2,7 +2,7 @@ import subprocess
 
 JAR_FILE = "target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar"
 
-PROJECTS = ["mph-table"]
+PROJECTS = ["mph-table", "convex"]
 TRIALS = [10, 50, 500, 1000]
 
 

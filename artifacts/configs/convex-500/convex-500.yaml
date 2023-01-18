@@ -1,0 +1,16 @@
+name: convex-500
+URL: https://github.com/Convex-Dev/convex.git
+checkoutID: e6db05a611cd4a1fb51f959e20d246637bb7744a
+patchName: artifacts/configs/convex-500/convex-500.patch
+subProject: convex-core
+mainJar: convex-core-0.7.1-jar-with-dependencies.jar
+testJar: convex-core-0.7.1-tests.jar
+#mvnOptions: -DfailIfNoTests=false -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+mvnOptions: -DfailIfNoTests=false
+properties:
+  - name: GenTestFormat#messageRoundTrip
+    entryPoint: "convex.comms.GenTestFormat.messageRoundTrip(Ljava/lang/String;)V"
+  - name: GenTestFormat#primitiveRoundTrip
+    entryPoint: "convex.comms.GenTestFormat.primitiveRoundTrip(Lconvex/core/data/ACell;)V"
+  - name: GenTestFormat#dataRoundTrip
+    entryPoint: "convex.comms.GenTestFormat.dataRoundTrip(Lconvex/core/data/ACell;)V"
