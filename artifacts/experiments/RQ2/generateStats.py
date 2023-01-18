@@ -4,7 +4,7 @@ import subprocess
 JAR_FILE = "target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar"
 
 PROJECTS = ["mph-table"]
-TRIALS = [10]
+TRIALS = [10, 50, 500, 1000]
 
 
 def test_properties(project_name: str, trials: int):
