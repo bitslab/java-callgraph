@@ -1,0 +1,100 @@
+name: jflex-10
+URL: https://github.com/jflex-de/jflex.git
+checkoutID: e6d1752bd48a7ccb2a2b78479dc5a73ac475bbb9
+patchName: artifacts/configs/jflex-10/jflex.patch
+subProject: jflex
+mainJar: jflex-1.8.2-jar-with-dependencies.jar
+testJar: jflex-1.8.2-tests.jar
+#mvnOptions: -DfailIfNoTests=false -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+mvnOptions: -DfailIfNoTests=false
+properties:
+  - name: StateSetQuickcheck#removeAdd
+    entryPoint: "jflex.state.StateSetQuickcheck.removeAdd(Ljflex/state/StateSet;I)V"
+  - name: StateSetQuickcheck#addStateDoesNotRemove
+    entryPoint: "jflex.state.StateSetQuickcheck.addStateDoesNotRemove(Ljflex/state/StateSet;I)V"
+  - name: StateSetQuickcheck#containsElements
+    entryPoint: "jflex.state.StateSetQuickcheck.containsElements(Ljflex/state/StateSet;I)V"
+  - name: CharClassesQuickcheck#addSingle
+    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSingle(Ljflex/core/unicode/CharClasses;II)V"
+  - name: CharClassesQuickcheck#addSingleSingleton
+    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSingleSingleton(Ljflex/core/unicode/CharClasses;I)V"
+  - name: CharClassesQuickcheck#addSet
+    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSet(Ljflex/core/unicode/CharClasses;Ljflex/core/unicode/IntCharSet;I)V"
+  - name: CharClassesQuickcheck#addString
+    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addString(Ljflex/core/unicode/CharClasses;Ljava/lang/String;I)V"
+#  - name: StateSetQuickcheck#size2nbits
+#    entryPoint: "jflex.state.StateSetQuickcheck.size2nbits(I)V"
+#  - name: StateSetQuickcheck#containsIsSubset
+#    entryPoint: "jflex.state.StateSetQuickcheck.containsIsSubset(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#addIsUnion
+#    entryPoint: "jflex.state.StateSetQuickcheck.addIsUnion(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#addCommutes
+#    entryPoint: "jflex.state.StateSetQuickcheck.addCommutes(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#addEmpty
+#    entryPoint: "jflex.state.StateSetQuickcheck.addEmpty(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#addSelf
+#    entryPoint: "jflex.state.StateSetQuickcheck.addSelf(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#addIdemPotent
+#    entryPoint: "jflex.state.StateSetQuickcheck.addIdemPotent(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#intersect
+#    entryPoint: "jflex.state.StateSetQuickcheck.intersect(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#intersectUnchanged
+#    entryPoint: "jflex.state.StateSetQuickcheck.intersectUnchanged(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#intersectCommutes
+#    entryPoint: "jflex.state.StateSetQuickcheck.intersectCommutes(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#intersectEmpty
+#    entryPoint: "jflex.state.StateSetQuickcheck.intersectEmpty(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#intersectSelf
+#    entryPoint: "jflex.state.StateSetQuickcheck.intersectSelf(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#containsItsElements
+#    entryPoint: "jflex.state.StateSetQuickcheck.containsItsElements(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#removeRemoves
+#    entryPoint: "jflex.state.StateSetQuickcheck.removeRemoves(Ljflex/state/StateSet;I)V"
+#  - name: StateSetQuickcheck#clearMakesEmpty
+#    entryPoint: "jflex.state.StateSetQuickcheck.clearMakesEmpty(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#addStateAdds
+#    entryPoint: "jflex.state.StateSetQuickcheck.addStateAdds(Ljflex/state/StateSet;I)V"
+#  - name: StateSetQuickcheck#addStateAdd
+#    entryPoint: "jflex.state.StateSetQuickcheck.addStateAdd(Ljflex/state/StateSet;I)V"
+#  - name: StateSetQuickcheck#complementNoOriginalElements
+#    entryPoint: "jflex.state.StateSetQuickcheck.complementNoOriginalElements(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#complementElements
+#    entryPoint: "jflex.state.StateSetQuickcheck.complementElements(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#complementUnion
+#    entryPoint: "jflex.state.StateSetQuickcheck.complementUnion(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#containsNoElements
+#    entryPoint: "jflex.state.StateSetQuickcheck.containsNoElements(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#copy
+#    entryPoint: "jflex.state.StateSetQuickcheck.copy(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#copyInto
+#    entryPoint: "jflex.state.StateSetQuickcheck.copyInto(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#hashCode
+#    entryPoint: "jflex.state.StateSetQuickcheck.hashCode(Ljflex/state/StateSet;Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#getAndRemoveRemoves
+#    entryPoint: "jflex.state.StateSetQuickcheck.getAndRemoveRemoves(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#getAndRemoveIsElement
+#    entryPoint: "jflex.state.StateSetQuickcheck.getAndRemoveIsElement(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#getAndRemoveAdd
+#    entryPoint: "jflex.state.StateSetQuickcheck.getAndRemoveAdd(Ljflex/state/StateSet;)V"
+#  - name: StateSetQuickcheck#enumerator
+#    entryPoint: "jflex.state.StateSetQuickcheck.enumerator(Ljflex/state/StateSet;)V"
+#  - name: CharClassesQuickcheck#invariants
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.invariants(Ljflex/core/unicode/CharClasses;)V"
+#  - name: CharClassesQuickcheck#maxCharCode
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.maxCharCode(Ljflex/core/unicode/CharClasses;)V"
+#  - name: CharClassesQuickcheck#addSetParts
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSetParts(Ljflex/core/unicode/CharClasses;Ljflex/core/unicode/IntCharSet;)V"
+#  - name: CharClassesQuickcheck#addSetComplement
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.addSetComplement(Ljflex/core/unicode/CharClasses;Ljflex/core/unicode/IntCharSet;)V"
+#  - name: CharClassesQuickcheck#normaliseSingle
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.normaliseSingle(Ljflex/core/unicode/CharClasses;I)V"
+#  - name: CharClassesQuickcheck#computeTablesEq
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.computeTablesEq(Ljflex/core/unicode/CharClasses;Ljava/util/ArrayList;)V"
+#  - name: CharClassesQuickcheck#getTablesEq
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.getTablesEq(Ljflex/core/unicode/CharClasses;Ljava/util/ArrayList;)V"
+#  - name: CharClassesQuickcheck#classCodesUnion
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.classCodesUnion(Ljflex/core/unicode/CharClasses;)V"
+#  - name: CharClassesQuickcheck#classCodesCode
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.classCodesCode(Ljflex/core/unicode/CharClasses;)V"
+#  - name: CharClassesQuickcheck#classCodesDisjointOrdered
+#    entryPoint: "jflex.core.unicode.CharClassesQuickcheck.classCodesDisjointOrdered(Ljflex/core/unicode/CharClasses;)V"

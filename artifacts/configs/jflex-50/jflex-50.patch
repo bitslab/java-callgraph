@@ -1,0 +1,146 @@
+diff --git a/jflex/pom.xml b/jflex/pom.xml
+index 47904b61..185a3790 100644
+--- a/jflex/pom.xml
++++ b/jflex/pom.xml
+@@ -51,6 +51,21 @@
+       <timezone>+1</timezone>
+     </developer>
+   </developers>
++  <reporting>
++      <plugins>
++        <plugin>
++          <groupId>org.jacoco</groupId>
++          <artifactId>jacoco-maven-plugin</artifactId>
++          <reportSets>
++            <reportSet>
++              <reports>
++                <report>report</report>
++              </reports>
++            </reportSet>
++          </reportSets>
++        </plugin>
++      </plugins>
++  </reporting>
+   <dependencies>
+     <dependency>
+       <groupId>com.github.vbmacher</groupId>
+@@ -156,6 +171,34 @@
+             </manifest>
+           </archive>
+         </configuration>
++        <executions>
++          <execution>
++            <goals>
++              <goal>test-jar</goal>
++            </goals>
++          </execution>
++        </executions>
++      </plugin>
++      <plugin>
++        <groupId>org.apache.maven.plugins</groupId>
++        <artifactId>maven-assembly-plugin</artifactId>
++        <version>3.3.0</version>
++
++        <configuration>
++          <descriptorRefs>
++            <descriptorRef>jar-with-dependencies</descriptorRef>
++          </descriptorRefs>
++        </configuration>
++
++        <executions>
++          <execution>
++            <id>make-assembly</id>
++            <phase>package</phase>
++            <goals>
++              <goal>single</goal>
++            </goals>
++          </execution>
++        </executions>
+       </plugin>
+       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+@@ -231,6 +274,13 @@
+               </excludes>
+             </configuration>
+           </execution>
++          <execution>
++            <id>jacoco-report</id>
++            <phase>test</phase>
++            <goals>
++              <goal>report</goal>
++            </goals>
++          </execution>
+         </executions>
+       </plugin>
+     </plugins>
+diff --git a/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java b/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
+index c31b5221..4744c3ce 100644
+--- a/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
++++ b/jflex/src/test/java/jflex/core/unicode/CharClassesQuickcheck.java
+@@ -45,7 +45,7 @@ public class CharClassesQuickcheck {
+     assertThat(c.getMaxCharCode()).isEqualTo(CharClasses.maxChar);
+   }
+ 
+-  @Property
++  @Property(trials = 10)
+   public void addSingle(
+       CharClasses classes,
+       @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c1,
+@@ -56,7 +56,7 @@ public class CharClassesQuickcheck {
+     assertThat(classes.getClassCode(c1)).isNotEqualTo(classes.getClassCode(c2));
+   }
+ 
+-  @Property
++  @Property(trials = 10)
+   public void addSingleSingleton(
+       CharClasses classes, @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
+     classes.makeClass(c, false);
+@@ -64,7 +64,7 @@ public class CharClassesQuickcheck {
+     assertThat(set).isEqualTo(IntCharSet.ofCharacter(c));
+   }
+ 
+-  @Property
++  @Property(trials = 10)
+   public void addSet(
+       CharClasses classes,
+       @InRange(maxInt = CharClasses.maxChar) IntCharSet set,
+@@ -110,7 +110,7 @@ public class CharClassesQuickcheck {
+     assertThat(others).isEqualTo(IntCharSet.complementOf(set));
+   }
+ 
+-  @Property
++  @Property(trials = 10)
+   public void addString(
+       CharClasses classes, String s, @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
+ 
+diff --git a/jflex/src/test/java/jflex/state/StateSetQuickcheck.java b/jflex/src/test/java/jflex/state/StateSetQuickcheck.java
+index c3ac7e67..08945ece 100644
+--- a/jflex/src/test/java/jflex/state/StateSetQuickcheck.java
++++ b/jflex/src/test/java/jflex/state/StateSetQuickcheck.java
+@@ -154,7 +154,7 @@ public class StateSetQuickcheck {
+     assertThat(s.hasElement(e)).isFalse();
+   }
+ 
+-  @Property
++  @Property(trials = 10)
+   public void removeAdd(
+       @Size(max = 90) @InRange(minInt = 0, maxInt = 100) StateSet s,
+       @InRange(minInt = 0, maxInt = 100) int e) {
+@@ -180,7 +180,7 @@ public class StateSetQuickcheck {
+     assertThat(set.hasElement(e)).isTrue();
+   }
+ 
+-  @Property
++  @Property(trials = 10)
+   public void addStateDoesNotRemove(StateSet set, @InRange(minInt = 0, maxInt = 2 ^ 32) int e) {
+     StateSet setPre = new StateSet(set);
+     set.addState(e);
+@@ -224,7 +224,7 @@ public class StateSetQuickcheck {
+     assertThat(union1).isEqualTo(union0);
+   }
+ 
+-  @Property
++  @Property(trials = 10)
+   public void containsElements(StateSet s, @InRange(minInt = 0, maxInt = 2 ^ 32) int e) {
+     s.addState(e);
+     assertThat(s.containsElements()).isTrue();
