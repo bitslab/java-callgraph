@@ -1,4 +1,3 @@
-import sys
 import subprocess
 
 JAR_FILE = "target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar"
