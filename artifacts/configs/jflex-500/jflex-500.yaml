@@ -1,7 +1,7 @@
-name: jflex-50
+name: jflex-500
 URL: https://github.com/jflex-de/jflex.git
 checkoutID: e6d1752bd48a7ccb2a2b78479dc5a73ac475bbb9
-patchName: artifacts/configs/jflex-50/jflex-50.patch
+patchName: artifacts/configs/jflex-500/jflex-500.patch
 subProject: jflex
 mainJar: jflex-1.8.2-jar-with-dependencies.jar
 testJar: jflex-1.8.2-tests.jar

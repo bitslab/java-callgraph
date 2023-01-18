@@ -1,0 +1,97 @@
+diff --git a/pom.xml b/pom.xml
+index 08ebb666..0157a994 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -373,6 +373,58 @@
+                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                 </configuration>
+             </plugin>
++
++            <plugin>
++                <groupId>org.jacoco</groupId>
++                <artifactId>jacoco-maven-plugin</artifactId>
++                <version>0.8.6</version>
++                <executions>
++                    <execution>
++                        <id>default-prepare-agent</id>
++                        <goals>
++                            <goal>prepare-agent</goal>
++                        </goals>
++                    </execution>
++                    <execution>
++                        <id>jacoco-report</id>
++                        <phase>test</phase>
++                        <goals>
++                            <goal>report</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-jar-plugin</artifactId>
++                <version>3.2.0</version>
++                <executions>
++                    <execution>
++                        <goals>
++                            <goal>test-jar</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-assembly-plugin</artifactId>
++                <version>3.3.0</version>
++                <configuration>
++                    <descriptorRefs>
++                        <descriptorRef>jar-with-dependencies</descriptorRef>
++                    </descriptorRefs>
++                </configuration>
++                <executions>
++                    <execution>
++                       <id>make-assembly</id>
++                        <phase>package</phase>
++                        <goals>
++                            <goal>single</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
+         </plugins>
+ 
+         <pluginManagement>
+@@ -457,4 +509,20 @@
+             </plugins>
+         </pluginManagement>
+     </build>
++
++    <reporting>
++        <plugins>
++            <plugin>
++                <groupId>org.jacoco</groupId>
++                <artifactId>jacoco-maven-plugin</artifactId>
++                <reportSets>
++                    <reportSet>
++                        <reports>
++                            <report>report</report>
++                        </reports>
++                    </reportSet>
++                </reportSets>
++            </plugin>
++        </plugins>
++    </reporting>
+ </project>
+diff --git a/src/test/java/net/ripe/rpki/commons/validation/X509ResourceCertificateParentChildValidatorTest.java b/src/test/java/net/ripe/rpki/commons/validation/X509ResourceCertificateParentChildValidatorTest.java
+index cb8b7dd9..eea76dcf 100644
+--- a/src/test/java/net/ripe/rpki/commons/validation/X509ResourceCertificateParentChildValidatorTest.java
++++ b/src/test/java/net/ripe/rpki/commons/validation/X509ResourceCertificateParentChildValidatorTest.java
+@@ -222,7 +222,7 @@ public class X509ResourceCertificateParentChildValidatorTest {
+         assertTrue(result.hasFailures());
+     }
+ 
+-    @Property
++    @Property(trials = 500)
+     public void validParentChildSubResources(List<@From(IpResourceGen.class) IpResource> parentResources, int childResourceCount) {
+         assumeThat(parentResources.size(), greaterThan(0));
+         assumeThat(childResourceCount, greaterThan(0));

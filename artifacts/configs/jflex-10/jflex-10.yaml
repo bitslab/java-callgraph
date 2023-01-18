@@ -1,7 +1,7 @@
 name: jflex-10
 URL: https://github.com/jflex-de/jflex.git
 checkoutID: e6d1752bd48a7ccb2a2b78479dc5a73ac475bbb9
-patchName: artifacts/configs/jflex-10/jflex.patch
+patchName: artifacts/configs/jflex-10/jflex-10.patch
 subProject: jflex
 mainJar: jflex-1.8.2-jar-with-dependencies.jar
 testJar: jflex-1.8.2-tests.jar

@@ -1,0 +1,21 @@
+name: rpki-commons-1000
+URL: https://github.com/RIPE-NCC/rpki-commons.git
+checkoutID: dd5af7c644d2cd9cc6b0b5f4f2480b6dfc1ef074
+patchName: artifacts/configs/rpki-commons-1000/rpki-commons-1000.patch
+mainJar: rpki-commons-DEV.jar
+testJar: rpki-commons-DEV-tests.jar
+#mvnOptions: -DfailIfNoTests=false
+#mvnOptions: -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+properties:
+#  - name: RoaCMSBuilderPropertyTest#buildEncodedParseCheck
+#    entryPoint: net.ripe.rpki.commons.crypto.cms.roa.RoaCMSBuilderPropertyTest.buildEncodedParseCheck(JLjava/lang/Integer;)V
+#  - name: ManifestCMSBuilderPropertyTest#buildEncodedParseCheck
+#    entryPoint: net.ripe.rpki.commons.crypto.cms.manifest.ManifestCMSBuilderPropertyTest.buildEncodedParseCheck([BLjava/math/BigInteger;Ljava/lang/Integer;)V
+#  - name: AspaCmsTest#should_generate_aspa
+#    entryPoint: net.ripe.rpki.commons.crypto.cms.aspa.AspaCmsTest.should_generate_aspa(ILjava/util/List;)V
+  - name: X509ResourceCertificateParentChildValidatorTest#validParentChildSubResources
+    entryPoint: net.ripe.rpki.commons.validation.X509ResourceCertificateParentChildValidatorTest.validParentChildSubResources(Ljava/util/List;I)V
+#  - name: X509ResourceCertificateParentChildValidatorTest#validParentChildOverClaiming
+#    entryPoint: net.ripe.rpki.commons.validation.X509ResourceCertificateParentChildValidatorTest.validParentChildOverClaiming(Ljava/util/List;ILjava/util/List;)V
+#  - name: X509ResourceCertificateParentChildValidatorTest#validParentChildOverClaimingLooseValidation
+#    entryPoint: net.ripe.rpki.commons.validation.X509ResourceCertificateParentChildValidatorTest.validParentChildOverClaimingLooseValidation(Ljava/util/List;ILjava/util/List;)V

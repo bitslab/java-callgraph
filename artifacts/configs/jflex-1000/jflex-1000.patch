@@ -82,7 +82,7 @@ index c31b5221..4744c3ce 100644
    }
  
 -  @Property
-+  @Property(trials = 50)
++  @Property(trials = 1000)
    public void addSingle(
        CharClasses classes,
        @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c1,
@@ -91,7 +91,7 @@ index c31b5221..4744c3ce 100644
    }
  
 -  @Property
-+  @Property(trials = 50)
++  @Property(trials = 1000)
    public void addSingleSingleton(
        CharClasses classes, @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
      classes.makeClass(c, false);
@@ -100,7 +100,7 @@ index c31b5221..4744c3ce 100644
    }
  
 -  @Property
-+  @Property(trials = 50)
++  @Property(trials = 1000)
    public void addSet(
        CharClasses classes,
        @InRange(maxInt = CharClasses.maxChar) IntCharSet set,
@@ -109,7 +109,7 @@ index c31b5221..4744c3ce 100644
    }
  
 -  @Property
-+  @Property(trials = 50)
++  @Property(trials = 1000)
    public void addString(
        CharClasses classes, String s, @InRange(minInt = 0, maxInt = CharClasses.maxChar) int c) {
  
@@ -122,7 +122,7 @@ index c3ac7e67..08945ece 100644
    }
  
 -  @Property
-+  @Property(trials = 50)
++  @Property(trials = 1000)
    public void removeAdd(
        @Size(max = 90) @InRange(minInt = 0, maxInt = 100) StateSet s,
        @InRange(minInt = 0, maxInt = 100) int e) {
@@ -131,7 +131,7 @@ index c3ac7e67..08945ece 100644
    }
  
 -  @Property
-+  @Property(trials = 50)
++  @Property(trials = 1000)
    public void addStateDoesNotRemove(StateSet set, @InRange(minInt = 0, maxInt = 2 ^ 32) int e) {
      StateSet setPre = new StateSet(set);
      set.addState(e);
@@ -140,7 +140,7 @@ index c3ac7e67..08945ece 100644
    }
  
 -  @Property
-+  @Property(trials = 50)
++  @Property(trials = 1000)
    public void containsElements(StateSet s, @InRange(minInt = 0, maxInt = 2 ^ 32) int e) {
      s.addState(e);
      assertThat(s.containsElements()).isTrue();
