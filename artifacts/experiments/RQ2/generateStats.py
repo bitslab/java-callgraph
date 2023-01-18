@@ -2,8 +2,8 @@ import subprocess
 
 JAR_FILE = "target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar"
 
-PROJECTS = ["mph-table", "convex"]
-TRIALS = [10, 50, 500, 1000]
+PROJECTS = ["mph-table", "convex", "jflex"]
+TRIALS = [10, 50, 500]
 
 
 def test_properties(project_name: str):
