@@ -2,11 +2,9 @@ import datetime
 import os
 import re
 
-import numpy as np
-import pandas as pd
 
 BASE_RESULT_DIR = "artifacts/results/"
-PROJECTS = ["mph-table"]
+PROJECTS = ["convex", "jflex", "mph-table", "rpki-commons"]
 REPORT_NAME = "artifacts/output/rq2.csv"
 TEX_REPORT_NAME = "artifacts/output/rq2.tex"
 
@@ -27,25 +25,45 @@ propertyShortNames = {
     "X509ResourceCertificateParentChildValidatorTest#validParentChildSubResources": 'resources'
 }
 
+
 def obtain_stats_directories(results_directory: str) -> list[str]:
-    directory_tree = [x for x in os.walk(results_directory)] # os.walk returns a tuple with structure (directory, subdirectories, files)
+    directory_tree = [x for x in os.walk(
+        results_directory)]  # os.walk returns a tuple with structure (directory, subdirectories, files)
     return directory_tree[0][1]
 
-def filter_for_recent_results(project_name: str, stats_directories: list[str]) -> dict[str, str]:
-    valid_directories = []
-    project_string = project_name if project_name != "convex" else project_name + "-core"  # edge case
-    time_stamps = [datetime.datetime.strptime(x.replace(project_string, "").replace("_", ":").replace("T", " "), "%Y-%m-%d %H:%M:%S.%f")
+
+def filter_for_recent_result(project_name: str, stats_directories: list[str]) -> str:
+    if "convex" in project_name:
+        project_string = project_name + "-core"
+    elif "jflex" in project_name:
+        project_string = "jflex"
+    else:
+        project_string = project_name
+
+    time_stamps = [datetime.datetime.strptime(x.replace(project_string, "").replace("_", ":").replace("T", " "),
+                                              "%Y-%m-%d %H:%M:%S.%f")
                    for x in stats_directories]
     time_stamps.sort()
-    valid_runs = time_stamps[-10:]
+    valid_runs = time_stamps[-1:]
+
     for directory in stats_directories:
-        val = datetime.datetime.strptime(directory.replace(project_string, "").replace("_", ":").replace("T", " "), "%Y-%m-%d %H:%M:%S.%f")
+        val = datetime.datetime.strptime(directory.replace(project_string, "").replace("_", ":").replace("T", " "),
+                                         "%Y-%m-%d %H:%M:%S.%f")
         if val in valid_runs:
-            valid_directories.append(directory)
-    return valid_directories
+            return directory
+
 
 def main():
-    return 0
+    final_dataset = {}
+    row_count = 1
+    for project in PROJECTS:
+        project_dataset = {}
+        for iteration in ITERATIONS:
+            project_name = project + "-" + str(iteration)
+            stats_directory = BASE_RESULT_DIR + project_name + "/"
+            project_iteration_stats = obtain_stats_directories(results_directory=stats_directory)
+            iteration_directory = stats_directory + filter_for_recent_result(project_name=project_name, stats_directories=project_iteration_stats)
+
 
 if __name__ == "__main__":
     main()

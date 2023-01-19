@@ -91,6 +91,7 @@ The "test" phase will generate another dot file that has the heuristic value pre
 Georgios Gousios <gousiosg@gmail.com>  
 Will Cygan <wcygan3232@gmail.com>
 Jesse Coultas <jcoul01s@uic.edu>
+Alekh Meka <alekhmeka@gmail.com>
 
 ### License
 
