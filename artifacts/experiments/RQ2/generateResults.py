@@ -84,10 +84,14 @@ def obtain_iteration_stats(iteration_directory: str) -> dict[str, float]:
 def generate_project_df(project_ds: dict[int, dict]) -> pd.DataFrame():
     print(project_ds)
     project_df = pd.DataFrame()
-    property_dict = project_ds[10]  # grab first dict for property names
-    project_df['Property'] = [key for key in property_dict.keys()]
+    valid_keys = project_ds[10].keys()  # grab first dict keys for property names
+    project_df['Property'] = [key for key in valid_keys]
     for key in project_ds.keys():
-        project_df[key] = [val if val else np.nan for val in project_ds[key].values()]
+        iteration_property_dict = project_ds[key]
+        for vk in valid_keys:
+            if vk not in iteration_property_dict:
+                iteration_property_dict[vk] = np.nan
+        project_df[key] = [val for val in project_ds[key].values()]
     return project_df
 
 
