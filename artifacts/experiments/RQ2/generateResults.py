@@ -1,5 +1,6 @@
 import datetime
 import os
+import pandas as pd
 import re
 
 BASE_RESULT_DIR = "artifacts/results/"
@@ -91,10 +92,10 @@ def main():
             iteration_directory = stats_directory + filter_for_recent_result(project_name=project_name,
                                                                              stats_directories=project_iteration_stats)
             iteration_stats = obtain_iteration_stats(iteration_directory=iteration_directory)
-            project_dataset[project_name] = iteration_stats
+            project_dataset[iteration] = iteration_stats
         final_dataset[project] = project_dataset
-
-    print(final_dataset)
+        ds = pd.DataFrame(final_dataset)
+    print(ds)
 
 
 if __name__ == "__main__":
