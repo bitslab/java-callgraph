@@ -53,22 +53,22 @@ def filter_for_recent_result(project_name: str, stats_directories: list[str]) ->
             return directory
 
 
-def calculate_coverage(file: str) -> dict[str, str]:
-    coverage = {}
+def calculate_coverage(file: str) -> float:
+    coverage: float = 0.00
     with open(file) as f:
         lines = [line.rstrip() for line in f]
         nodes_covered = int(lines[1].replace("nodesCovered,", ""))
         node_count = int(lines[2].replace("nodeCount,", ""))
-        lines_covered = int(lines[3].replace("linesCovered,", ""))
-        lines_missed = int(lines[4].replace("linesMissed,", ""))
+        # lines_covered = int(lines[3].replace("linesCovered,", ""))
+        # lines_missed = int(lines[4].replace("linesMissed,", ""))
 
-        coverage["MC"] = nodes_covered / node_count * 100
-        coverage["LC"] = lines_covered / (lines_covered + lines_missed) * 100
+        coverage = nodes_covered / node_count * 100
+        # coverage["LC"] = lines_covered / (lines_covered + lines_missed) * 100
 
     return coverage
 
 
-def obtain_iteration_stats(iteration_directory: str) -> dict[str, dict]:
+def obtain_iteration_stats(iteration_directory: str) -> dict[str, float]:
     files = [x for x in os.walk(
         iteration_directory)][0][2]
     stats_files = list(filter(lambda stat_file: "reachability-coverage.csv" in stat_file, files))
