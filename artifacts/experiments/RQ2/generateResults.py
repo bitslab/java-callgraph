@@ -61,8 +61,8 @@ def calculate_coverage(file: str) -> dict[str, str]:
         lines_covered = int(lines[3].replace("linesCovered,", ""))
         lines_missed = int(lines[4].replace("linesMissed,", ""))
 
-        coverage["MC"] = nodes_covered / node_count
-        coverage["LC"] = lines_covered / lines_covered + lines_missed
+        coverage["MC"] = nodes_covered / node_count * 100
+        coverage["LC"] = lines_covered / (lines_covered + lines_missed) * 100
 
     return coverage
 
