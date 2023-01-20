@@ -2,7 +2,6 @@ import datetime
 import os
 import re
 
-
 BASE_RESULT_DIR = "artifacts/results/"
 PROJECTS = ["convex", "jflex", "mph-table", "rpki-commons"]
 REPORT_NAME = "artifacts/output/rq2.csv"
@@ -53,6 +52,33 @@ def filter_for_recent_result(project_name: str, stats_directories: list[str]) ->
             return directory
 
 
+def calculate_coverage(file: str) -> dict[str, str]:
+    coverage = {}
+    with open(file) as f:
+        lines = [line.rstrip() for line in f]
+        nodes_covered = int(lines[1].replace("nodesCovered,", ""))
+        node_count = int(lines[2].replace("nodeCount,", ""))
+        lines_covered = int(lines[3].replace("linesCovered,", ""))
+        lines_missed = int(lines[4].replace("linesMissed,", ""))
+
+        coverage["method_coverage"] = nodes_covered / node_count
+        coverage["line_coverage"] = lines_covered / lines_covered + lines_missed
+
+    return coverage
+
+
+def obtain_iteration_stats(iteration_directory: str) -> dict[str, dict]:
+    files = [x for x in os.walk(
+        iteration_directory)][0][2]
+    stats_files = list(filter(lambda stat_file: "reachability-coverage.csv" in stat_file, files))
+    ret = {}
+    for file in stats_files:
+        file_location = iteration_directory + "/" + file
+        prop = file.replace("-reachability-coverage.csv", "")
+        ret[prop] = calculate_coverage(file=file_location)
+    return ret
+
+
 def main():
     final_dataset = {}
     row_count = 1
@@ -62,7 +88,13 @@ def main():
             project_name = project + "-" + str(iteration)
             stats_directory = BASE_RESULT_DIR + project_name + "/"
             project_iteration_stats = obtain_stats_directories(results_directory=stats_directory)
-            iteration_directory = stats_directory + filter_for_recent_result(project_name=project_name, stats_directories=project_iteration_stats)
+            iteration_directory = stats_directory + filter_for_recent_result(project_name=project_name,
+                                                                             stats_directories=project_iteration_stats)
+            iteration_stats = obtain_iteration_stats(iteration_directory=iteration_directory)
+            project_dataset[project_name] = iteration_stats
+        final_dataset[project] = project_dataset
+
+    print(final_dataset)
 
 
 if __name__ == "__main__":

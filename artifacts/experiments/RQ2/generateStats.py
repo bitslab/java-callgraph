@@ -26,6 +26,7 @@ def clear_output():
     for f in files:
         os.remove(f)
 
+
 def main():
     for project in PROJECTS:
         test_properties(project_name=project)
@@ -33,6 +34,7 @@ def main():
         for trial in TRIALS:
             test_properties_with_trials(project_name=project, trials=trial)
             clear_output()
+
 
 if __name__ == "__main__":
     main()
