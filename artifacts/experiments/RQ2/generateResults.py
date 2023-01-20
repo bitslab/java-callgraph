@@ -80,6 +80,15 @@ def obtain_iteration_stats(iteration_directory: str) -> dict[str, float]:
     return ret
 
 
+def generate_project_df(project_ds: dict[int, dict]) -> pd.DataFrame():
+    project_df = pd.DataFrame()
+    property_dict = project_ds[10]  # grab first dict for property names
+    project_df['Property'] = [key for key in property_dict.keys()]
+    for key in project_ds.keys():
+        project_df[key] = [val for val in project_ds[key].values()]
+    return project_df
+
+
 def main():
     final_dataset = {}
     row_count = 1
@@ -93,9 +102,8 @@ def main():
                                                                              stats_directories=project_iteration_stats)
             iteration_stats = obtain_iteration_stats(iteration_directory=iteration_directory)
             project_dataset[iteration] = iteration_stats
-        final_dataset[project] = project_dataset
-        ds = pd.DataFrame(final_dataset)
-    print(ds)
+        final_dataset[project] = generate_project_df(project_ds=project_dataset)
+    print(final_dataset)
 
 
 if __name__ == "__main__":
