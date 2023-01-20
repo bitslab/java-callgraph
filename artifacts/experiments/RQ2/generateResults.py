@@ -33,7 +33,7 @@ def obtain_stats_directories(results_directory: str) -> list[str]:
 
 def filter_for_recent_result(project_name: str, stats_directories: list[str]) -> str:
     if "convex" in project_name:
-        project_string = project_name + "-core"
+        project_string = project_name.split("-")[0] + "-core"
     elif "jflex" in project_name:
         project_string = "jflex"
     else:
