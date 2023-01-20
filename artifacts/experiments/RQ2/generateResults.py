@@ -81,6 +81,7 @@ def obtain_iteration_stats(iteration_directory: str) -> dict[str, float]:
 
 
 def generate_project_df(project_ds: dict[int, dict]) -> pd.DataFrame():
+    print(project_ds)
     project_df = pd.DataFrame()
     property_dict = project_ds[10]  # grab first dict for property names
     project_df['Property'] = [key for key in property_dict.keys()]
