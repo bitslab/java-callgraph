@@ -1,6 +1,7 @@
 import datetime
 import os
 import pandas as pd
+import numpy as np
 import re
 
 BASE_RESULT_DIR = "artifacts/results/"
@@ -86,7 +87,7 @@ def generate_project_df(project_ds: dict[int, dict]) -> pd.DataFrame():
     property_dict = project_ds[10]  # grab first dict for property names
     project_df['Property'] = [key for key in property_dict.keys()]
     for key in project_ds.keys():
-        project_df[key] = [val for val in project_ds[key].values()]
+        project_df[key] = [val if val else np.nan for val in project_ds[key].values()]
     return project_df
 
 
