@@ -9,7 +9,10 @@ PROJECTS = ["convex", "jflex", "mph-table", "rpki-commons"]
 REPORT_NAME = "artifacts/output/rq2.csv"
 TEX_REPORT_NAME = "artifacts/output/rq2.tex"
 
-ITERATIONS = [10, 50, 500, 1000]
+# ITERATIONS = [10, 50, 500, 1000]
+
+PROJECTS = ["mph-table"]
+ITERATIONS = [10]
 
 propertyShortNames = {
     "TestSmartListSerializer#canRoundTripSerializableLists": 'list',
@@ -66,18 +69,31 @@ def calculate_coverage(file: str) -> float:
         coverage = nodes_covered / node_count * 100
         # coverage["LC"] = lines_covered / (lines_covered + lines_missed) * 100
 
-    return coverage
+    return round(coverage, 2)
 
 
-def obtain_iteration_stats(iteration_directory: str) -> dict[str, float]:
+def obtain_time_elapsed(time_file: str) -> float:
+    with open(time_file) as f:
+        contents = f.read()
+        time_elapsed_regrex = re.search('Total Time Elapsed: (.+?) seconds', contents)
+        if time_elapsed_regrex:
+            time_elapsed = time_elapsed_regrex.group(1)
+            return round(float(time_elapsed), 2)
+    return -1.00
+
+
+def obtain_iteration_stats(iteration_directory: str) -> dict[str, tuple]:
     files = [x for x in os.walk(
         iteration_directory)][0][2]
     stats_files = list(filter(lambda stat_file: "reachability-coverage.csv" in stat_file, files))
+    print(stats_files)
+    time_files = [f.replace("-reachability-coverage.csv", ".html") for f in stats_files]
     ret = {}
-    for file in stats_files:
+    for file, time_file in zip(stats_files, time_files):
         file_location = iteration_directory + "/" + file
+        time_file_location = iteration_directory + "/" + time_file
         prop = file.replace("-reachability-coverage.csv", "")
-        ret[prop] = calculate_coverage(file=file_location)
+        ret[prop] = (calculate_coverage(file=file_location), obtain_time_elapsed(time_file=time_file_location))
     return ret
 
 
