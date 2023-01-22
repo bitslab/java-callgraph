@@ -177,7 +177,8 @@ def main():
 
             if possibleCommand == '\HEADER':
                 outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{' + s[1].strip()[
-                                                                               7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
+                                                                               7:].strip().replace("-",
+                                                                                                   "") + '}' + " \\\\\n" + '\\hline' + "\n"
             else:
                 outTable += line
 
