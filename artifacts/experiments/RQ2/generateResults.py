@@ -9,8 +9,7 @@ PROJECTS = ["convex", "jflex", "rpki-commons"]
 REPORT_NAME = "artifacts/output/rq2.csv"
 TEX_REPORT_NAME = "artifacts/output/rq2.tex"
 ITERATIONS = [10, 50, 500, 1000]
-RAW_NAMES = ["Property", "10", "50", "500", "1000"]
-
+RAW_NAMES = ["Property", "10", "50", "100", "500", "1000"]
 row_count = 1
 
 propertyShortNames = {
@@ -92,7 +91,7 @@ def obtain_iteration_stats(iteration_directory: str) -> dict[str, tuple]:
         time_file_location = iteration_directory + "/" + time_file
         prop = file.replace("-reachability-coverage.csv", "")
         ret[prop] = (
-        calculate_coverage(file=file_location), obtain_time_elapsed(time_file=time_file_location))
+            calculate_coverage(file=file_location), obtain_time_elapsed(time_file=time_file_location))
     return ret
 
 
@@ -109,50 +108,29 @@ def generate_project_df(project_ds: dict[int, dict], row_count: int) -> pd.DataF
 
     project_df = pd.DataFrame()
     for prop, val in property_dict.items():
-        mc_dict = {"N" : row_count, "Property": propertyShortNames[prop], 10 : val[0][0],
-                   50 : val[1][0], 500: val[2][0], 1000: val[3][0]}
+        print(val)
+        mc_dict = {"N": row_count, "Property": propertyShortNames[prop], 10: val[1][0],
+                   50: val[2][0], 100: val[0][0], 500: val[3][0], 1000: val[4][0]}
         row_count += 1
-        tt_dict = {"N": row_count, "Property": "time(s)", 10 : val[0][1],
-                   50 : val[1][1], 500: val[2][1], 1000: val[3][1]}
+        tt_dict = {"N": row_count, "Property": "time(s)", 10: val[0][1],
+                   50: val[1][1], 100: val[0][1], 500: val[2][1], 1000: val[3][1]}
         method_coverage_df = pd.DataFrame(mc_dict, index=[i for i in range(1)])
         time_taken_df = pd.DataFrame(tt_dict, index=[i for i in range(1)])
 
-        print(method_coverage_df)
         project_df = pd.concat([project_df, method_coverage_df, time_taken_df])
     return project_df
-
-    # time_df = pd.DataFrame()
-    # valid_keys = project_ds[10].keys()  # grab first dict keys for property names
-    # project_df['Property'] = [key for key in valid_keys]
-    # time_df['Property'] = [key for key in valid_keys]
-
-
-
-    # for key in project_ds.keys():
-    #     iteration_property_dict = project_ds[key]
-    #     for vk in valid_keys:
-    #         if vk not in iteration_property_dict:
-    #             iteration_property_dict[vk] = (np.nan, np.nan)
-    #     # project_df[key] = [val for val in project_ds[key].values()]
-    #     coverage = []
-    #     times = []
-    #     for k, v in iteration_property_dict.items():
-    #         coverage.append(v[0])
-    #         times.append(v[1])
-    #
-    #     project_df[key] = [c for c in coverage]
-    #     time_df[key] = [t for t in times]
-    #     # project_df = pd.concat([project_df, time_df], ignore_index= True)
-    #     # project_df['Time' + str(key)] = [t for t in times]
-    # ret = pd.concat([project_df, time_df], ignore_index=True)
-    # print(ret)
-    # return project_df
 
 
 def main():
     final_dataset = {}
     for project in PROJECTS:
         project_dataset = {}
+        stats_directory_base = BASE_RESULT_DIR + project + "/"
+        project_base_iteration_stats = obtain_stats_directories(results_directory=stats_directory_base)
+        iteration_directory_base = stats_directory_base + filter_for_recent_result(project_name=project,
+                                                                                   stats_directories=project_base_iteration_stats)
+        iteration_stats = obtain_iteration_stats(iteration_directory=iteration_directory_base)
+        project_dataset[100] = iteration_stats
         for iteration in ITERATIONS:
             project_name = project + "-" + str(iteration)
             stats_directory = BASE_RESULT_DIR + project_name + "/"
