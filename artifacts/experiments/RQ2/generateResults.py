@@ -9,7 +9,6 @@ PROJECTS = ["convex", "jflex", "rpki-commons"]
 REPORT_NAME = "artifacts/output/rq2.csv"
 TEX_REPORT_NAME = "artifacts/output/rq2.tex"
 
-PROJECTS = ["convex"]
 ITERATIONS = [10, 50, 500, 1000]
 RAW_NAMES = ["Property", "10", "50", "500", "1000"]
 
