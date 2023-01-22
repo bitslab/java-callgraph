@@ -5,7 +5,7 @@ import numpy as np
 import re
 
 BASE_RESULT_DIR = "artifacts/results/"
-PROJECTS = ["convex", "jflex", "rpki-commons"]
+PROJECTS = ["convex", "jflex", "mph-table", "rpki-commons"]
 REPORT_NAME = "artifacts/output/rq2.csv"
 TEX_REPORT_NAME = "artifacts/output/rq2.tex"
 ITERATIONS = [10, 50, 500, 1000]
@@ -177,8 +177,8 @@ def main():
 
             if possibleCommand == '\HEADER':
                 outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[
-                                                                               7:].strip().replace("-",
-                                                                                                   "") + '}' + " \\\\\n" + '\\hline' + "\n"
+                                                                                 7:].strip().replace("-",
+                                                                                                     "") + '}' + " \\\\\n" + '\\hline' + "\n"
             else:
                 outTable += line
 
