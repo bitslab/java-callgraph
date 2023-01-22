@@ -5,14 +5,11 @@ import numpy as np
 import re
 
 BASE_RESULT_DIR = "artifacts/results/"
-PROJECTS = ["convex", "jflex", "mph-table", "rpki-commons"]
+PROJECTS = ["convex", "jflex", "rpki-commons"]
 REPORT_NAME = "artifacts/output/rq2.csv"
 TEX_REPORT_NAME = "artifacts/output/rq2.tex"
 
-# ITERATIONS = [10, 50, 500, 1000]
-
-PROJECTS = ["mph-table"]
-ITERATIONS = [10]
+ITERATIONS = [10, 50, 500, 1000]
 
 propertyShortNames = {
     "TestSmartListSerializer#canRoundTripSerializableLists": 'list',
@@ -33,6 +30,7 @@ propertyShortNames = {
 def obtain_stats_directories(results_directory: str) -> list[str]:
     directory_tree = [x for x in os.walk(
         results_directory)]  # os.walk returns a tuple with structure (directory, subdirectories, files)
+    print(directory_tree[0])
     return directory_tree[0][1]
 
 
