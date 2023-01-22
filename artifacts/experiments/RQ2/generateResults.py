@@ -90,7 +90,8 @@ def obtain_iteration_stats(iteration_directory: str) -> dict[str, tuple]:
         file_location = iteration_directory + "/" + file
         time_file_location = iteration_directory + "/" + time_file
         prop = file.replace("-reachability-coverage.csv", "")
-        ret[prop] = (calculate_coverage(file=file_location), obtain_time_elapsed(time_file=time_file_location))
+        ret[propertyShortNames[prop]] = (
+        calculate_coverage(file=file_location), obtain_time_elapsed(time_file=time_file_location))
     return ret
 
 
@@ -136,15 +137,16 @@ def main():
         for project in PROJECTS:
             final_dataset[project]['_style'] = ''
             header = dict(zip(['N', 'Property', '10', '50', '100', '500', '1000'], ['', '', '', '', '', '', '']))
-            final_dataset[project]['N'] = pd.RangeIndex(start=row_count, stop=len(final_dataset[project].index) + row_count)
+            final_dataset[project]['N'] = pd.RangeIndex(start=row_count,
+                                                        stop=len(final_dataset[project].index) + row_count)
             df = pd.concat([
-                    df,
-                    pd.DataFrame(header | {'_style': 'HEADER', 'Property': project}, index=[0]),
-                    final_dataset[project]
-                ], ignore_index=True)
+                df,
+                pd.DataFrame(header | {'_style': 'HEADER', 'Property': project}, index=[0]),
+                final_dataset[project]
+            ], ignore_index=True)
 
-        bold_rows = df[ df['_style'] == 'BOLD' ].index
-        header_rows = df[ df['_style'] == 'HEADER' ].index
+        bold_rows = df[df['_style'] == 'BOLD'].index
+        header_rows = df[df['_style'] == 'HEADER'].index
         latexTable = df \
             .drop(columns=['_style']) \
             .style \
@@ -164,7 +166,8 @@ def main():
             possibleCommand = s[0].strip()
 
             if possibleCommand == '\HEADER':
-                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{' + s[1].strip()[7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
+                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{' + s[1].strip()[
+                                                                               7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
             else:
                 outTable += line
 
