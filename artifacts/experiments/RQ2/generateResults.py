@@ -42,7 +42,6 @@ def filter_for_recent_results(project_name: str, stats_directories: list[str]) -
     else:
         project_string = project_name
 
-    print(project_string)
     time_stamps = [datetime.datetime.strptime(x.replace(project_string, "").replace("_", ":").replace("T", " "),
                                               "%Y-%m-%d %H:%M:%S.%f")
                    for x in stats_directories]
