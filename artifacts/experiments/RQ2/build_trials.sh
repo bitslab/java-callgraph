@@ -20,17 +20,17 @@ java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c mph-ta
 java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c mph-table-500 -o mph-table-500_graph
 java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c mph-table-1000 -o mph-table-1000_graph
 
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/convex-10/convex-core/convex-core-0.7.1-jar-with-dependencies.jar -t ./artifacts/output/convex-10/convex-core/convex-core-0.7.1-tests.jar -o convex-10_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/convex-50/convex-core/convex-core-0.7.1-jar-with-dependencies.jar -t ./artifacts/output/convex-50/convex-core/convex-core-0.7.1-tests.jar -o convex-50_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/convex-500/convex-core/convex-core-0.7.1-jar-with-dependencies.jar -t ./artifacts/output/convex-500/convex-core/convex-core-0.7.1-tests.jar -o convex-500_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/convex-1000/convex-core/convex-core-0.7.1-jar-with-dependencies.jar -t ./artifacts/output/convex-1000/convex-core/convex-core-0.7.1-tests.jar -o convex-1000_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c convex-10 -o convex-10_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c convex-50 -o convex-50_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c convex-500 -o convex-500_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c convex-1000 -o convex-1000_graph
 
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-10/jflex/jflex-1.8.2-jar-with-dependencies.jar -t ./artifacts/output/jflex-10/jflex/jflex-1.8.2-tests.jar -o jflex-10_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-50/jflex/jflex-1.8.2-jar-with-dependencies.jar -t ./artifacts/output/jflex-50/jflex/jflex-1.8.2-tests.jar -o jflex-50_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-500/jflex/jflex-1.8.2-jar-with-dependencies.jar -t ./artifacts/output/jflex-500/jflex/jflex-1.8.2-tests.jar -o jflex-500_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/jflex-1000/jflex/jflex-1.8.2-jar-with-dependencies.jar -t ./artifacts/output/jflex-1000/jflex/jflex-1.8.2-tests.jar -o jflex-1000_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c jflex-10 -o jflex-10_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c jflex-50 -o jflex-50_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c jflex-500 -o jflex-500_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c jflex-1000 -o jflex-1000_graph
 
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/rpki-commons-10/rpki-commons-DEV.jar -t ./artifacts/output/rpki-commons-10/rpki-commons-DEV-tests.jar -o rpki-commons-10_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/rpki-commons-50/rpki-commons-DEV.jar -t ./artifacts/output/rpki-commons-50/rpki-commons-DEV-tests.jar -o rpki-commons-50_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/rpki-commons-500/rpki-commons-DEV.jar -t ./artifacts/output/rpki-commons-500/rpki-commons-DEV-tests.jar -o rpki-commons-500_graph
-java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -j ./artifacts/output/rpki-commons-1000/rpki-commons-DEV.jar -t ./artifacts/output/rpki-commons-1000/rpki-commons-DEV-tests.jar -o rpki-commons-1000_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c rpki-commons-10 -o rpki-commons-10_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c rpki-commons-50 -o rpki-commons-50_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c rpki-commons-500 -o rpki-commons-500_graph
+java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c rpki-commons-1000 -o rpki-commons-1000_graph
