@@ -5,7 +5,6 @@ import subprocess
 JAR_FILE = "target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar"
 
 PROJECTS = ["convex", "jflex", "mph-table", "rpki-commons"]
-
 TRIALS = [10, 50, 500, 1000]
 
 
