@@ -29,11 +29,13 @@ def clear_output():
 
 def main():
     for project in PROJECTS:
-        test_properties(project_name=project)
-        clear_output()
-        for trial in TRIALS:
-            test_properties_with_trials(project_name=project, trials=trial)
+        for index in range(10):
+            test_properties(project_name=project)
             clear_output()
+        for trial in TRIALS:
+            for index in range(10):
+                test_properties_with_trials(project_name=project, trials=trial)
+                clear_output()
 
 
 if __name__ == "__main__":
