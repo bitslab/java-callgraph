@@ -108,7 +108,7 @@ def obtain_iteration_stats(iteration_directories: list[str]) -> dict[str, tuple]
 
         stats_str = str(mean_stats) + " \u00B1 " + str(standard_dev_stats)
         times_str = str(mean_times) + " \u00B1 " + str(standard_dev_times)
-        ret[prop] = (stats_str, times_str)
+        ret[key] = (stats_str, times_str)
     return ret
 
 
