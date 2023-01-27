@@ -147,7 +147,7 @@ def main():
         filtered_results_base = filter_for_recent_results(project_name=project,
                                                           stats_directories=project_base_iteration_stats)
         iteration_directories_base = [stats_directory_base + result for result in filtered_results_base]
-        iteration_stats = obtain_iteration_stats(iteration_directory=iteration_directories_base)
+        iteration_stats = obtain_iteration_stats(iteration_directories=iteration_directories_base)
         project_dataset[100] = iteration_stats
         for iteration in ITERATIONS:
             project_name = project + "-" + str(iteration)
@@ -156,7 +156,7 @@ def main():
             filtered_results = filter_for_recent_results(project_name=project_name,
                                                          stats_directories=project_iteration_stats)
             iteration_directories = [stats_directory + result for result in filtered_results]
-            iteration_stats = obtain_iteration_stats(iteration_directory=iteration_directories)
+            iteration_stats = obtain_iteration_stats(iteration_directories=iteration_directories)
             project_dataset[iteration] = iteration_stats
         final_dataset[project] = generate_project_df(project_ds=project_dataset, row_count=row_count)
     print(final_dataset)
