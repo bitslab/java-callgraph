@@ -34,7 +34,7 @@ def obtain_stats_directories(results_directory: str) -> list[str]:
     return directory_tree[0][1]
 
 
-def filter_for_recent_result(project_name: str, stats_directories: list[str]) -> str:
+def filter_for_recent_results(project_name: str, stats_directories: list[str]) -> str:
     if "convex" in project_name:
         project_string = project_name.split("-")[0] + "-core"
     elif "jflex" in project_name:
@@ -46,28 +46,27 @@ def filter_for_recent_result(project_name: str, stats_directories: list[str]) ->
                                               "%Y-%m-%d %H:%M:%S.%f")
                    for x in stats_directories]
     time_stamps.sort()
-    valid_runs = time_stamps[-1:]
-
+    valid_runs = time_stamps[-10:]
+    valid_directories = []
     for directory in stats_directories:
         val = datetime.datetime.strptime(directory.replace(project_string, "").replace("_", ":").replace("T", " "),
                                          "%Y-%m-%d %H:%M:%S.%f")
         if val in valid_runs:
-            return directory
+            valid_directories.append(directory)
+    return valid_directories
 
-
-def calculate_coverage(file: str) -> float:
-    coverage: float = 0.00
+def calculate_coverage(file: str) -> int:
+    coverage: int = 0
     with open(file) as f:
         lines = [line.rstrip() for line in f]
-        nodes_covered = int(lines[1].replace("nodesCovered,", ""))
-        node_count = int(lines[2].replace("nodeCount,", ""))
-        # lines_covered = int(lines[3].replace("linesCovered,", ""))
+        # nodes_covered = int(lines[1].replace("nodesCovered,", ""))
+        # node_count = int(lines[2].replace("nodeCount,", ""))
+        lines_covered = int(lines[3].replace("linesCovered,", ""))
         # lines_missed = int(lines[4].replace("linesMissed,", ""))
 
-        coverage = nodes_covered / node_count * 100
+        coverage = lines_covered
         # coverage["LC"] = lines_covered / (lines_covered + lines_missed) * 100
-
-    return round(coverage, 2)
+    return coverage
 
 
 def obtain_time_elapsed(time_file: str) -> float:
@@ -80,18 +79,36 @@ def obtain_time_elapsed(time_file: str) -> float:
     return -1.00
 
 
-def obtain_iteration_stats(iteration_directory: str) -> dict[str, tuple]:
-    files = [x for x in os.walk(
-        iteration_directory)][0][2]
-    stats_files = list(filter(lambda stat_file: "reachability-coverage.csv" in stat_file, files))
-    time_files = [f.replace("-reachability-coverage.csv", ".html") for f in stats_files]
+def obtain_iteration_stats(iteration_directories: list[str]) -> dict[str, tuple]:
+    stats: dict[str, list] = {}
+    times: dict[str, list] = {}
+    for iteration_directory in iteration_directories:
+        files = [x for x in os.walk(
+            iteration_directory)][0][2]
+        stats_files = list(filter(lambda stat_file: "reachability-coverage.csv" in stat_file, files))
+        time_files = [f.replace("-reachability-coverage.csv", ".html") for f in stats_files]
+        for file, time_file in zip(stats_files, time_files):
+            file_location = iteration_directory + "/" + file
+            time_file_location = iteration_directory + "/" + time_file
+            prop = file.replace("-reachability-coverage.csv", "")
+            if prop not in stats:
+                stats[prop] = []
+                times[prop] = []
+            stats[prop].append(calculate_coverage(file=file_location))
+            times[prop].append(obtain_time_elapsed(time_file=time_file_location))
     ret = {}
-    for file, time_file in zip(stats_files, time_files):
-        file_location = iteration_directory + "/" + file
-        time_file_location = iteration_directory + "/" + time_file
-        prop = file.replace("-reachability-coverage.csv", "")
-        ret[prop] = (
-            calculate_coverage(file=file_location), obtain_time_elapsed(time_file=time_file_location))
+    for key, val in stats.items():
+        np_array_stats = np.array(val)
+        mean_stats = '{:.2f}'.format(round(np_array_stats.mean(), 2))
+        standard_dev_stats = '{:.2f}'.format(round(np_array_stats.std(), 2))
+        time_val = times[key]
+        np_array_times = np.array(time_val)
+        mean_times = '{:.2f}'.format(round(np_array_times.mean(), 2))
+        standard_dev_times = '{:.2f}'.format(round(np_array_times.std(), 2))
+
+        stats_str = str(mean_stats) + " \u00B1 " + str(standard_dev_stats)
+        times_str = str(mean_times) + " \u00B1 " + str(standard_dev_times)
+        ret[prop] = (stats_str, times_str)
     return ret
 
 
@@ -112,8 +129,8 @@ def generate_project_df(project_ds: dict[int, dict], row_count: int) -> pd.DataF
         mc_dict = {"N": row_count, "Property": propertyShortNames[prop], 10: val[1][0],
                    50: val[2][0], 100: val[0][0], 500: val[3][0], 1000: val[4][0]}
         row_count += 1
-        tt_dict = {"N": row_count, "Property": "time(s)", 10: val[0][1],
-                   50: val[1][1], 100: val[0][1], 500: val[2][1], 1000: val[3][1]}
+        tt_dict = {"N": row_count, "Property": "time(s)", 10: val[1][1],
+                   50: val[2][1], 100: val[0][1], 500: val[3][1], 1000: val[4][1]}
         method_coverage_df = pd.DataFrame(mc_dict, index=[i for i in range(1)])
         time_taken_df = pd.DataFrame(tt_dict, index=[i for i in range(1)])
 
@@ -127,7 +144,7 @@ def main():
         project_dataset = {}
         stats_directory_base = BASE_RESULT_DIR + project + "/"
         project_base_iteration_stats = obtain_stats_directories(results_directory=stats_directory_base)
-        iteration_directory_base = stats_directory_base + filter_for_recent_result(project_name=project,
+        iteration_directory_base = stats_directory_base + filter_for_recent_results(project_name=project,
                                                                                    stats_directories=project_base_iteration_stats)
         iteration_stats = obtain_iteration_stats(iteration_directory=iteration_directory_base)
         project_dataset[100] = iteration_stats
@@ -135,7 +152,7 @@ def main():
             project_name = project + "-" + str(iteration)
             stats_directory = BASE_RESULT_DIR + project_name + "/"
             project_iteration_stats = obtain_stats_directories(results_directory=stats_directory)
-            iteration_directory = stats_directory + filter_for_recent_result(project_name=project_name,
+            iteration_directory = stats_directory + filter_for_recent_results(project_name=project_name,
                                                                              stats_directories=project_iteration_stats)
             iteration_stats = obtain_iteration_stats(iteration_directory=iteration_directory)
             project_dataset[iteration] = iteration_stats
