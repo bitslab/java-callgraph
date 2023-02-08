@@ -27,12 +27,7 @@ propertyShortNames = {
     "StateSetQuickcheck#addStateDoesNotRemove": 'add',
     "StateSetQuickcheck#containsElements": 'contains',
     "StateSetQuickcheck#removeAdd": 'remove',
-    "RoaCMSBuilderPropertyTest#buildEncodedParseCheck": 'roa',
-    "ManifestCMSBuilderPropertyTest#buildEncodedParseCheck": 'manifest',
-    "AspaCmsTest#should_generate_aspa": 'aspa',
-    "X509ResourceCertificateParentChildValidatorTest#validParentChildSubResources": 'resources',
-    "X509ResourceCertificateParentChildValidatorTest#validParentChildOverClaiming": 'claiming',
-    "X509ResourceCertificateParentChildValidatorTest#validParentChildOverClaimingLooseValidation": 'loose'
+    "X509ResourceCertificateParentChildValidatorTest#validParentChildSubResources": 'resources'
 }
 
 
@@ -257,7 +252,7 @@ def main():
             if possibleCommand == '\HEADER':
                 outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[7:].strip().replace("-", "") + '}' + " \\\\\n" + '\\hline' + "\n"
             else:
-                outTable += line
+                outTable += line.replace("nan", "-")
 
         tf.write(outTable)
 

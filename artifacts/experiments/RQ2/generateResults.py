@@ -199,7 +199,7 @@ def main():
                                                                                  7:].strip().replace("-",
                                                                                                      "") + '}' + " \\\\\n" + '\\hline' + "\n"
             else:
-                outTable += line
+                outTable += line.replace("nan", "-")
 
         tf.write(outTable)
 
