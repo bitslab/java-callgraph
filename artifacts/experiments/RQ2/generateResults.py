@@ -166,8 +166,7 @@ def main():
         for project in PROJECTS:
             final_dataset[project]['_style'] = ''
             header = dict(zip(['N', 'Property', 10, 50, 100, 500, 1000], ['', '', '', '', '', '', '']))
-            final_dataset[project]['N'] = pd.RangeIndex(start=row_count,
-                                                        stop=len(final_dataset[project].index) + row_count)
+            final_dataset[project]['N'] = ''
             df = pd.concat([
                 df,
                 pd.DataFrame(header | {'_style': 'HEADER', 'Property': project}, index=[0]),
