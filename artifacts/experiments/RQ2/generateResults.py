@@ -10,7 +10,6 @@ REPORT_NAME = "artifacts/output/rq2.csv"
 TEX_REPORT_NAME = "artifacts/output/rq2.tex"
 ITERATIONS = [10, 50, 500, 1000]
 RAW_NAMES = ["Property", "10", "50", "100", "500", "1000"]
-row_count = 1
 
 propertyShortNames = {
     "TestSmartListSerializer#canRoundTripSerializableLists": 'list',
@@ -112,7 +111,7 @@ def obtain_iteration_stats(iteration_directories: list[str]) -> dict[str, tuple]
     return ret
 
 
-def generate_project_df(project_ds: dict[int, dict]) -> pd.DataFrame():
+def generate_project_df(project_ds: dict[int, dict], row_count: int) -> pd.DataFrame():
     property_dict = {}
     valid_keys = project_ds[10].keys()  # grab first dict keys for property names
     for key in valid_keys:
@@ -139,6 +138,7 @@ def generate_project_df(project_ds: dict[int, dict]) -> pd.DataFrame():
 
 
 def main():
+    row_count = 1
     final_dataset = {}
     for project in PROJECTS:
         project_dataset = {}
@@ -158,7 +158,7 @@ def main():
             iteration_directories = [stats_directory + result for result in filtered_results]
             iteration_stats = obtain_iteration_stats(iteration_directories=iteration_directories)
             project_dataset[iteration] = iteration_stats
-        final_dataset[project] = generate_project_df(project_ds=project_dataset)
+        final_dataset[project] = generate_project_df(project_ds=project_dataset, row_count=row_count)
     print(final_dataset)
 
     with open(TEX_REPORT_NAME, 'w') as tf:
