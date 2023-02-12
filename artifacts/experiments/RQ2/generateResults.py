@@ -111,7 +111,7 @@ def obtain_iteration_stats(iteration_directories: list[str]) -> dict[str, tuple]
     return ret
 
 
-def generate_project_df(project_ds: dict[int, dict], row_count: int) -> pd.DataFrame():
+def generate_project_df(project_ds: dict[int, dict], row_count: int) -> (pd.DataFrame(), int):
     property_dict = {}
     valid_keys = project_ds[10].keys()  # grab first dict keys for property names
     for key in valid_keys:
@@ -134,7 +134,7 @@ def generate_project_df(project_ds: dict[int, dict], row_count: int) -> pd.DataF
         time_taken_df = pd.DataFrame(tt_dict, index=[i for i in range(1)])
 
         project_df = pd.concat([project_df, method_coverage_df, time_taken_df])
-    return project_df
+    return project_df, row_count
 
 
 def main():
@@ -158,7 +158,7 @@ def main():
             iteration_directories = [stats_directory + result for result in filtered_results]
             iteration_stats = obtain_iteration_stats(iteration_directories=iteration_directories)
             project_dataset[iteration] = iteration_stats
-        final_dataset[project] = generate_project_df(project_ds=project_dataset, row_count=row_count)
+        final_dataset[project], row_count = generate_project_df(project_ds=project_dataset, row_count=row_count)
     print(final_dataset)
 
     with open(TEX_REPORT_NAME, 'w') as tf:
