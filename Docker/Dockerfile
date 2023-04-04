@@ -4,9 +4,7 @@ FROM maven:3.8.6-eclipse-temurin-11-alpine
 WORKDIR /root
 
 # add needing packages
-RUN apk add --no-cache git sed patch graphviz
-RUN apt-get update
-RUN apt-get install -y python3
+RUN apk add --no-cache git sed patch graphviz python3
 
 RUN mkdir -p -m 700 artifact/
 RUN mkdir -p -m 700 git/
