@@ -5,6 +5,7 @@ WORKDIR /root
 
 # add needing packages
 RUN apk add --no-cache git sed patch graphviz python3 py3-pip
+RUN pip3 install setuptools
 RUN pip3 install numpy
 RUN pip3 install pandas
 
