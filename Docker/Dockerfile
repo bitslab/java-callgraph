@@ -1,13 +1,19 @@
-FROM maven:3.8.6-eclipse-temurin-11-alpine
+FROM ubuntu:22.04
 
 # if work dir changed, the RUN sed line needs changes also
 WORKDIR /root
 
 # add needing packages
-RUN apk add --no-cache git sed patch graphviz python3 py3-pip
-RUN pip3 install setuptools
-RUN pip3 install numpy
-RUN pip3 install pandas
+RUN apt-get update
+RUN apt-get -y install git 
+RUN apt-get install sed
+RUN apt-get install patch
+RUN apt-get -y install graphviz
+RUN apt-get -y install python3
+RUN apt-get -y install python3-pip
+RUN apt -y install default-jdk
+RUN apt -y install maven
+RUN pip3 install setuptools numpy pandas
 
 RUN mkdir -p -m 700 artifact/
 RUN mkdir -p -m 700 git/
@@ -18,6 +24,7 @@ RUN git clone https://github.com/bitslab/java-callgraph.git git/java-callgraph
 RUN cd git/java-callgraph && mvn package
 RUN cd git/java-callgraph && java -jar target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar git -c mph-table
 RUN cd git/java-callgraph && java -jar target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar git -c mph-table-fixed
+RUN cd git/java-callgraph && java -jar target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar git -c mph-table-10
 RUN cd git/java-callgraph && java -jar target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar git -c mph-table-50
 RUN cd git/java-callgraph && java -jar target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar git -c mph-table-500
 RUN cd git/java-callgraph && java -jar target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar git -c mph-table-1000
