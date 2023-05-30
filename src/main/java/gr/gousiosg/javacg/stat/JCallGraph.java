@@ -45,7 +45,10 @@ import org.apache.bcel.generic.Type;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.jgrapht.Graph;
+import org.jgrapht.event.TraversalListenerAdapter;
+import org.jgrapht.event.VertexTraversalEvent;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.DepthFirstIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -59,6 +62,7 @@ import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
+import java.util.stream.Stream;
 
 import static java.util.Map.entry;
 
@@ -421,6 +425,44 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
     maybeInspectReachability(callgraph, depth, jacocoCoverage, entryPoint, output);
 
     // maybeWriteGraph(callgraph.graph, args[4]);
+
+    writeXML(callgraph.graph, entryPoint, new File("dfs.xml"));
+  }
+
+  static private long depth = 0;
+
+  private static void writeXML(Graph<String, DefaultEdge> graph, String entryPoint, File output) {
+    DepthFirstIterator<String, DefaultEdge> iter = new DepthFirstIterator<>(graph, entryPoint);
+    Set<String> present = new HashSet<>();
+
+    try (PrintStream ps = new PrintStream(new BufferedOutputStream(new FileOutputStream(output)))) {
+      iter.addTraversalListener(new TraversalListenerAdapter<>(){
+        @Override
+        public void vertexTraversed(VertexTraversalEvent<String> e) {
+//          if (present.contains(e.getSource()))
+//            return;
+          String spaces = Stream.iterate("", i -> " ").limit(depth).reduce("", String::concat);
+          ps.println(String.format("%s<node method=\"%s\">", spaces, e.getVertex().replace("<","&lt;").replace(">", "&gt;")));
+
+          depth += 1;
+        }
+
+        @Override
+        public void vertexFinished(VertexTraversalEvent<String> e) {
+          depth -= 1;
+
+          String spaces = Stream.iterate("", i -> " ").limit(depth).reduce("", String::concat);
+          ps.println(String.format("%s</node>", spaces));
+
+        }
+      });
+
+      while (iter.hasNext()) {
+        iter.next();
+      }
+    } catch (IOException e) {
+      throw new Error(e);
+    }
   }
 
   private static void maybeWriteGraph(Graph<String, DefaultEdge> graph, String output) {
