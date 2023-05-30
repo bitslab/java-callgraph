@@ -100,6 +100,8 @@ public class Pruning {
             Graph<String, DefaultEdge> graph, JarMetadata metadata, JacocoCoverage coverage) {
         metadata.getConcreteMethods().stream()
                 .filter(concreteMethod -> !coverage.hasNonzeroCoverage(concreteMethod))
+                .filter(m -> !m.contains("List.add"))
+                .filter(m -> !m.contains("com.indeed"))
                 .forEach(graph::removeVertex);
     }
 
