@@ -262,6 +262,8 @@ public class MethodVisitor extends EmptyVisitor {
         }
     }
 
+    private long expCount = 0L;
+
     private void expand(Node caller, Node receiver, Class<?> receiverType) {
         if (Object.class.equals(receiverType)) return;
 
@@ -286,10 +288,16 @@ public class MethodVisitor extends EmptyVisitor {
             expansions.get(receiverType).put(receiver.method, exps);
         }
 
+        // Create a special node for this expansion
+        String expNode = "$exp$" + (expCount++) + "$" + receiverType.getName() + ":" + receiver.method;
+        methodCalls.add(createEdge(caller.signature, expNode));
+
+
+
         /* Record expanded method call */
         exps.forEach(
                 expansionSignature -> {
-                    methodCalls.add(createEdge(caller.signature, expansionSignature));
+                    methodCalls.add(createEdge(expNode, expansionSignature));
                     jarMetadata.addConcreteMethod(expansionSignature);
                 });
     }
