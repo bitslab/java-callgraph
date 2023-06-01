@@ -480,7 +480,7 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
     /* Apply coverage */
     jacocoCoverage.applyCoverage(reachability, callgraph.metadata);
 
-    Pruning.pruneReachabilityGraph(reachability, callgraph.metadata, jacocoCoverage);
+//    Pruning.pruneReachabilityGraph(reachability, callgraph.metadata, jacocoCoverage);
 
     /* Should we write the graph to a file? */
     String outputName = getCompleteOutputName(depth, outputFile);

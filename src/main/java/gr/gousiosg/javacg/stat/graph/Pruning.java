@@ -3,7 +3,6 @@ package gr.gousiosg.javacg.stat.graph;
 import gr.gousiosg.javacg.stat.coverage.ColoredNode;
 import gr.gousiosg.javacg.stat.coverage.JacocoCoverage;
 import gr.gousiosg.javacg.stat.support.JarMetadata;
-import gr.gousiosg.javacg.stat.support.TestArguments;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
@@ -30,7 +29,7 @@ public class Pruning {
         markConcreteBridgeTargets(callgraph.graph, callgraph.metadata);
         pruneBridgeMethods(callgraph.graph, callgraph.metadata);
         pruneConcreteMethods(callgraph.graph, callgraph.metadata, coverage);
-        pruneMethodsFromTests(callgraph.graph, callgraph.metadata, coverage);
+//        pruneMethodsFromTests(callgraph.graph, callgraph.metadata, coverage);
     }
 
     public static void pruneReachabilityGraph(Graph<ColoredNode, DefaultEdge> reachability, JarMetadata metadata, JacocoCoverage coverage) {
