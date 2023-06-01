@@ -289,7 +289,7 @@ public class MethodVisitor extends EmptyVisitor {
         }
 
         // Create a special node for this expansion
-        String expNode = "$exp$" + (expCount++) + "$" + receiverType.getName() + ":" + receiver.method;
+        String expNode = String.format("%s.%s - %s:%d", receiverType.getName(), receiver.method, visitedClass.getSourceFileName(), currentLineNumber);
         methodCalls.add(createEdge(caller.signature, expNode));
 
 
