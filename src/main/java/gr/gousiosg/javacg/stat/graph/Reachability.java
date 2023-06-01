@@ -47,8 +47,14 @@ public class Reachability {
         reachable.push(entrypoint);
 
         Map<String, ColoredNode> subgraphNodes = new HashMap<>();
-        Set<String> seenBefore = new HashSet<>();
-        Set<String> nextLevel = new HashSet<>();
+
+        // Initialize
+        {
+            ColoredNode node = new ColoredNode(entrypoint);
+            subgraphNodes.put(entrypoint, node);
+            subgraph.addVertex(node);
+            node.markEntryPoint();
+        }
 
         while (!reachable.isEmpty()) {
 
@@ -57,58 +63,44 @@ public class Reachability {
                 break;
             }
 
-            while (!reachable.isEmpty()) {
-                /* Visit reachable node */
-                String source = reachable.pop();
-                ColoredNode sourceNode =
-                        subgraphNodes.containsKey(source) ? subgraphNodes.get(source) : new ColoredNode(source);
+            /* Visit reachable node */
+            String source = reachable.pop();
+            ColoredNode sourceNode =
+                    subgraphNodes.containsKey(source) ? subgraphNodes.get(source) : new ColoredNode(source);
 
-                /* Keep track of who we've visited */
-                seenBefore.add(source);
-                if (!subgraphNodes.containsKey(source)) {
-                    subgraph.addVertex(sourceNode);
-                    subgraphNodes.put(source, sourceNode);
-                }
+            /* Keep track of who we've visited */
+            if (!subgraphNodes.containsKey(source))
+                throw new AssertionError();
 
-                /* Check if we can add deeper edges or not */
-                if (maybeMaximumDepth.isPresent() && (maybeMaximumDepth.get() == currentDepth)) {
-                    break;
-                }
+            Set<DefaultEdge> edges = graph.outgoingEdgesOf(source);
 
-                graph
-                        .edgesOf(source)
-                        .forEach(
-                                edge -> {
-                                    String target = graph.getEdgeTarget(edge);
-                                    ColoredNode targetNode =
-                                            subgraphNodes.containsKey(target)
-                                                    ? subgraphNodes.get(target)
-                                                    : new ColoredNode(target);
+            graph
+                    .outgoingEdgesOf(source)
+                    .stream()
+                    .forEach(
+                            edge -> {
+                                String target = graph.getEdgeTarget(edge);
+                                ColoredNode targetNode = subgraphNodes.get(target);
 
-                                    if (!subgraphNodes.containsKey(target)) {
-                                        subgraphNodes.put(target, targetNode);
-                                        subgraph.addVertex(targetNode);
-                                    }
+                                if (targetNode == null) {
+                                    targetNode = new ColoredNode(target);
+                                    subgraphNodes.put(target, targetNode);
+                                    subgraph.addVertex(targetNode);
+                                    reachable.add(target);
+                                }
 
-                                    if (graph.containsEdge(source, target)
-                                            && !subgraph.containsEdge(sourceNode, targetNode)) {
-                                        subgraph.addEdge(sourceNode, targetNode);
-                                    }
-
-                                    /* Have we visited this vertex before? */
-                                    if (!seenBefore.contains(target)) {
-                                        nextLevel.add(target);
-                                        seenBefore.add(target);
-                                    }
-                                });
-            }
+                                subgraph.addEdge(sourceNode, targetNode);
+                            });
 
             currentDepth++;
-            reachable.addAll(nextLevel);
-            nextLevel.clear();
         }
 
-        subgraphNodes.get(entrypoint).markEntryPoint();
+        Set<DefaultEdge> bi = graph.incomingEdgesOf("com.indeed.mph.SmartSerializer.write - RoundTripHelpers.java:22");
+        Set<DefaultEdge> bo = graph.outgoingEdgesOf("com.indeed.mph.SmartSerializer.write - RoundTripHelpers.java:22");
+        ColoredNode n = subgraphNodes.get("com.indeed.mph.SmartSerializer.write - RoundTripHelpers.java:22");
+        Set<DefaultEdge> ai = subgraph.incomingEdgesOf(n);
+        Set<DefaultEdge> ao = subgraph.outgoingEdgesOf(n);
+
         return subgraph;
     }
 }
