@@ -177,7 +177,7 @@ public class JCallGraph {
             rt.testProperty(propertyName);
             JacocoCoverage jacocoCoverage = new JacocoCoverage(s.first);
             // 3. Prune the graph with coverage
-            Pruning.pruneOriginalGraph(callgraph, jacocoCoverage);
+            Pruning.pruneOriginalGraph(entryPoint, callgraph, jacocoCoverage);
             // 4. Operate on the graph and write it to output
             maybeWriteGraph(callgraph.graph, JCallGraph.OUTPUT_DIRECTORY + propertyName);
             Graph<ColoredNode, DefaultEdge> prunedReachability = maybeInspectReachability(callgraph, arguments.maybeDepth(), jacocoCoverage, s.second, JCallGraph.OUTPUT_DIRECTORY + propertyName);
@@ -420,7 +420,7 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
 //            depth = Optional.of(Integer.parseInt(args[7]));
 
     // This method changes the callgraph object
-    Pruning.pruneOriginalGraph(callgraph, jacocoCoverage);
+    Pruning.pruneOriginalGraph(entryPoint, callgraph, jacocoCoverage);
 
     maybeInspectReachability(callgraph, depth, jacocoCoverage, entryPoint, output);
 

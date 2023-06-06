@@ -1,5 +1,6 @@
 package gr.gousiosg.javacg.stat.graph;
 
+import edu.uic.bitslab.callgraph.PruneMethods;
 import gr.gousiosg.javacg.stat.coverage.ColoredNode;
 import gr.gousiosg.javacg.stat.coverage.JacocoCoverage;
 import gr.gousiosg.javacg.stat.support.JarMetadata;
@@ -25,10 +26,11 @@ public class Pruning {
      * @param callgraph the graph
      * @param coverage  the coverage
      */
-    public static void pruneOriginalGraph(StaticCallgraph callgraph, JacocoCoverage coverage) {
+    public static void pruneOriginalGraph(String entryPoint, StaticCallgraph callgraph, JacocoCoverage coverage) {
         markConcreteBridgeTargets(callgraph.graph, callgraph.metadata);
         pruneBridgeMethods(callgraph.graph, callgraph.metadata);
-        pruneConcreteMethods(callgraph.graph, callgraph.metadata, coverage);
+        new PruneMethods(entryPoint, callgraph, coverage).prune();
+//        pruneConcreteMethods(callgraph.graph, callgraph.metadata, coverage);
 //        pruneMethodsFromTests(callgraph.graph, callgraph.metadata, coverage);
     }
 
