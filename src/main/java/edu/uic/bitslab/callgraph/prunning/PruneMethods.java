@@ -1,4 +1,4 @@
-package edu.uic.bitslab.callgraph;
+package edu.uic.bitslab.callgraph.prunning;
 
 import gr.gousiosg.javacg.stat.coverage.JacocoCoverage;
 import gr.gousiosg.javacg.stat.graph.StaticCallgraph;
@@ -7,8 +7,8 @@ import org.jgrapht.graph.DefaultEdge;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
 
@@ -16,14 +16,19 @@ public class PruneMethods {
     private String entryPointName;
     private StaticCallgraph callgraph;
     private JacocoCoverage coverage;
+    private Pruner[] pruners;
 
     public PruneMethods(String entryPointName, StaticCallgraph callgraph, JacocoCoverage coverage) {
         this.entryPointName = entryPointName;
         this.callgraph = callgraph;
         this.coverage = coverage;
+        pruners = new Pruner[]{
+                new KeepMethodsWithCoverage(coverage),
+                new KeepMethodsInsidePackage("com.indeed")
+        };
     }
 
-    private final boolean isVirtualCallNode(String vertex) {
+    private boolean isVirtualCallNode(String vertex) {
         return vertex.contains(" - ");
     }
 
@@ -52,9 +57,11 @@ public class PruneMethods {
     }
 
     protected Set<String> pruneConcreteTargets(String virtualCall, Set<String> concreteTargets) {
-        return concreteTargets.stream()
-                .filter(concreteMethod -> !coverage.hasNonzeroCoverage(concreteMethod))
-                .filter(m -> !m.contains("com.indeed"))
-                .collect(Collectors.toSet());
+        Stream<String> targets = concreteTargets.stream();
+
+        for (Pruner p : pruners)
+            targets = p.pruneConcreteTargets(virtualCall, targets);
+
+        return targets.collect(Collectors.toSet());
     }
 }

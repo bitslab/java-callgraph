@@ -1,6 +1,6 @@
 package gr.gousiosg.javacg.stat.graph;
 
-import edu.uic.bitslab.callgraph.PruneMethods;
+import edu.uic.bitslab.callgraph.prunning.PruneMethods;
 import gr.gousiosg.javacg.stat.coverage.ColoredNode;
 import gr.gousiosg.javacg.stat.coverage.JacocoCoverage;
 import gr.gousiosg.javacg.stat.support.JarMetadata;
