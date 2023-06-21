@@ -10,12 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static gr.gousiosg.javacg.stat.graph.Utilities.nodeMap;
+import static java.util.function.Predicate.not;
 
 public class Pruning {
     private static final Logger LOGGER = LoggerFactory.getLogger(Pruning.class);
@@ -30,12 +33,38 @@ public class Pruning {
         markConcreteBridgeTargets(callgraph.graph, callgraph.metadata);
         pruneBridgeMethods(callgraph.graph, callgraph.metadata);
         new PruneMethods(entryPoint, callgraph, coverage).prune();
+        trimLibraryCalls(entryPoint, callgraph, Set.of("com.indeed"));
 //        pruneConcreteMethods(callgraph.graph, callgraph.metadata, coverage);
 //        pruneMethodsFromTests(callgraph.graph, callgraph.metadata, coverage);
     }
 
     public static void pruneReachabilityGraph(Graph<ColoredNode, DefaultEdge> reachability, JarMetadata metadata, JacocoCoverage coverage) {
         pruneMethodsFromTestsThatAreReachable(reachability, metadata, coverage);
+    }
+
+    private static void trimLibraryCalls(String entryPoint, StaticCallgraph callgraph, Set<String> paks) {
+        LinkedList<String> nodes = new LinkedList<>();
+        Set<String> seen = new HashSet<>();
+        nodes.add(entryPoint);
+
+        Set<String> toRemove = new HashSet<>();
+
+        while (!nodes.isEmpty()) {
+            String node = nodes.removeFirst();
+            seen.add(node);
+
+            boolean keep = paks.stream().map(s -> node.startsWith(s)).reduce(false, Boolean::logicalOr);
+
+            if (!keep && callgraph.graph.outgoingEdgesOf(node).isEmpty())
+                toRemove.add(node);
+
+            callgraph.graph.outgoingEdgesOf(node).stream()
+                    .map(callgraph.graph::getEdgeTarget)
+                    .filter(not(seen::contains))
+                    .forEach(nodes::addLast);
+        }
+
+        toRemove.stream().forEach(n -> callgraph.graph.removeVertex(n));
     }
 
     /**
