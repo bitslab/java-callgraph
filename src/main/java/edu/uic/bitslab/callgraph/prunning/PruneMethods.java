@@ -23,8 +23,9 @@ public class PruneMethods {
         this.callgraph = callgraph;
         this.coverage = coverage;
         pruners = new Pruner[]{
-                new KeepMethodsWithCoverage(coverage),
-                new KeepMethodsInsidePackage("com.indeed")
+//                new KeepMethodsWithCoverage(coverage),
+//                new KeepMethodsInsidePackage("com.indeed")
+                new OnlyKeep12ConcreteTargetsWithCoverage(coverage)
         };
     }
 
