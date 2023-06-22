@@ -1,8 +1,10 @@
 name: datasonnet-mapper
 URL: https://github.com/datasonnet/datasonnet-mapper.git
-checkoutID: 2.5
+checkoutID: "2.5"
 patchName: artifacts/configs/datasonnet-mapper/datasonnet-mapper.patch
 mainJar: datasonnet-mapper-2.5-jar-with-dependencies.jar
 testJar: datasonnet-mapper-2.5-tests.jar
 properties:
-  - name:
+  - name: XMLPropertyTest#reversible
+    entryPoint: "com.datasonnet.XMLPropertyTest.reversible(Lcom/datasonnet/util/XMLGenerator;)V"
+#  - name: XMLPropertyTest#jsonSerializes
