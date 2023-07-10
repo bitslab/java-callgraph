@@ -1,0 +1,26 @@
+name: test-yaml
+URL: https://invalid/test/project
+checkoutID: deadbeef
+patchName: some/named/test-yaml.patch
+mainJar: main-project.jar
+testJar: test-project.jar
+mvnOptions: -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+subProject: subTest
+properties:
+  - name: One
+    entryPoint: "invalid.test.one(Ljava/util/List;Ljava/util/List;Ljava/util/List;)V"
+  - name: Two
+    entryPoint: "invalid.test.two(S)V"
+  - name: Three
+    entryPoint: "invalid.test.three(I)V"
+packages:
+  - invalid.test
+  - another.test
+  - yet.one.more.test
+virtualIncludeConcrete:
+  some-virtual:
+    - concrete-one
+  one-more-virtual:
+    - concrete-one
+    - concrete-two
+    - concrete-three

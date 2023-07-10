@@ -1,8 +1,8 @@
 package edu.uic.bitslab.callgraph;
 
 import gr.gousiosg.javacg.stat.JCallGraph;
-import gr.gousiosg.javacg.stat.coverage.ColoredNode;
-import gr.gousiosg.javacg.stat.graph.Utilities;
+import edu.uic.bitslab.callgraph.graph.ColoredNode;
+import edu.uic.bitslab.callgraph.graph.Utilities;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;

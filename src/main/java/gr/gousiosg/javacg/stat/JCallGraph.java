@@ -29,15 +29,15 @@
 package gr.gousiosg.javacg.stat;
 
 import edu.uic.bitslab.callgraph.GetBest;
+import edu.uic.bitslab.callgraph.config.ManualOptions;
+import edu.uic.bitslab.callgraph.graph.*;
 import gr.gousiosg.javacg.dyn.Pair;
-import gr.gousiosg.javacg.stat.coverage.ColoredNode;
-import gr.gousiosg.javacg.stat.coverage.CoverageStatistics;
-import gr.gousiosg.javacg.stat.coverage.JacocoCoverage;
-import gr.gousiosg.javacg.stat.graph.*;
-import gr.gousiosg.javacg.stat.support.BuildArguments;
-import gr.gousiosg.javacg.stat.support.GitArguments;
-import gr.gousiosg.javacg.stat.support.RepoTool;
-import gr.gousiosg.javacg.stat.support.TestArguments;
+import edu.uic.bitslab.callgraph.coverage.CoverageStatistics;
+import edu.uic.bitslab.callgraph.coverage.JacocoCoverage;
+import edu.uic.bitslab.callgraph.support.BuildArguments;
+import edu.uic.bitslab.callgraph.support.GitArguments;
+import edu.uic.bitslab.callgraph.support.RepoTool;
+import edu.uic.bitslab.callgraph.support.TestArguments;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -177,7 +177,7 @@ public class JCallGraph {
             rt.testProperty(propertyName);
             JacocoCoverage jacocoCoverage = new JacocoCoverage(s.first);
             // 3. Prune the graph with coverage
-            Pruning.pruneOriginalGraph(entryPoint, callgraph, jacocoCoverage);
+            Pruning.pruneOriginalGraph(entryPoint, callgraph, jacocoCoverage, rt.getSUTConfig());
             // 4. Operate on the graph and write it to output
             maybeWriteGraph(callgraph.graph, JCallGraph.OUTPUT_DIRECTORY + propertyName);
             Graph<ColoredNode, DefaultEdge> prunedReachability = maybeInspectReachability(callgraph, arguments.maybeDepth(), jacocoCoverage, s.second, JCallGraph.OUTPUT_DIRECTORY + propertyName);
@@ -355,13 +355,24 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
   }
 
   public static void manualMain(String[] args) {
+    ManualOptions manualOptions = new ManualOptions();
+
+    // fill in args if we have them
+    if (args.length > 1) manualOptions.callgraphFilename = args[1];
+    if (args.length > 2) manualOptions.jacocoFilename = args[2];
+    if (args.length > 3) manualOptions.outputFilename = args[3];
+    if (args.length > 4) manualOptions.jarPath = args[4];
+    if (args.length > 5) manualOptions.classMethod = args[5];
+    if (args.length > 6) manualOptions.returnType = args[6];
+    if (args.length > 7) manualOptions.parameterTypes = args[7];
+
 
     // First argument:   the serialized file
     StaticCallgraph callgraph = null;
     try {
-      File f = new File(args[1]);
+      File f = new File(manualOptions.callgraphFilename);
       LOGGER.info("Deserializing file " + f.getAbsolutePath());
-      callgraph = deserializeStaticCallGraph(new File(args[1]));
+      callgraph = deserializeStaticCallGraph(new File(manualOptions.callgraphFilename));
     } catch (IOException e) {
       LOGGER.error("Could not deserialize static call graph", e);
     } catch (ClassNotFoundException e) {
@@ -371,23 +382,23 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
     // Second argument: the jacoco.xml
     JacocoCoverage jacocoCoverage = null;
     try {
-      File f = new File(args[2]);
+      File f = new File(manualOptions.jacocoFilename);
       LOGGER.info("Reading JaCoCo coverage file " + f.getAbsolutePath());
       jacocoCoverage = new JacocoCoverage(f.getAbsolutePath());
     } catch (IOException | ParserConfigurationException | JAXBException | SAXException e) {
       LOGGER.error("Could not read JaCoCo coverage file", e);
     }
 
-    // third argument:  the output file
-    String output = args[3];
-
     if (callgraph == null || jacocoCoverage == null) {
       // Something went wrong, bail
       return;
     }
 
+    // third argument:  the output file
+    String output = manualOptions.outputFilename;
+
     // forth argument:  Jar path to infer entry point signature
-    String jarPath = args[4];
+    String jarPath = manualOptions.jarPath;
     try {
       new JarFile(jarPath);
     } catch(IOException e){
@@ -395,36 +406,30 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
     }
 
     // Sixth argument, optional, return type of expected method
-    Optional<String> returnType = Optional.empty();
-    if(args.length > 6)
-      returnType = Optional.of(args[6]);
+    Optional<String> returnType = manualOptions.returnType == null ? Optional.empty() : Optional.of(manualOptions.returnType);
 
     // Seventh argument, optional, parameter types of expected method
-    Optional<String> paramterTypes = Optional.empty();
-    if(args.length > 7)
-      paramterTypes = Optional.of(args[7]);
+    Optional<String> parameterTypes = manualOptions.parameterTypes == null ? Optional.empty() : Optional.of(manualOptions.parameterTypes);
 
     // Fifth argument, class.method input where class can be written as nested classes to generate exact method signature
     String entryPoint = null;
     try {
-      entryPoint = generateEntryPoint(jarPath, args[5], returnType, paramterTypes);
+      entryPoint = generateEntryPoint(jarPath, manualOptions.classMethod, returnType, parameterTypes);
 //            System.out.println(entryPoint);
     } catch(IOException e){
       LOGGER.error("Could not generate method signature", e);
     }
 
-
     // Seventh argument, optional, is the depth
-    Optional<Integer> depth = Optional.empty();
-//        if (args.length > 6)
-//            depth = Optional.of(Integer.parseInt(args[7]));
+    Optional<Integer> depth = manualOptions.depth == -1 ? Optional.empty() : Optional.of(manualOptions.depth);
 
     // This method changes the callgraph object
-    Pruning.pruneOriginalGraph(entryPoint, callgraph, jacocoCoverage);
+    Pruning.pruneOriginalGraph(entryPoint, callgraph, jacocoCoverage, manualOptions);
 
     maybeInspectReachability(callgraph, depth, jacocoCoverage, entryPoint, output);
 
-    // maybeWriteGraph(callgraph.graph, args[4]);
+    // maybeWriteGraph(callgraph.graph, manualOptions.outputFilename);
+
 
     writeXML(callgraph.graph, entryPoint, new File("dfs.xml"));
   }
@@ -592,10 +597,7 @@ public static ArrayList<Pair<String, String>> fetchAllMethodSignaturesForyaml (J
 
 
   private static RepoTool maybeObtainTool(GitArguments arguments) throws FileNotFoundException{
-    Optional<RepoTool> rt = RepoTool.obtainTool(arguments.maybeGetConfig().get());
-    if(rt.isPresent())
-      return rt.get();
-    throw new FileNotFoundException("folderName path is incorrect! Please provide a valid folder");
+    return new RepoTool(arguments.maybeGetConfig().get());
   }
 
   private static RepoTool maybeObtainTool(TestArguments arguments) throws FileNotFoundException{

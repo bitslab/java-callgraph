@@ -29,9 +29,9 @@
 package gr.gousiosg.javacg.stat;
 
 import gr.gousiosg.javacg.dyn.Pair;
-import gr.gousiosg.javacg.stat.support.ClassHierarchyInspector;
-import gr.gousiosg.javacg.stat.support.JarMetadata;
-import gr.gousiosg.javacg.stat.support.MethodSignatureUtil;
+import edu.uic.bitslab.callgraph.support.ClassHierarchyInspector;
+import edu.uic.bitslab.callgraph.support.JarMetadata;
+import edu.uic.bitslab.callgraph.support.MethodSignatureUtil;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.*;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static gr.gousiosg.javacg.stat.support.IgnoredConstants.IGNORED_METHOD_NAMES;
+import static edu.uic.bitslab.callgraph.support.IgnoredConstants.IGNORED_METHOD_NAMES;
 
 /**
  * The simplest of method visitors, prints any invoked method signature for all method invocations.
@@ -291,8 +291,7 @@ public class MethodVisitor extends EmptyVisitor {
         // Create a special node for this expansion
         String expNode = String.format("%s.%s - %s:%d", receiverType.getName(), receiver.method, visitedClass.getSourceFileName(), currentLineNumber);
         methodCalls.add(createEdge(caller.signature, expNode));
-
-
+        jarMetadata.addCallsite(expNode);
 
         /* Record expanded method call */
         exps.forEach(

@@ -1,11 +1,12 @@
 package edu.uic.bitslab.callgraph;
 
 import com.opencsv.CSVReader;
+import edu.uic.bitslab.callgraph.config.SUTConfig;
 import gr.gousiosg.javacg.dyn.Pair;
-import gr.gousiosg.javacg.stat.coverage.ColoredNode;
-import gr.gousiosg.javacg.stat.coverage.JacocoCoverage;
+import edu.uic.bitslab.callgraph.graph.ColoredNode;
+import edu.uic.bitslab.callgraph.coverage.JacocoCoverage;
 import gr.gousiosg.javacg.stat.coverage.Report;
-import gr.gousiosg.javacg.stat.support.RepoTool;
+import edu.uic.bitslab.callgraph.support.RepoTool;
 import org.apache.commons.cli.*;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
@@ -184,9 +185,9 @@ public class Comparison {
     }
 
     private static Path getLatestResultPath(String project) throws IOException {
-        RepoTool rt = new RepoTool(project);
+        SUTConfig sutConfig = SUTConfig.fromProjectName(project);
         String resultsDir = "artifacts/results/" + project;
-        String glob = (rt.getSubProject().equals("") ? project : rt.getSubProject()) + "????-??-??T??_??_??.??????";
+        String glob = (sutConfig.subProject.equals("") ? project : sutConfig.subProject) + "????-??-??T??_??_??.??????";
         Path latestPath = null;
 
         for (Path path : Files.newDirectoryStream(Path.of(resultsDir), glob)) {

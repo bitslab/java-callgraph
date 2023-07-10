@@ -29,7 +29,7 @@
 package gr.gousiosg.javacg.stat;
 
 import gr.gousiosg.javacg.dyn.Pair;
-import gr.gousiosg.javacg.stat.support.JarMetadata;
+import edu.uic.bitslab.callgraph.support.JarMetadata;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
