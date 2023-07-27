@@ -256,16 +256,16 @@ public class MethodVisitor extends EmptyVisitor {
                 jarMetadata.addBridgeMethod(caller.signature);
             } else {
                 // record the virtual method and expand it to subtypes
-                jarMetadata.addVirtualMethod(receiver.signature);
                 expand(caller, receiver, maybeReceiverType.get());
+                jarMetadata.addVirtualMethod(receiver.signature);
             }
         }
     }
 
     private long expCount = 0L;
 
-    private void expand(Node caller, Node receiver, Class<?> receiverType) {
-        if (Object.class.equals(receiverType)) return;
+    private boolean expand(Node caller, Node receiver, Class<?> receiverType) {
+        if (Object.class.equals(receiverType)) return false;
 
         ClassHierarchyInspector inspector = jarMetadata.getInspector();
         expansions.putIfAbsent(receiverType, new HashMap<>());
@@ -293,12 +293,20 @@ public class MethodVisitor extends EmptyVisitor {
         methodCalls.add(createEdge(caller.signature, expNode));
         jarMetadata.addCallsite(expNode);
 
+        if (isTestMethod) {
+            jarMetadata.testMethods.add(expNode);
+        }
+
+        if (exps.isEmpty()) return false;
+
         /* Record expanded method call */
         exps.forEach(
                 expansionSignature -> {
                     methodCalls.add(createEdge(expNode, expansionSignature));
                     jarMetadata.addConcreteMethod(expansionSignature);
                 });
+
+        return true;
     }
 
     public Pair<String, String> createEdge(String from, String to) {

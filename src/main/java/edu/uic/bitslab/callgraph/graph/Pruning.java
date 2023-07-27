@@ -10,12 +10,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static edu.uic.bitslab.callgraph.graph.Utilities.nodeMap;
@@ -25,11 +20,15 @@ public class Pruning {
     private static final Logger LOGGER = LoggerFactory.getLogger(Pruning.class);
 
     public static void pruneOriginalGraph(String entryPoint, StaticCallgraph callgraph, JacocoCoverage coverage, SUTConfig sutConfig) {
-        pruneOriginalGraph(entryPoint, callgraph, coverage, sutConfig.packages);
+        pruneOriginalGraph(entryPoint, callgraph, coverage, sutConfig.packages, sutConfig.virtualIncludeConcrete);
     }
 
     public static void pruneOriginalGraph(String entryPoint, StaticCallgraph callgraph, JacocoCoverage coverage, ManualOptions manualOptions) {
-        pruneOriginalGraph(entryPoint, callgraph, coverage, new HashSet<>(manualOptions.packages));
+        // get manualOptions - convert from list to set
+        HashMap<String, Set<String>> asSetVIC = new HashMap<>();
+        manualOptions.virtualIncludeConcrete.forEach((s, l) -> asSetVIC.put(s, new HashSet<>(l)));
+
+        pruneOriginalGraph(entryPoint, callgraph, coverage, new HashSet<>(manualOptions.packages), asSetVIC);
     }
 
     /**
@@ -38,17 +37,20 @@ public class Pruning {
      * @param callgraph the graph
      * @param coverage  the coverage
      */
-    public static void pruneOriginalGraph(String entryPoint, StaticCallgraph callgraph, JacocoCoverage coverage, Set<String> packages) {
+    public static void pruneOriginalGraph(String entryPoint, StaticCallgraph callgraph, JacocoCoverage coverage, Set<String> packages, Map<String, Set<String>> virtualIncludeConcrete) {
         markConcreteBridgeTargets(callgraph.graph, callgraph.metadata);
         pruneBridgeMethods(callgraph.graph, callgraph.metadata);
-        new PruneMethods(entryPoint, callgraph, coverage).prune();
+        new PruneMethods(entryPoint, callgraph, coverage, packages, virtualIncludeConcrete).prune();
 
         if (packages.size() > 0) {
             trimLibraryCalls(entryPoint, callgraph, packages);
         }
 
+        // prune test methods
+//        pruneMethodsFromTests(entryPoint, callgraph);
+
 //        pruneConcreteMethods(callgraph.graph, callgraph.metadata, coverage);
-//        pruneMethodsFromTests(callgraph.graph, callgraph.metadata, coverage);
+
     }
 
     public static void pruneReachabilityGraph(Graph<ColoredNode, DefaultEdge> reachability, JarMetadata metadata, JacocoCoverage coverage) {
@@ -66,7 +68,7 @@ public class Pruning {
             String node = nodes.removeFirst();
             seen.add(node);
 
-            boolean keep = paks.stream().map(s -> node.startsWith(s)).reduce(false, Boolean::logicalOr);
+            boolean keep = paks.stream().map(node::startsWith).reduce(false, Boolean::logicalOr);
 
             if (!keep && callgraph.graph.outgoingEdgesOf(node).isEmpty())
                 toRemove.add(node);
@@ -77,12 +79,12 @@ public class Pruning {
                     .forEach(nodes::addLast);
         }
 
-        toRemove.stream().forEach(n -> callgraph.graph.removeVertex(n));
+        toRemove.forEach(n -> callgraph.graph.removeVertex(n));
     }
 
     /**
      * Remove all bridge / synthetic methods that were created during type erasure See
-     * https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html for more information.
+     * <a href="https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html">...</a> for more information.
      *
      * @param graph    the graph
      * @param metadata the metadata of the graph
@@ -107,10 +109,8 @@ public class Pruning {
                                 graph
                                         .outgoingEdgesOf(bridgeNode)
                                         .forEach(
-                                                e -> {
-                                                    LOGGER.error(
-                                                            "\t" + graph.getEdgeSource(e) + " -> " + graph.getEdgeTarget(e));
-                                                });
+                                                e -> LOGGER.error(
+                                                        "\t" + graph.getEdgeSource(e) + " -> " + graph.getEdgeTarget(e)));
                                 System.exit(1);
                             }
 
@@ -171,40 +171,59 @@ public class Pruning {
      * <p>
      * For example, a test method may call assertEquals. We should remove assertEquals from the graph.
      *
-     * @param graph    the graph
-     * @param metadata the metadata of the graph
+     * @param entryPoint entrypoint
+     * @param callgraph callgraph
      */
-    private static void pruneMethodsFromTests(Graph<String, DefaultEdge> graph, JarMetadata metadata, JacocoCoverage coverage) {
-        var testTargetNodes = metadata.testMethods.stream()
-                .filter(graph::containsVertex)
-                .map(graph::outgoingEdgesOf)
-                .flatMap(Collection::stream)
-                .map(graph::getEdgeTarget)
-                .collect(Collectors.toSet());
+    private static void pruneMethodsFromTests(String entryPoint, StaticCallgraph callgraph) {
+        // prune the testMethods
+        callgraph.metadata.testMethods.stream()
+                .filter(s -> !s.equals(entryPoint))
+                .filter(callgraph.graph::containsVertex)
+                .forEach( s -> {
+                    Set<DefaultEdge> incomingEdges = callgraph.graph.incomingEdgesOf(s);
+                    Set<DefaultEdge> outgoingEdges = callgraph.graph.outgoingEdgesOf(s);
 
-        var targetsToRemove = testTargetNodes.stream()
-                .filter(graph::containsVertex)
-                .filter(target -> {
-                    if (coverage.containsMethod(target)) {
-                        return false;
-                    }
+                    incomingEdges.forEach( incomingEdge -> {
+                        String sourceVertex = callgraph.graph.getEdgeSource(incomingEdge);
 
-                    if (metadata.testMethods.contains(target)) {
-                        return false;
-                    }
+                        outgoingEdges.forEach( outgoingEdge -> {
+                            String targetVertex = callgraph.graph.getEdgeTarget(outgoingEdge);
 
-                    for (var e : graph.incomingEdgesOf(target)) {
-                        if (!metadata.testMethods.contains(graph.getEdgeSource(e))) {
-                            return false;
-                        }
-                    }
+                            callgraph.graph.addEdge(sourceVertex, targetVertex);
+                        });
+                    });
 
-                    return true;
-                })
-                .filter(target -> !metadata.testMethods.contains(target))
-                .collect(Collectors.toSet());
+                    callgraph.graph.removeVertex(s);
+                });
+    }
 
-        targetsToRemove.forEach(graph::removeVertex);
+    /**
+     * Prunes callsites that are part of the test method jar.
+     *
+     * @param entryPoint entryPoint
+     * @param callgraph callgraph
+     */
+    private static void pruneCallSitesFromTests(String entryPoint, StaticCallgraph callgraph) {
+        // prune the test callsites
+        callgraph.metadata.callSites.stream()
+                .filter(callgraph.graph::containsVertex)
+                .filter( a -> false )
+                .forEach( s -> {
+                    Set<DefaultEdge> incomingEdges = callgraph.graph.incomingEdgesOf(s);
+                    Set<DefaultEdge> outgoingEdges = callgraph.graph.outgoingEdgesOf(s);
+
+                    incomingEdges.forEach( incomingEdge -> {
+                        String sourceVertex = callgraph.graph.getEdgeSource(incomingEdge);
+
+                        outgoingEdges.forEach( outgoingEdge -> {
+                            String targetVertex = callgraph.graph.getEdgeTarget(outgoingEdge);
+
+                            callgraph.graph.addEdge(sourceVertex, targetVertex);
+                        });
+                    });
+
+                    callgraph.graph.removeVertex(s);
+                });
     }
 
     /**

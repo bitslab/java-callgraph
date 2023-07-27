@@ -94,12 +94,6 @@ public class Reachability {
             currentDepth++;
         }
 
-        Set<DefaultEdge> bi = graph.incomingEdgesOf("com.indeed.mph.SmartSerializer.write - RoundTripHelpers.java:22");
-        Set<DefaultEdge> bo = graph.outgoingEdgesOf("com.indeed.mph.SmartSerializer.write - RoundTripHelpers.java:22");
-        ColoredNode n = subgraphNodes.get("com.indeed.mph.SmartSerializer.write - RoundTripHelpers.java:22");
-        Set<DefaultEdge> ai = subgraph.incomingEdgesOf(n);
-        Set<DefaultEdge> ao = subgraph.outgoingEdgesOf(n);
-
         return subgraph;
     }
 }

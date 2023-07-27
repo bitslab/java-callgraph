@@ -34,17 +34,6 @@ public class GetBest {
     private final String propertyName;
     private final Map<ColoredNode, Double> score = new HashMap<>();
 
-    /* Colors - Copied from gr.gousiosg.javacg.stat.coverage.ColoredNode */
-    private static final String IMPLIED_COVERAGE_COLOR = "skyblue";
-    private static final String LIGHT_GREEN = "greenyellow";
-    private static final String MEDIUM_GREEN = "green1";
-    private static final String MEDIUM_DARK_GREEN = "green3";
-    private static final String DARK_GREEN = "green4";
-    private static final String FIREBRICK = "lightpink";
-    private static final String ENTRYPOINT_COLOR = "lightgoldenrod";
-    private static final String NO_COLOR = "ghostwhite";
-    private static final String TEST_NODE_COLOR = "plum";
-
     private static final String DEFAULT_EDGE_COLOR = "black";
     private static final String FIRST_PATH_EDGE_COLOR = "green";
     private static final String SECOND_PATH_EDGE_COLOR = "yellow";
@@ -53,7 +42,7 @@ public class GetBest {
     private static final int NUM_TOP_PATHS = 3;
 
     // color by type
-    private static final String UNCOVERED_COLOR = FIREBRICK;
+    private static final String UNCOVERED_COLOR = ColoredNode.FIREBRICK;
 
 
 
@@ -291,18 +280,10 @@ public class GetBest {
                 case UNCOVERED_COLOR:
                     return 1.00;
 
-                case LIGHT_GREEN:
-                    return 0.00;
-
-                case MEDIUM_GREEN:
-                    return 0.00;
-
-                case MEDIUM_DARK_GREEN:
-                    return 0.00;
-
-                case DARK_GREEN:
-                    return 0.00;
-
+                case ColoredNode.LIGHT_GREEN:
+                case ColoredNode.MEDIUM_GREEN:
+                case ColoredNode.MEDIUM_DARK_GREEN:
+                case ColoredNode.DARK_GREEN:
                 default:
                     return 0.00;
             }

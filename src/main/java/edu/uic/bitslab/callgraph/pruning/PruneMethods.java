@@ -5,28 +5,30 @@ import edu.uic.bitslab.callgraph.coverage.JacocoCoverage;
 import edu.uic.bitslab.callgraph.graph.StaticCallgraph;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.function.Predicate.not;
 
 public class PruneMethods {
-    private String entryPointName;
-    private StaticCallgraph callgraph;
-    private JacocoCoverage coverage;
-    private Pruner[] pruners;
+    private final String entryPointName;
+    private final StaticCallgraph callgraph;
+    private final JacocoCoverage coverage;
+    private final Pruner[] pruners;
 
     public PruneMethods(String entryPointName, StaticCallgraph callgraph, JacocoCoverage coverage) {
+        this(entryPointName, callgraph, coverage, Collections.emptySet(), Collections.emptyMap());
+    }
+
+    public PruneMethods(String entryPointName, StaticCallgraph callgraph, JacocoCoverage coverage, Set<String> packages, Map<String, Set<String>> virtualIncludeConcrete) {
         this.entryPointName = entryPointName;
         this.callgraph = callgraph;
         this.coverage = coverage;
         pruners = new Pruner[]{
 //                new KeepMethodsWithCoverage(coverage),
-//                new KeepMethodsInsidePackage("com.indeed")
-                new OnlyKeep12ConcreteTargetsWithCoverage(coverage)
+//                new KeepMethodsInsidePackage("com.indeed"),
+                new OnlyKeep12ConcreteTargetsWithCoverage(coverage, virtualIncludeConcrete),
         };
     }
 

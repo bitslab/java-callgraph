@@ -31,13 +31,10 @@ package gr.gousiosg.javacg.stat;
 import edu.uic.bitslab.callgraph.GetBest;
 import edu.uic.bitslab.callgraph.config.ManualOptions;
 import edu.uic.bitslab.callgraph.graph.*;
+import edu.uic.bitslab.callgraph.support.*;
 import gr.gousiosg.javacg.dyn.Pair;
 import edu.uic.bitslab.callgraph.coverage.CoverageStatistics;
 import edu.uic.bitslab.callgraph.coverage.JacocoCoverage;
-import edu.uic.bitslab.callgraph.support.BuildArguments;
-import edu.uic.bitslab.callgraph.support.GitArguments;
-import edu.uic.bitslab.callgraph.support.RepoTool;
-import edu.uic.bitslab.callgraph.support.TestArguments;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -200,6 +197,10 @@ public class JCallGraph {
             }
             rt.cleanTarget();
           }
+
+          // printAll
+          HelperText.printAll();
+
           break;
         }
 

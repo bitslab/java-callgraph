@@ -1,6 +1,5 @@
 package edu.uic.bitslab.callgraph.graph;
 
-import edu.uic.bitslab.callgraph.Callsite;
 import edu.uic.bitslab.callgraph.coverage.JacocoCoverage;
 import gr.gousiosg.javacg.stat.coverage.Report;
 
@@ -12,18 +11,18 @@ public class ColoredNode implements Serializable {
 
 
     /* Colors */
-    private static final String IMPLIED_COVERAGE_COLOR = "skyblue";
-    private static final String LIGHT_GREEN = "greenyellow";
-    private static final String MEDIUM_GREEN = "green1";
-    private static final String MEDIUM_DARK_GREEN = "green3";
-    private static final String DARK_GREEN = "green4";
-    private static final String FIREBRICK = "lightpink";
-    private static final String ENTRYPOINT_COLOR = "lightgoldenrod";
-    private static final String NO_COLOR = "ghostwhite";
-    private static final String TEST_NODE_COLOR = "plum";
+    public static final String IMPLIED_COVERAGE_COLOR = "skyblue";
+    public static final String LIGHT_GREEN = "greenyellow";
+    public static final String MEDIUM_GREEN = "green1";
+    public static final String MEDIUM_DARK_GREEN = "green3";
+    public static final String DARK_GREEN = "green4";
+    public static final String FIREBRICK = "lightpink";
+    public static final String ENTRYPOINT_COLOR = "lightgoldenrod";
+    public static final String NO_COLOR = "ghostwhite";
+    public static final String TEST_NODE_COLOR = "plum";
 
-    private static final String VIRTUAL_METHOD_CALL = "orange";
-    private static final String CALL_SITE = "yellow";
+    public static final String VIRTUAL_METHOD_CALL = "#fff2cc";
+    public static final String CALL_SITE = "#fed79c";
 
     private final String label;
     private String color = NO_COLOR;
@@ -81,7 +80,7 @@ public class ColoredNode implements Serializable {
     }
 
     private void chooseColor() {
-        if (!this.color.equals(ENTRYPOINT_COLOR)) {
+        if (!this.color.equals(ENTRYPOINT_COLOR) && !this.color.equals(CALL_SITE)) {
             float lineRatio = lineRatio();
             if (lineRatio > 0.75) {
                 this.color = DARK_GREEN;
@@ -110,7 +109,7 @@ public class ColoredNode implements Serializable {
         this.color = VIRTUAL_METHOD_CALL;
     }
 
-    public void markCallsite() {
+    public void markCallSite() {
         this.color = CALL_SITE;
     }
 

@@ -1,6 +1,5 @@
 package edu.uic.bitslab.callgraph.coverage;
 
-import edu.uic.bitslab.callgraph.Callsite;
 import edu.uic.bitslab.callgraph.graph.ColoredNode;
 import gr.gousiosg.javacg.stat.coverage.Report;
 import edu.uic.bitslab.callgraph.support.JarMetadata;
@@ -105,6 +104,11 @@ public class JacocoCoverage {
                                 return;
                             }
 
+                            if (metadata.callSites.contains(method)) {
+                                nodeMap.get(method).markCallSite();
+                                return;
+                            }
+
                             if (metadata.getVirtualMethods().contains(method)) {
                                 nodeMap.get(method).markVirtualMethod();
                                 return;
@@ -125,7 +129,7 @@ public class JacocoCoverage {
 
                                 boolean impliedCoverage =
                                         impliedCalls.stream()
-                                                .anyMatch(fileAndLine -> coveredLines.contains(fileAndLine));
+                                                .anyMatch(coveredLines::contains);
 
                                 if (impliedCoverage) {
                                     nodeMap.get(method).markImpliedCoverage();

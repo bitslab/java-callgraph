@@ -16,6 +16,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Comparison {
@@ -38,6 +40,8 @@ public class Comparison {
 
     public Map<String, Row> pruneAndJaCoCo(String jacocoXMLFilename, String prunedGraphSerFile) {
         Map<String, Row> rpt = new HashMap<>();
+
+        LOGGER.info("Loading serialized object file " + prunedGraphSerFile);
 
         try {
             Graph<ColoredNode, DefaultEdge> prunedGraph;
@@ -187,7 +191,7 @@ public class Comparison {
     private static Path getLatestResultPath(String project) throws IOException {
         SUTConfig sutConfig = SUTConfig.fromProjectName(project);
         String resultsDir = "artifacts/results/" + project;
-        String glob = (sutConfig.subProject.equals("") ? project : sutConfig.subProject) + "????-??-??T??_??_??.??????";
+        String glob = (sutConfig.subProject.equals("") ? project : sutConfig.subProject) + "????-??-??T??_??_??*";
         Path latestPath = null;
 
         for (Path path : Files.newDirectoryStream(Path.of(resultsDir), glob)) {
@@ -252,7 +256,12 @@ public class Comparison {
             assert project != null;
 
             String dirPath = latestPath.getFileName().toString();
-            timeStamp = dirPath.substring(dirPath.length() - 26);
+            Matcher matcherFilename = Pattern.compile("^.*(\\d{4}-\\d{2}-\\d{2}T\\d{2}_\\d{2}_\\d{2}\\.\\d+)$").matcher(dirPath);
+            if (matcherFilename.find()) {
+                timeStamp = matcherFilename.group(1);
+            } else {
+                throw new Exception("Unexpected directory name " + dirPath + " does not match the expected format with timestamp.");
+            }
         }
 
         Comparison comparison = new Comparison();
