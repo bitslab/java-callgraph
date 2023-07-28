@@ -7,6 +7,8 @@ mainJar: jflex-1.8.2-jar-with-dependencies.jar
 testJar: jflex-1.8.2-tests.jar
 #mvnOptions: -DfailIfNoTests=false -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
 mvnOptions: -DfailIfNoTests=false
+packages:
+  - jflex
 properties:
   - name: StateSetQuickcheck#removeAdd
     entryPoint: "jflex.state.StateSetQuickcheck.removeAdd(Ljflex/state/StateSet;I)V"
