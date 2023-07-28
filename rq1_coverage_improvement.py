@@ -32,15 +32,15 @@ for project in projects:
     fixedCsvFile = project[2]
 
     original = pd.read_csv(csvFile, sep=',', header=0)
-    original = original[ original['inPrunedGraph'] == "Y"]   # only include actual reachable methods
-    original['entryPointKey'] = original['entryPoint'].apply(lambda v: v.split("(", 1)[0])
+    original = original[ original['inPrunedGraph'] == "Y" ]   # only include actual reachable methods
+    original[FIELD_PROPERTY] = original['entryPoint'].apply(lambda v: shortNames[v])
 
     fixed = pd.read_csv(fixedCsvFile, sep=',', header=0)
-    fixed = fixed[ fixed['inPrunedGraph'] == "Y"]    # only include actual reachable methods
-    fixed['entryPointKey'] = fixed['entryPoint'].apply(lambda v: v.split("(", 1)[0])
-    fixed.rename(columns=lambda x: x if x == 'entryPointKey' or x == 'method' else 'FIXED_'+x, inplace=True)
+    fixed = fixed[ fixed['inPrunedGraph'] == "Y" ]    # only include actual reachable methods
+    fixed[FIELD_PROPERTY] = fixed['entryPoint'].apply(lambda v: shortNames[v])
+    fixed.rename(columns=lambda x: x if x == FIELD_PROPERTY or x == 'method' else 'FIXED_'+x, inplace=True)
 
-    data = pd.merge(fixed, original, on=['entryPointKey', 'method'], how='left')
+    data = pd.merge(fixed, original, on=[FIELD_PROPERTY, 'method'], how='left')
     data['entryPoint'].fillna(data['FIXED_entryPoint'], inplace=True)
 
     # drop rows where we don't have "FIXED"
