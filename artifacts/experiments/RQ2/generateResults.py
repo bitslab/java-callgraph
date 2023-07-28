@@ -10,7 +10,6 @@ REPORT_NAME = "artifacts/output/rq2.csv"
 TEX_REPORT_NAME = "artifacts/output/rq2.tex"
 ITERATIONS = [10, 50, 500, 1000]
 RAW_NAMES = ["Property", "10", "50", "100", "500", "1000"]
-row_count = 1
 
 propertyShortNames = {
     "TestSmartListSerializer#canRoundTripSerializableLists": 'list',
@@ -112,7 +111,7 @@ def obtain_iteration_stats(iteration_directories: list[str]) -> dict[str, tuple]
     return ret
 
 
-def generate_project_df(project_ds: dict[int, dict], row_count: int) -> pd.DataFrame():
+def generate_project_df(project_ds: dict[int, dict]) -> pd.DataFrame():
     property_dict = {}
     valid_keys = project_ds[10].keys()  # grab first dict keys for property names
     for key in valid_keys:
@@ -126,10 +125,9 @@ def generate_project_df(project_ds: dict[int, dict], row_count: int) -> pd.DataF
     project_df = pd.DataFrame()
     for prop, val in property_dict.items():
         print(val)
-        mc_dict = {"N": row_count, "Property": propertyShortNames[prop], 10: val[1][0],
+        mc_dict = {"Property": propertyShortNames[prop], 10: val[1][0],
                    50: val[2][0], 100: val[0][0], 500: val[3][0], 1000: val[4][0]}
-        row_count += 1
-        tt_dict = {"N": row_count, "Property": "time(s)", 10: val[1][1],
+        tt_dict = {"Property": "\emph{time(s)}", 10: val[1][1],
                    50: val[2][1], 100: val[0][1], 500: val[3][1], 1000: val[4][1]}
         method_coverage_df = pd.DataFrame(mc_dict, index=[i for i in range(1)])
         time_taken_df = pd.DataFrame(tt_dict, index=[i for i in range(1)])
@@ -158,16 +156,14 @@ def main():
             iteration_directories = [stats_directory + result for result in filtered_results]
             iteration_stats = obtain_iteration_stats(iteration_directories=iteration_directories)
             project_dataset[iteration] = iteration_stats
-        final_dataset[project] = generate_project_df(project_ds=project_dataset, row_count=row_count)
+        final_dataset[project] = generate_project_df(project_ds=project_dataset)
     print(final_dataset)
 
     with open(TEX_REPORT_NAME, 'w') as tf:
         df = pd.DataFrame()
         for project in PROJECTS:
             final_dataset[project]['_style'] = ''
-            header = dict(zip(['N', 'Property', 10, 50, 100, 500, 1000], ['', '', '', '', '', '', '']))
-            final_dataset[project]['N'] = pd.RangeIndex(start=row_count,
-                                                        stop=len(final_dataset[project].index) + row_count)
+            header = dict(zip(['Property', 10, 50, 100, 500, 1000], ['', '', '', '', '', '']))
             df = pd.concat([
                 df,
                 pd.DataFrame(header | {'_style': 'HEADER', 'Property': project}, index=[0]),
@@ -193,11 +189,8 @@ def main():
             c = str(len(s))
 
             possibleCommand = s[0].strip()
-
-            if possibleCommand == '\HEADER':
-                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[
-                                                                                 7:].strip().replace("-",
-                                                                                                     "") + '}' + " \\\\\n" + '\\hline' + "\n"
+            if '\HEADER' in possibleCommand:
+                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[0].replace("\\HEADER ", "").replace("-", "").strip() + '}' + " \\\\\n" + '\\hline' + "\n"
             else:
                 outTable += line.replace("nan", "-")
 
