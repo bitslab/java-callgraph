@@ -53,7 +53,9 @@ public class OnlyKeep12ConcreteTargetsWithCoverage implements Pruner {
             );
         }
 
+        return Stream.empty();
+
         // return not covered to be pruned
-        return orig.stream().filter(Predicate.not(tgts::contains));
+        // return orig.stream().filter(Predicate.not(tgts::contains));
     }
 }
