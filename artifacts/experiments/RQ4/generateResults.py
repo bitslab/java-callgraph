@@ -140,9 +140,8 @@ def generate_mph_project_df(final_stats: dict[str, str], final_fixed_stats: dict
     merged_df = pd.merge(vanilla_df, improved_df, how='outer', on='Property')
     merged_final_df = pd.concat([merged_df, naive_df]).reset_index()
 
-    merged_final_df['N'] = pd.RangeIndex(start=row_count, stop=len(merged_final_df.index) + row_count)
     row_count += len(merged_final_df.index)
-    final_df = merged_final_df[['N', 'Property', 'Vanilla', 'Improved']]
+    final_df = merged_final_df[['Property', 'Vanilla', 'Improved']]
     return final_df, row_count
 
 def generate_project_df(final_stats: dict[str, str], final_fixed_stats: dict[str, str], row_count: int) -> (pd.DataFrame(), int):
@@ -155,9 +154,8 @@ def generate_project_df(final_stats: dict[str, str], final_fixed_stats: dict[str
     improved_df['Improved'] = [val for val in final_fixed_stats.values()]
 
     merged_df = pd.merge(vanilla_df, improved_df, how='outer', on='Property')
-    merged_df['N'] = pd.RangeIndex(start=row_count, stop=len(merged_df.index) + row_count)
     row_count += len(merged_df.index)
-    final_df = merged_df[['N', 'Property', 'Vanilla', 'Improved']]
+    final_df = merged_df[['Property', 'Vanilla', 'Improved']]
     return final_df, row_count
 
 
@@ -217,11 +215,10 @@ def main():
 
             proj_mean = pd.merge(proj_stats, overhead_stats, how='outer', on='index')[CALC_NAMES].mean()
             proj_mean['_style'] = 'BOLD'
-            proj_mean['N'] = ''
             proj_mean['Property'] = 'Average'
             final_dataset[project].loc['mean'] = proj_mean
 
-            header = dict(zip(['N', 'Property', 'Vanilla', 'Improved', 'Overhead'], ['', '', '', '', '']))
+            header = dict(zip(['Property', 'Vanilla', 'Improved', 'Overhead'], ['', '', '', '']))
             df = pd.concat([
                 df,
                 pd.DataFrame(header | {'_style': 'HEADER', 'Property': project}, index=[0]),
@@ -249,8 +246,8 @@ def main():
 
             possibleCommand = s[0].strip()
 
-            if possibleCommand == '\HEADER':
-                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[7:].strip().replace("-", "") + '}' + " \\\\\n" + '\\hline' + "\n"
+            if '\HEADER' in possibleCommand:
+                outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[0].replace("\\HEADER ", "").replace("-", "").strip() + '}' + " \\\\\n" + '\\hline' + "\n"
             else:
                 outTable += line.replace("nan", "-")
 
