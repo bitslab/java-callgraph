@@ -6,13 +6,13 @@ FIELD_JACOCO = '\\jacoco'
 FIELD_SYSNAME = '\\sysname'
 FIELD_REACHABLE = 'Reachable'
 FIELD_IMPOSSIBLE = 'Impossible'
-FIELD_MISSED = 'Missed'
+# FIELD_MISFIELD_MISSED = 'Missed'
 FIELD_FIRST = 'First'
 FIELD_SECOND = 'Second'
 FIELD_THIRD = 'Third'
 
 PROP_NAMES = [FIELD_PROPERTY]
-CALC_NAMES = [FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_MISSED, FIELD_SYSNAME, FIELD_FIRST, FIELD_SECOND, FIELD_THIRD]
+CALC_NAMES = [FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_SYSNAME, FIELD_FIRST, FIELD_SECOND, FIELD_THIRD]
 TABLE_HEADER = PROP_NAMES + CALC_NAMES
 
 projects = [
@@ -70,8 +70,8 @@ for project in projects:
     data[FIELD_REACHABLE] = data['linesTotal']
     data.loc[(~(data['TP'])), FIELD_REACHABLE] = 0
 
-    data[FIELD_MISSED] = data['linesTotal']
-    data.loc[(~(data['FN'])), FIELD_MISSED] = 0
+#    data[FIELD_MISSED] = data['linesTotal']
+#    data.loc[(~(data['FN'])), FIELD_MISSED] = 0
 
     data[FIELD_SYSNAME] = data['linesTotal']
     data.loc[(~(data['FN'] | data['TP'])), FIELD_SYSNAME] = 0
@@ -79,8 +79,8 @@ for project in projects:
     # add Name as a friendly name for each entrypoint
     data[FIELD_PROPERTY] = data['entryPoint'].apply(lambda v: shortNames[v])
     dataPaths[FIELD_PROPERTY] = dataPaths['entryPoint'].apply(lambda v: shortNames[v])
-
-    dfGrouped = data[[FIELD_PROPERTY, FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_REACHABLE, FIELD_MISSED, FIELD_SYSNAME]].groupby(by=FIELD_PROPERTY).sum().round(2)
+#FIELD_MISSED
+    dfGrouped = data[[FIELD_PROPERTY, FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_REACHABLE, FIELD_SYSNAME]].groupby(by=FIELD_PROPERTY).sum().round(2)
     df = dfGrouped.merge(dataPaths[[FIELD_PROPERTY, 'First', 'Second', 'Third']], on=FIELD_PROPERTY, how='left')
 
     df.reset_index(inplace=True)
@@ -96,7 +96,8 @@ for project in projects:
 
 # output sum group by projName
 with open(byProjNameFile, 'w') as tf:
-    fpfnSum = dataSet[['Project', FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_REACHABLE, FIELD_MISSED, FIELD_SYSNAME]] \
+    #FIELD_MISSED
+    fpfnSum = dataSet[['Project', FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_REACHABLE, FIELD_SYSNAME]] \
         .sort_values(by='Project') \
         .groupby(by='Project') \
         .sum()
@@ -140,7 +141,7 @@ with open(byAllEntrypointNameFile, 'w') as tf:
         .format({
         FIELD_JACOCO: "{:.0f}",
         FIELD_IMPOSSIBLE: lambda x: "-{:.0f} ({:.0f}\%)".format(*x),
-        FIELD_MISSED: "+{:.0f}",
+        # FIELD_MISSED: "+{:.0f}",
         FIELD_SYSNAME: "{:.0f}",
         FIELD_FIRST: "{:.0f}",
         FIELD_SECOND: "{:.0f}",
