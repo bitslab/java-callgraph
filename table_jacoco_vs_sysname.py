@@ -159,9 +159,9 @@ with open(byAllEntrypointNameFile, 'w') as tf:
 
         possibleCommand = s[0].strip()
 
-        if possibleCommand == '\HEADER':
-            outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[
-                                                                             7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
+        if possibleCommand.startswith('\HEADER'):
+            projectName = possibleCommand[7:].strip()
+            outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + projectName + '}' + " \\\\\n" + '\\hline' + "\n"
         else:
             outTable += line
 
