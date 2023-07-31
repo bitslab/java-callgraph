@@ -32,7 +32,7 @@ else
   # build project
   java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar build -c $projectName -o serializedGraphs/$projectName
 
-  cp serializedGraphs/$projectName $projectName_graph
+  cp "serializedGraphs/$projectName" $projectName"_graph"
 
   # test project
   java -jar ./target/javacg-0.1-SNAPSHOT-jar-with-dependencies.jar test -c $projectName -f serializedGraphs/$projectName
