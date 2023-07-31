@@ -37,7 +37,7 @@ def obtain_stats_directories(results_directory: str) -> list[str]:
 
 def filter_for_recent_results(project_name: str, stats_directories: list[str]) -> dict[str, str]:
     valid_directories = []
-    project_string = project_name if project_name != "convex" else project_name + "-core"  # edge case
+    project_string = project_name if project_name != "convex" else project_name  # edge case
     if "mph-table-fixed" in stats_directories[0]:  # edge case
         project_string = "mph-table-fixed"
     elif "mph-table-naive" in stats_directories[0]:
