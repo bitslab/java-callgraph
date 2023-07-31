@@ -5,6 +5,8 @@ patchName: artifacts/configs/mph-table-fixed/mph-table-fixed.patch
 mainJar: mph-table-1.0.6-SNAPSHOT-jar-with-dependencies.jar
 testJar: mph-table-1.0.6-SNAPSHOT-tests.jar
 #mvnOptions: -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000"
+#packages:
+#  - com.indeed.mph
 properties:
 #  - name: TestSmartListSerializer#canRoundTripSerializableLists
 #    entryPoint: "com.indeed.mph.serializers.TestSmartListSerializer.canRoundTripSerializableLists(Ljava/util/List;Ljava/util/List;Ljava/util/List;)V"
