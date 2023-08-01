@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from common import shortNames
 
 FIELD_PROPERTY = 'Property'
@@ -6,10 +7,9 @@ FIELD_JACOCO = '\\jacoco'
 FIELD_SYSNAME = '\\sysname'
 FIELD_REACHABLE = 'Reachable'
 FIELD_IMPOSSIBLE = 'Impossible'
-# FIELD_MISFIELD_MISSED = 'Missed'
-FIELD_FIRST = 'First'
-FIELD_SECOND = 'Second'
-FIELD_THIRD = 'Third'
+FIELD_FIRST = '\\NUMFIRST'
+FIELD_SECOND = '\\NUMSECOND'
+FIELD_THIRD = '\\NUMTHIRD'
 
 PROP_NAMES = [FIELD_PROPERTY]
 CALC_NAMES = [FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_SYSNAME, FIELD_FIRST, FIELD_SECOND, FIELD_THIRD]
@@ -70,18 +70,16 @@ for project in projects:
     data[FIELD_REACHABLE] = data['linesTotal']
     data.loc[(~(data['TP'])), FIELD_REACHABLE] = 0
 
-#    data[FIELD_MISSED] = data['linesTotal']
-#    data.loc[(~(data['FN'])), FIELD_MISSED] = 0
-
     data[FIELD_SYSNAME] = data['linesTotal']
     data.loc[(~(data['FN'] | data['TP'])), FIELD_SYSNAME] = 0
 
     # add Name as a friendly name for each entrypoint
     data[FIELD_PROPERTY] = data['entryPoint'].apply(lambda v: shortNames[v])
     dataPaths[FIELD_PROPERTY] = dataPaths['entryPoint'].apply(lambda v: shortNames[v])
-#FIELD_MISSED
+
     dfGrouped = data[[FIELD_PROPERTY, FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_REACHABLE, FIELD_SYSNAME]].groupby(by=FIELD_PROPERTY).sum().round(2)
     df = dfGrouped.merge(dataPaths[[FIELD_PROPERTY, 'First', 'Second', 'Third']], on=FIELD_PROPERTY, how='left')
+    df.rename(columns={'First':FIELD_FIRST, 'Second':FIELD_SECOND, 'Third':FIELD_THIRD}, inplace=True)
 
     df.reset_index(inplace=True)
     dfSubset = df[TABLE_HEADER]
@@ -96,7 +94,6 @@ for project in projects:
 
 # output sum group by projName
 with open(byProjNameFile, 'w') as tf:
-    #FIELD_MISSED
     fpfnSum = dataSet[['Project', FIELD_JACOCO, FIELD_IMPOSSIBLE, FIELD_REACHABLE, FIELD_SYSNAME]] \
         .sort_values(by='Project') \
         .groupby(by='Project') \
@@ -130,9 +127,8 @@ with open(byAllEntrypointNameFile, 'w') as tf:
     header_rows = newDF[newDF['_style'] == 'HEADER'].index
     data_rows = newDF[newDF['_style'] != 'HEADER'].index
 
-    impossiblePercent = newDF[FIELD_IMPOSSIBLE].apply(lambda x: "0" if x == "" else x).astype('int') / newDF[
-        FIELD_JACOCO].apply(lambda x: "0" if x == "" else x).astype('int')
-    newDF[FIELD_IMPOSSIBLE] = list(zip(newDF[FIELD_IMPOSSIBLE], impossiblePercent * 100))
+    impossiblePercent = ((newDF[FIELD_IMPOSSIBLE].apply(lambda x: "0" if x == "" else x).astype('int') / newDF[FIELD_JACOCO].apply(lambda x: "0" if x == "" else x).astype('int')) * 100).apply(np.floor)
+    newDF[FIELD_IMPOSSIBLE] = list(zip(newDF[FIELD_IMPOSSIBLE], impossiblePercent))
 
     latexTable = newDF \
         .drop(columns=['_style']) \
@@ -141,7 +137,6 @@ with open(byAllEntrypointNameFile, 'w') as tf:
         .format({
         FIELD_JACOCO: "{:.0f}",
         FIELD_IMPOSSIBLE: lambda x: "-{:.0f} ({:.0f}\%)".format(*x),
-        # FIELD_MISSED: "+{:.0f}",
         FIELD_SYSNAME: "{:.0f}",
         FIELD_FIRST: "{:.0f}",
         FIELD_SECOND: "{:.0f}",
@@ -149,7 +144,7 @@ with open(byAllEntrypointNameFile, 'w') as tf:
     }, subset=pd.IndexSlice[data_rows, :], na_rep="-") \
         .set_properties(subset=pd.IndexSlice[header_rows, :], **{'HEADER': ''}) \
         .set_properties(subset=pd.IndexSlice[bold_rows, :], **{'textbf': '--rwrap'}) \
-        .to_latex(hrules=False, column_format="llrrrrrrr")
+        .to_latex(hrules=False, column_format="llrrrrr")
 
     outTable = ''
 

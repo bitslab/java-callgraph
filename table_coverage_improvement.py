@@ -3,13 +3,12 @@ from common import shortNames
 
 # IMPROVEMENT IN COVERAGE
 
-FIELD_N = 'N'
 FIELD_PROPERTY = 'Property'
 FIELD_IMPROVED_LOC_COVERAGE = 'Fixed' # 'Improved LOC Coverage'
 FIELD_ORIGINAL_LOC_COVERAGE = 'Vanilla' # 'Original LOC Coverage'
 FIELD_LOC_COUNT_IMPROVEMENT = 'Improved' # 'Improvement'
 
-PROP_NAMES = [FIELD_N, FIELD_PROPERTY]
+PROP_NAMES = [FIELD_PROPERTY]
 CALC_NAMES = [FIELD_IMPROVED_LOC_COVERAGE, FIELD_ORIGINAL_LOC_COVERAGE, FIELD_LOC_COUNT_IMPROVEMENT]
 TABLE_HEADER = PROP_NAMES + CALC_NAMES
 
@@ -55,7 +54,7 @@ for project in projects:
     data[FIELD_PROPERTY] = data['entryPoint'].apply(lambda v: shortNames[v])
 
     df = data[[FIELD_PROPERTY]+CALC_NAMES].groupby(by=FIELD_PROPERTY).sum().round(2)
-    df[FIELD_N] = pd.RangeIndex(start=rowCount, stop=len(df.index) + rowCount)
+    df.reset_index(inplace=True)
     df.reset_index(inplace=True)
     dfSubset = df[PROP_NAMES + CALC_NAMES]
 
@@ -85,7 +84,6 @@ with open(allCoverageFile, 'w') as tf:
 
         projMean = dataSetSum[projName][CALC_NAMES].mean()
         projMean['_style'] = 'BOLD'
-        projMean[FIELD_N] = ''
         projMean[FIELD_PROPERTY] = 'Average'
         dataSetSum[projName].loc['mean'] = projMean
 
@@ -112,7 +110,7 @@ with open(allCoverageFile, 'w') as tf:
             }, subset=pd.IndexSlice[data_rows, :]) \
         .set_properties(subset=pd.IndexSlice[header_rows, :], **{'HEADER': ''}) \
         .set_properties(subset=pd.IndexSlice[bold_rows, :], **{'textbf': '--rwrap'}) \
-        .to_latex(hrules=False, column_format="llrrrrrr")
+        .to_latex(hrules=False, column_format="lrrr")
 
     outTable = ''
 
@@ -123,8 +121,9 @@ with open(allCoverageFile, 'w') as tf:
 
         possibleCommand = s[0].strip()
 
-        if possibleCommand == '\HEADER':
-            outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + s[1].strip()[7:].strip() + '}' + " \\\\\n" + '\\hline' + "\n"
+        if possibleCommand.startswith('\HEADER'):
+            projectName = possibleCommand[7:].strip()
+            outTable += '\\hline' + "\n" + '\multicolumn{' + c + '}{c}{\\' + projectName + '}' + " \\\\\n" + '\\hline' + "\n"
         else:
             outTable += line
 
