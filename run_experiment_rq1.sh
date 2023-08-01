@@ -26,6 +26,7 @@ do
 	fi
 done
 
-python rq1_jacoco_vs_sysname.py
+python table_jacoco_vs_sysname.py
 
+python table_coverage_improvement.py
 

@@ -20,7 +20,7 @@ projects = [
     ('rpkicommons', 'artifacts/experiment/rq1_rpki-commons.csv', 'artifacts/experiment/rq1_rpki-commons-fixed.csv'),
 ]
 
-allCoverageFile = 'artifacts/experiment/rq1_table_coverage.tex'
+allCoverageFile = 'artifacts/experiment/table_coverage.tex'
 
 dataSet = pd.DataFrame()
 dataSetSum = {}
